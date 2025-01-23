@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.64" ClassName="CFlbTermDef" SubType="9099">
+	<ImageDatas>
+		<ImageData Id="1000">424de6000000000000007600000028000000100000000e000000010004000000000070000000000000000000000000000000000000000000000000008000008000000080800080000000800080008080000080808000c0c0c0000000ff0000ff000000ffff00ff000000ff00ff00ffff0000ffffff00ffffcccccccccfffffffccccccccc4ffffffccccccccc4ffffffccccccccc4ffffffccccccccc4ffffffccccccccc4ffffffcffffff8c4ffffffcf77f778c4ffffffcffffff8c4ffffffcfeeeee8c4ffffffcfeeeee8c4ffffffcffffff8c4ffffffccccccccc4ffffffff44444444ff</ImageData>
+	</ImageDatas>
+	<Box Id="29" BoxType="9099" BoxFlags="#x00000020">
+		<Name>__FILENAME__</Name>
+		<ImageId>1000</ImageId>
+		<EtherCAT SlaveType="2" PdiType="#x0006" MboxDataLinkLayer="true" StateMBoxPolling="true" CycleMBoxPollingTime="0" CoeType="13" FoeType="1" VendorId="#x00000538" ProductCode="#x00002000" InfoDataAddr="true" InfoDataSoeDS401="true" PortPhys="17" IdentificationAdo="308" SlotPdoIncrement="1" SlotIndexIncrement="2048" Type="NORDACpro" Desc="NORDACpro">
+			<SyncMan>001080003600010001000000800080008000001036010000</SyncMan>
+			<SyncMan>801080003200010002000000800080008000801032010000</SyncMan>
+			<SyncMan>00110c0074000100030000000000c800c800001174010000</SyncMan>
+			<SyncMan>001d0c0030000100040000000000c800c800001d30010000</SyncMan>
+			<Fmmu>0000000000000000001100020100000001000000000000000000000000000000</Fmmu>
+			<Fmmu>0000000000000000001d00010100000002000000000000000000000000000000</Fmmu>
+			<Fmmu>00000000000000000d0800010100000003000000000000000000000000000000</Fmmu>
+			<BootStrapData>0010800080108000</BootStrapData>
+			<SuName>EM03</SuName>
+			<SuTask>#x02010030</SuTask>
+			<MBoxUserCmdData>020003000a00000021000000000000000000000000000000000000000000000020a92100020000000000503432352046756e6374696f6e2050544320696e707574202d20534c4e2041444400</MBoxUserCmdData>
+			<MBoxUserCmdData>020003000a00000029000000000000000000000000000000000000000000000020692001020000002003537562496e64657820303031202d20534c4e2041444420284d6178206672657175656e63792038302900</MBoxUserCmdData>
+			<MBoxUserCmdData>020003000a0000002700000000000000000000000000000000000000000000002066200102000000e803537562496e64657820303031202d2041444420534c4e20282041636374696d652031307365632900</MBoxUserCmdData>
+			<MBoxUserCmdData>020003000a0000002800000000000000000000000000000000000000000000002067200102000000e803537562496e6465782030303120202d2041444420534c4e20282044656374696d652031307365632900</MBoxUserCmdData>
+			<MBoxUserCmdData>020003000a00000022000000000000000000000000000000000000000000000020fd21000200000008005035303920536f7572636520636f6e74726f6c20776f7264202d2041444420534c4e00</MBoxUserCmdData>
+			<MBoxUserCmdData>020003000a000000350000000000000000000000000000000000000000000000201f220d020000000200537562496e64657820303133202d20534c4e2041444420286164642061637475616c737065656420746f20696e746572666163652900</MBoxUserCmdData>
+			<MBoxUserCmdData>020003000a00000032000000000000000000000000000000000000000000000020222205020000003100537562496e64657820303035202d2041444420534c4e20286164642072616d7074696d6520746f20696e746572666163652900</MBoxUserCmdData>
+			<MBoxUserCmdData>020003000a000000260000000000000000000000000000000000000000000000201f2201020000001700537562496e64657820303031202d20534c4e204144442028465257207769746820736c69702900</MBoxUserCmdData>
+			<MBoxUserCmdData>020003000a00000030000000000000000000000000000000000000000000000020d42001020000000000537562496e6465782030303120534c4e20414444202844697361626c6520536c697020436f6d70656e736174696f6e2900</MBoxUserCmdData>
+			<Pdo Name="Process data in" Index="#x1a00" Flags="#x0280" SyncMan="3">
+				<Entry Name="Status word" Index="#x2401" Sub="#x01">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="Actual value 1" Index="#x2401" Sub="#x02">
+					<Type>INT</Type>
+				</Entry>
+				<Entry Name="Actual value 2" Index="#x2401" Sub="#x03">
+					<Type>INT</Type>
+				</Entry>
+				<Entry Name="Actual value 3" Index="#x2401" Sub="#x04">
+					<Type>INT</Type>
+				</Entry>
+				<Entry Name="Actual value 4" Index="#x2401" Sub="#x05">
+					<Type>INT</Type>
+				</Entry>
+				<Entry Name="Actual value 5" Index="#x2401" Sub="#x06">
+					<Type>INT</Type>
+				</Entry>
+			</Pdo>
+			<Pdo Name="Process data out" Index="#x1600" InOut="1" Flags="#x0280" SyncMan="2">
+				<Entry Name="Control Word" Index="#x2400" Sub="#x01">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="Set Value 1" Index="#x2400" Sub="#x02">
+					<Type>INT</Type>
+				</Entry>
+				<Entry Name="Set Value 2" Index="#x2400" Sub="#x03">
+					<Type>INT</Type>
+				</Entry>
+				<Entry Name="Set Value 3" Index="#x2400" Sub="#x04">
+					<Type>INT</Type>
+				</Entry>
+				<Entry Name="Set Value 4" Index="#x2400" Sub="#x05">
+					<Type>INT</Type>
+				</Entry>
+				<Entry Name="Set Value 5" Index="#x2400" Sub="#x06">
+					<Type>INT</Type>
+				</Entry>
+			</Pdo>
+			<CoeProfile ProfileNo="402"/>
+			<Slot Name="Axis 1">
+				<SlotData>0000010001000000010000000008000000000000000000000000000000000000</SlotData>
+				<ModuleIdent>16896</ModuleIdent>
+				<ModuleIdent>16384</ModuleIdent>
+				<ModuleIdent>16640</ModuleIdent>
+				<ModuleIdent>16901</ModuleIdent>
+				<ModuleIdent>16976</ModuleIdent>
+				<Module Id="#x03090021" Type="SK550P" Class="">
+					<Name>Module 1 (SK550P)</Name>
+					<ImageId>411</ImageId>
+					<ModuleData>3805000000420000000004000000000000000000000000000000000000000000</ModuleData>
+					<PdoIndex>6656</PdoIndex>
+					<PdoIndex>5632</PdoIndex>
+				</Module>
+			</Slot>
+			<Slot Name="Axis 2">
+				<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+				<ModuleIdent>16384</ModuleIdent>
+				<ModuleIdent>16640</ModuleIdent>
+				<ModuleIdent>16896</ModuleIdent>
+			</Slot>
+			<Slot Name="Axis 3">
+				<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+				<ModuleIdent>16384</ModuleIdent>
+				<ModuleIdent>16640</ModuleIdent>
+				<ModuleIdent>16896</ModuleIdent>
+			</Slot>
+			<Slot Name="Axis 4">
+				<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+				<ModuleIdent>16384</ModuleIdent>
+				<ModuleIdent>16640</ModuleIdent>
+				<ModuleIdent>16896</ModuleIdent>
+			</Slot>
+			<Slot Name="Axis 5">
+				<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+				<ModuleIdent>16384</ModuleIdent>
+				<ModuleIdent>16640</ModuleIdent>
+				<ModuleIdent>16896</ModuleIdent>
+			</Slot>
+			<Slot Name="Axis 6">
+				<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+				<ModuleIdent>16384</ModuleIdent>
+				<ModuleIdent>16640</ModuleIdent>
+				<ModuleIdent>16896</ModuleIdent>
+			</Slot>
+			<Slot Name="Axis 7">
+				<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+				<ModuleIdent>16384</ModuleIdent>
+				<ModuleIdent>16640</ModuleIdent>
+				<ModuleIdent>16896</ModuleIdent>
+			</Slot>
+			<Slot Name="Axis 8">
+				<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+				<ModuleIdent>16384</ModuleIdent>
+				<ModuleIdent>16640</ModuleIdent>
+				<ModuleIdent>16896</ModuleIdent>
+			</Slot>
+		</EtherCAT>
+	</Box>
+	<Mappings>
+		<OwnerA Name="__THIS__">
+			<OwnerB Name="TIPC^DRS_2022_PLC_dev_0.1^DRS_2022_PLC_dev_0 Instance">
+				<Link VarA="InfoData^State" VarB="PlcTask Inputs^EM03.FRQ_HW[1].EthercatState"/>
+				<Link VarA="Module 1 (SK550P)^Process data in^Actual value 1" VarB="PlcTask Inputs^EM03.FRQ_HW[1].In_Actual"/>
+				<Link VarA="Module 1 (SK550P)^Process data in^Actual value 2" VarB="PlcTask Inputs^EM03.FRQ_HW[1].In_Actual" Size="16" OffsB="16"/>
+				<Link VarA="Module 1 (SK550P)^Process data in^Actual value 3" VarB="PlcTask Inputs^EM03.FRQ_HW[1].In_Actual" Size="16" OffsB="32"/>
+				<Link VarA="Module 1 (SK550P)^Process data in^Actual value 4" VarB="PlcTask Inputs^EM03.FRQ_HW[1].In_Actual" Size="16" OffsB="48"/>
+				<Link VarA="Module 1 (SK550P)^Process data in^Actual value 5" VarB="PlcTask Inputs^EM03.FRQ_HW[1].In_Actual" Size="16" OffsB="64"/>
+				<Link VarA="Module 1 (SK550P)^Process data in^Status word" VarB="PlcTask Inputs^EM03.FRQ_HW[1].In_Status"/>
+				<Link VarA="Module 1 (SK550P)^Process data out^Control Word" VarB="PlcTask Outputs^EM03.FRQ_HW[1].Out_Status"/>
+				<Link VarA="Module 1 (SK550P)^Process data out^Set Value 1" VarB="PlcTask Outputs^EM03.FRQ_HW[1].Out_Actual"/>
+				<Link VarA="Module 1 (SK550P)^Process data out^Set Value 2" VarB="PlcTask Outputs^EM03.FRQ_HW[1].Out_Actual" Size="16" OffsB="16"/>
+				<Link VarA="Module 1 (SK550P)^Process data out^Set Value 3" VarB="PlcTask Outputs^EM03.FRQ_HW[1].Out_Actual" Size="16" OffsB="32"/>
+				<Link VarA="Module 1 (SK550P)^Process data out^Set Value 4" VarB="PlcTask Outputs^EM03.FRQ_HW[1].Out_Actual" Size="16" OffsB="48"/>
+				<Link VarA="Module 1 (SK550P)^Process data out^Set Value 5" VarB="PlcTask Outputs^EM03.FRQ_HW[1].Out_Actual" Size="16" OffsB="64"/>
+			</OwnerB>
+		</OwnerA>
+	</Mappings>
+</TcSmItem>

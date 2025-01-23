@@ -1,0 +1,396 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <POU Name="AOI_NordFRQ" Id="{98d6de23-655e-4bdf-a73a-21126be48940}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_NordFRQ
+VAR_INPUT
+	Cmd_Reset :					BOOL;
+	Cmd_StartMotor_Frw :			BOOL;
+	Cmd_StartMotor_Rev :			BOOL;
+	Cfg_SpeedSetPoint :			REAL;
+	Cfg_RampTimeSetPoint :		REAL;
+
+	In_Status AT %I*	:				UINT;
+	In_Actual AT %I*	:				ARRAY [1..5] OF INT;
+END_VAR
+VAR_OUTPUT
+	Sts_ReadyToStart :			BOOL;
+	Sts_ActualSpeed_Hz :		REAL;
+	Sts_ActualSpeed_m_min :		REAL;
+	Sts_ActualTorque :			REAL;
+	Sts_ErrorActive :			BOOL;
+	Sts_WarningActive :			BOOL;
+	Sts_SetpointReached :		BOOL;
+	Sts_MotorRunningFrw :		BOOL;
+	Sts_MotorRunningRev :		BOOL;
+	Sts_MotorRunning :			BOOL;
+	Sts_StatusMessage :			STRING;
+
+	Out_Status AT %Q*	:				UINT;
+	Out_Actual AT %Q*	:				ARRAY [1..5] OF INT;
+END_VAR
+
+VAR
+	Stepcontrol	:						UINT;
+	ControlWord :						UINT;
+	StatusWord :						UINT;
+	MotorStartFRW :						BOOL;
+	MotorStartREV :						BOOL;
+	MotorChangeDirectionToFrw :			BOOL;
+	MotorChangeDirectionToRev :			BOOL;
+	MotorChangeDirectionTON :			TON;
+	MotorStartFRWONS :					R_TRIG;
+	MotorStartRevONS :					R_TRIG;
+	StopMovementONS :					R_TRIG;
+	ErrorINT :							INT;
+	ErrorString :						STRING;
+	ErrorDetectionONS :					R_TRIG;
+	ErrorDetected :						BOOL;
+	
+	FRQCTRL_RESET :						UINT;
+	FRQCTRL_ENABLE :					UINT;
+	FRQCTRL_GOFRW :						UINT;
+	FRQCTRL_GOREV :						UINT;
+	FRQCTRL_QUICKSTOP :					UINT;
+	
+	FRQCTRL :							UINT;
+	
+	SpeedSetpoint :						REAL;
+
+	ActualHzINT :						INT;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+Input StatusWord = Statusword
+(Parameter 543)
+Input Word 1 = Actual Frequency
+Input Word 2 = Actual Torque
+Input Word 3 = Errorword
+Input Word 4 = ??
+Input Word 5 = ??
+
+(Parameter 546)
+Output ControlWord = Controlword
+Output Word 1 = Setpoint Frequency
+Output Word 2 = Ramp Time
+Output Word 3 = ??
+Output Word 4 = ??
+Output Word 5 = ??
+*)
+Out_Actual[1] := REAL_TO_INT((16384.0/80)*Cfg_SpeedSetPoint);
+
+// Scaling setpoint ramp
+Out_Actual[2] := REAL_TO_INT(FUN_ScalingREAL(
+	rInput:=Cfg_RampTimeSetPoint , 
+	rInputMin:=0.0 , 
+	rInputMax:=10.0 , 
+	rOutputMin:=0 , 
+	rOutputMax:=32767.0 ));
+
+// Transfer StatusBits
+	//ReadFromTarget
+	Sts_ErrorActive := StatusWord.3;
+	Sts_WarningActive := StatusWord.7;
+	Sts_SetpointReached := StatusWord.8;
+	Sts_MotorRunningFrw := StatusWord.11 ;
+	Sts_MotorRunningRev := StatusWord.12;
+	
+
+	
+// Scaling status torque 
+Sts_ActualTorque := FUN_ScalingREAL(
+	rInput:=In_Actual[2] , 
+	rInputMin:=0.0 , 
+	rInputMax:=32787.0 , 
+	rOutputMin:=0.0 , 
+	rOutputMax:=200.0 );
+	
+
+	
+//Scaling status HZ
+Sts_ActualSpeed_Hz := FUN_ScalingREAL(
+	rInput:=In_Actual[1] , 
+	rInputMin:=0.0 , 
+	rInputMax:=16384.0 , 
+	rOutputMin:=0.0 , 
+	rOutputMax:=80.0 );
+	
+//SpeedSetpont
+IF Cfg_SpeedSetPoint = 0 THEN
+	Cfg_SpeedSetPoint := 20;
+END_IF
+
+// RAMPTIME
+IF Cfg_RampTimeSetPoint = 0 THEN
+	Cfg_RampTimeSetPoint := 1;
+END_IF	
+
+// Motor Directionbit control	
+MotorStartFRWONS(CLK:=Cmd_StartMotor_Frw , Q=> );
+MotorStartRevONS(CLK:=Cmd_StartMotor_Rev , Q=> );
+  
+IF MotorStartFRWONS.Q THEN
+	IF Cmd_StartMotor_Rev THEN
+		Cmd_StartMotor_Rev :=0;
+		MotorStartRev :=0;
+		MotorChangeDirectionToFrw :=1;	
+		ELSE
+		MotorStartFrw :=1;
+	END_IF
+END_IF
+IF MotorStartRevONS.Q THEN
+	IF Cmd_StartMotor_Frw THEN
+		Cmd_StartMotor_Frw :=0;
+		MotorStartFrw :=0;
+		MotorChangeDirectionToRev :=1;	
+		ELSE
+		MotorStartRev :=1;
+	END_IF
+END_IF
+MotorChangeDirectionTON(IN:=MotorChangeDirectionToFrw OR MotorChangeDirectionToRev , PT:=T#1S , Q=> , ET=> );
+IF MotorChangeDirectionTON.Q THEN
+	IF MotorChangeDirectionToFrw THEN
+		MotorChangeDirectionToFrw :=0;
+		Cmd_StartMotor_Frw :=1;
+		MotorStartFrw :=1;
+	END_IF
+	IF MotorChangeDirectionToRev THEN
+		MotorChangeDirectionToRev :=0;
+		Cmd_StartMotor_Rev :=1;
+		MotorStartRev :=1;
+	END_IF
+END_IF
+
+//Stopmotor Bit control
+StopMovementONS(CLK:=NOT Cmd_StartMotor_Rev AND NOT Cmd_StartMotor_Frw AND NOT MotorChangeDirectionToFrw AND NOT MotorChangeDirectionToRev, Q=> );
+IF StopMovementONS.Q THEN
+	MotorStartRev :=0;
+	MotorStartFrw :=0;
+END_IF
+FRQCTRL_RESET :=1278; 
+FRQCTRL_ENABLE :=1150;		
+FRQCTRL_GOFRW :=1151;			
+FRQCTRL_GOREV :=5247;
+FRQCTRL_QUICKSTOP := 0000;
+
+Out_Status := FRQCTRL;
+
+// Program Sequence
+	
+	CASE Stepcontrol OF
+	0:
+		Stepcontrol  := 666;
+		Sts_StatusMessage := 'PLC Reboot detected. Reset Drive!';
+	
+	10:
+
+		FRQCTRL := FRQCTRL_RESET;
+		Stepcontrol  := 30;
+		
+	30:
+		Sts_StatusMessage := 'Drive reset done, Drive is ready';
+		Sts_ReadyToStart :=1;
+		Stepcontrol  := 50;
+		FRQCTRL := FRQCTRL_ENABLE;
+
+
+		
+	50:
+		IF Cmd_Reset THEN
+			Cmd_Reset :=0;
+			Stepcontrol :=10;
+		END_IF
+		IF MotorStartFRW  THEN
+			Stepcontrol :=100;
+			Sts_StatusMessage := 'Drive running FRW';
+		END_IF
+		IF MotorStartRev THEN
+			Sts_StatusMessage := 'Drive running REV';
+			Stepcontrol :=200;
+		END_IF
+
+		IF ErrorDetected THEN
+			Stepcontrol :=500;
+		END_IF
+
+		
+	100:
+		FRQCTRL := FRQCTRL_GOFRW;
+		Stepcontrol :=110;
+	110:
+		IF NOT MotorStartFRW THEN
+			FRQCTRL := FRQCTRL_ENABLE;
+			Stepcontrol :=300;
+		END_IF	
+		IF ErrorDetected THEN
+			Stepcontrol :=500;
+		END_IF
+
+	
+	200:
+		FRQCTRL := FRQCTRL_GOREV;
+		Stepcontrol :=210;
+	210:
+		IF NOT MotorStartRev THEN
+			FRQCTRL := FRQCTRL_ENABLE;
+			Stepcontrol :=300;
+		END_IF	
+		IF ErrorDetected THEN
+			Stepcontrol :=500;
+		END_IF
+		
+			
+	300:
+		IF Sts_ActualSpeed_Hz = 0 THEN
+			Sts_StatusMessage := 'Running done, Drive is ready';
+			Stepcontrol  := 50;
+		END_IF
+
+		IF ErrorDetected THEN
+			Stepcontrol :=500;
+		END_IF
+		
+		
+	500:
+
+		Sts_StatusMessage := Concat('Drive error : ',ErrorString);
+		Stepcontrol :=666;
+		
+	666:
+		Sts_ReadyToStart :=0;
+		MotorStartRev :=0;
+		MotorStartFrw :=0;		
+		Cmd_StartMotor_Frw :=0;
+		Cmd_StartMotor_Rev :=0;
+		FRQCTRL := FRQCTRL_QUICKSTOP;
+		Stepcontrol :=667;
+		
+	667:
+		IF MotorStartFRW AND NOT ErrorDetected THEN
+			Stepcontrol :=100;
+			
+		END_IF
+		IF MotorStartRev AND NOT ErrorDetected THEN
+			Stepcontrol :=200;
+		END_IF
+			
+		IF Cmd_Reset THEN
+			Cmd_Reset :=0;
+			Stepcontrol :=10;
+		END_IF
+
+	END_CASE
+
+
+ErrorINT := In_Actual[3];
+ErrorDetectionONS(CLK:=ErrorINT <> 0   , Q=> );
+IF ErrorDetectionONS.Q THEN
+	ErrorDetected :=1;
+
+	CASE ErrorINT OF 
+		0:		ErrorString	:='	Undisclosed error detected ';
+		10	:	ErrorString	:='	Inverter overtemperature ';
+		11	:	ErrorString	:='	Internal FI overtemperature';
+		20	:	ErrorString	:='	Overtemperature motor thermistor ';
+		21	:	ErrorString	:='	Motor overtemperature I²t';
+		22	:	ErrorString	:='	Overtemperature of external brake resistor ';
+		30	:	ErrorString	:='	I2t overcurrent limit';
+		31	:	ErrorString	:='	Chopper overtemperature I2t';
+		32	:	ErrorString	:='	IGBT overcurrent - 125% monitoring';
+		33	:	ErrorString	:='	IGBT overcurrent fast - 150% monitoring';
+		40	:	ErrorString	:='	Overcurrent module';
+		50	:	ErrorString	:='	Overvoltage UZW';
+		51	:	ErrorString	:='	Mains overvoltage';
+		60	:	ErrorString	:='	Charging error';
+		61	:	ErrorString	:='	Mains undervoltage';
+		70	:	ErrorString	:='	Mains phase error';
+		80	:	ErrorString	:='	Parameter loss - maximum EEPROM value exceeded';
+		81	:	ErrorString	:='	Inverter type incorrect';
+		83	:	ErrorString	:='	EEPROM KSE error';
+		84	:	ErrorString	:='	Internal EEPROM error';
+		87	:	ErrorString	:='	EEPR copy not the same';
+		100	:	ErrorString	:='	Bus Timeout';
+		102	:	ErrorString	:='	Bus Timeout Option';
+		104	:	ErrorString	:='	Init error Option';
+		101	:	ErrorString	:='	System error option - See manual';
+		103	:	ErrorString	:='	System error option - See manual';
+		105	:	ErrorString	:='	System error option - See manual';
+		106	:	ErrorString	:='	System error option - See manual';
+		107	:	ErrorString	:='	System error option - See manual';
+		109	:	ErrorString	:='	Module missing / P120';
+		110	:	ErrorString	:='	Error in analog-digital converter';
+		120	:	ErrorString	:='	External watchdog';
+		121	:	ErrorString	:='	Drive switch-off limit';
+		122	:	ErrorString	:='	Generator switch-off limit';
+		123	:	ErrorString	:='	Torque limit';
+		124	:	ErrorString	:='	Current limit';
+		125	:	ErrorString	:='	Load monitor';
+		128	:	ErrorString	:='	Analogue In minimum';
+		129	:	ErrorString	:='	Analogue In maximum';
+		130	:	ErrorString	:='	Encoder error';
+		131	:	ErrorString	:='	Speed slip error';
+		132	:	ErrorString	:='	Shut-down monitoring';
+		160	:	ErrorString	:='	Motor phase error';
+		161	:	ErrorString	:='	Magnetisation current monitoring';
+		180	:	ErrorString	:='	Error in Safe Pulse Block';
+		190	:	ErrorString	:='	Parameter identification';
+		191	:	ErrorString	:='	Star / Delta circuit incorrect';
+		201	:	ErrorString	:='	Watchdog';
+		202	:	ErrorString	:='	Stack overflow';
+		203	:	ErrorString	:='	Stack underflow';
+		204	:	ErrorString	:='	Undefined opcode';
+		205	:	ErrorString	:='	Protected Instruction';
+		206	:	ErrorString	:='	Illegal word access';
+		207	:	ErrorString	:='	Illegal Inst. Access';
+		208	:	ErrorString	:='	Program memory error';
+		209	:	ErrorString	:='	Dual-ported RAM';
+		210	:	ErrorString	:='	NMI error';
+		211	:	ErrorString	:='	PLL error';
+		212	:	ErrorString	:='	ADU error "Overrun"';
+		213	:	ErrorString	:='	PMI error "Access Error"';
+		214	:	ErrorString	:='	Userstack overflow';
+
+	END_CASE
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="AOI_NordFRQ">
+      <LineId Id="3" Count="15" />
+      <LineId Id="20" Count="1" />
+      <LineId Id="811" Count="6" />
+      <LineId Id="810" Count="0" />
+      <LineId Id="22" Count="2" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="809" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="808" Count="0" />
+      <LineId Id="45" Count="19" />
+      <LineId Id="77" Count="3" />
+      <LineId Id="341" Count="4" />
+      <LineId Id="369" Count="55" />
+      <LineId Id="426" Count="2" />
+      <LineId Id="437" Count="4" />
+      <LineId Id="443" Count="3" />
+      <LineId Id="449" Count="0" />
+      <LineId Id="453" Count="9" />
+      <LineId Id="464" Count="2" />
+      <LineId Id="468" Count="1" />
+      <LineId Id="483" Count="3" />
+      <LineId Id="494" Count="2" />
+      <LineId Id="498" Count="9" />
+      <LineId Id="534" Count="2" />
+      <LineId Id="538" Count="9" />
+      <LineId Id="553" Count="0" />
+      <LineId Id="575" Count="0" />
+      <LineId Id="577" Count="2" />
+      <LineId Id="581" Count="1" />
+      <LineId Id="587" Count="16" />
+      <LineId Id="606" Count="15" />
+      <LineId Id="630" Count="73" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

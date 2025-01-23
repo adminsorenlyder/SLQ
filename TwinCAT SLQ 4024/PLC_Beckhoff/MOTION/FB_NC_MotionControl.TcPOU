@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <POU Name="FB_NC_MotionControl" Id="{a29df78d-c22b-4499-b814-4099926ad4f8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_NC_MotionControl
+VAR_INPUT
+	Cmd_Reset			:	BOOL;
+	Cmd_Enable			:	BOOL;
+	Cmd_MoveAbsolute	:	BOOL;
+	Cmd_MoveVelocity	:	BOOL;
+	Cmd_JogPositive		:	BOOL;
+	Cmd_JogNegative		:	BOOL;
+	Cmd_Stop			:	BOOL;
+	Cfg_Position		:	LREAL;
+	Cfg_Velocity		:	LREAL;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	// Control blocks
+	MC_ResetFB 			: MC_Reset;
+	MC_PowerFB 			: MC_Power;
+	MC_MoveAbsoluteFB 	: MC_MoveAbsolute;
+	MC_MoveVelocityFB 	: MC_MoveVelocity;
+	MC_HaltFB 			: MC_Halt;
+	MC_Jog 				: MC_Jog;
+
+	// Stepkontrol
+	StepControl 		: UINT;
+	
+	// Enable ONS
+	EnableAxisONS		: Tc2_Standard.R_TRIG;
+	// Disable ONS
+	DisableAxisONS		: Tc2_Standard.R_TRIG;
+	
+END_VAR
+VAR_IN_OUT
+	AxisRef		: Tc2_MC2.AXIS_REF;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// NC Simple Motion Control - With standard blocks
+// This block is made for inspirational purposes.
+// Please make your ovn version that comlies with your / your company´s programming vision
+// Version 1.0 - Initial Version
+//-----------------------------------------------------------------------------------------
+
+MC_ResetFB(Axis:=AxisRef);// Reset control block
+MC_PowerFB(Axis:=AxisRef);// Power/Enable control block
+MC_MoveAbsoluteFB(Axis:=AxisRef);// Move To Absolute Position block
+MC_MoveVelocityFB(Axis:=AxisRef);// Move Velocity move block
+MC_HaltFB(Axis:=AxisRef);// Axis Halt block
+MC_Jog(Axis:=AxisRef);// Jog block
+
+EnableAxisONS(CLK:= Cmd_Enable);
+DisableAxisONS(CLK:= NOT Cmd_Enable );
+
+// StepControl "case"
+
+CASE Stepcontrol OF
+
+   0: // Holding step
+      // Conditions for Reset, Enable, Disable, Start movement, Stop movement, Jog
+	  IF Cmd_Reset THEN
+		  Cmd_Reset :=0;
+		  Stepcontrol :=10;
+	  END_IF
+	  IF EnableAxisONS.Q THEN
+		  Stepcontrol :=20;
+	  END_IF
+	  IF DisableAxisONS.Q THEN
+		  Stepcontrol :=30;
+	  END_IF
+	  IF Cmd_MoveAbsolute THEN
+		  Cmd_MoveAbsolute :=0;
+		  Stepcontrol :=40;
+	  END_IF
+	  IF Cmd_MoveVelocity THEN
+		  Cmd_MoveVelocity :=0;
+		  Stepcontrol :=60;
+	  END_IF
+	  IF Cmd_Stop THEN
+		  Cmd_Stop :=0;
+		  Stepcontrol :=70;
+	  END_IF
+	  IF Cmd_JogPositive THEN
+		  Stepcontrol :=80;
+	  END_IF
+	  IF Cmd_JogNegative THEN
+		  Stepcontrol :=90;
+	  END_IF
+ 
+
+//---------------------------------RESET---------------------------------
+   10: // Reset Axis
+       MC_ResetFB.Execute :=TRUE;
+       IF MC_ResetFB.Done THEN
+          MC_ResetFB.Execute :=FALSE;
+          Stepcontrol :=0; // Back to holding step
+       END_IF
+
+//---------------------------------POWER---------------------------------
+   20: // Enable Axis / Power on Axis
+       MC_PowerFB.Enable :=TRUE;
+       MC_PowerFB.Enable_Positive :=TRUE;
+       MC_PowerFB.Enable_Negative :=TRUE;
+       IF MC_PowerFB.Status THEN
+          Stepcontrol :=0; // Back to holding step
+       END_IF
+
+   30: // Disable Axis / Removing power from Axis
+       MC_PowerFB.Enable :=FALSE;
+       MC_PowerFB.Enable_Positive :=FALSE;
+       MC_PowerFB.Enable_Negative :=FALSE;
+       IF NOT MC_PowerFB.Status THEN
+          Stepcontrol :=0; // Back to holding step
+       END_IF
+
+//---------------------------ABSOLUTE MOVEMENT--------------------------------
+   40: // Start Absolute Movement
+       MC_MoveAbsoluteFB.Execute :=TRUE;
+       MC_MoveAbsoluteFB.Velocity := Cfg_Velocity;
+       MC_MoveAbsoluteFB.Position := Cfg_Position;
+       IF MC_MoveAbsoluteFB.Active THEN
+          MC_MoveAbsoluteFB.Execute :=FALSE;
+          Stepcontrol :=45; // Back to holding step
+       END_IF
+
+   45:
+       IF NOT MC_MoveAbsoluteFB.Done THEN
+          Stepcontrol :=0; // Back to holding step
+       END_IF
+
+//-----------------------------VELOCITY RUN---------------------------------
+   60: // Start Velocity run
+       MC_MoveVelocityFB.Execute := TRUE;
+       MC_MoveVelocityFB.Velocity := Cfg_Velocity;
+       IF MC_MoveVelocityFB.Active THEN
+          MC_MoveVelocityFB.Execute := FALSE;
+          Stepcontrol :=0; // Back to holding step
+       END_IF
+
+   70: // Stop Axis
+       MC_HaltFB.Execute :=TRUE;
+       IF MC_HaltFB.Done THEN
+          MC_HaltFB.Execute :=FALSE;
+          Stepcontrol :=0; // Back to holding step
+       END_IF
+
+//---------------------------------JOGGING---------------------------------
+   80: // Jogging Frw
+       MC_Jog.JogForward := TRUE;
+       IF MC_Jog.active AND NOT Cmd_JogPositive THEN
+          Stepcontrol :=100; // Tilbage til ventestep
+       END_IF
+
+   90: // Jogging Rev
+       MC_Jog.JogBackwards := TRUE;
+       IF MC_Jog.active AND NOT Cmd_JogNegative THEN
+          Stepcontrol :=100; // Tilbage til ventestep
+       END_IF
+
+   100: // Stop Jog
+       MC_Jog.JogForward := FALSE;
+       MC_Jog.JogBackwards := FALSE;
+       Stepcontrol :=0; // Tilbage til ventestep
+
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="FB_NC_MotionControl">
+      <LineId Id="163" Count="0" />
+      <LineId Id="3" Count="124" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

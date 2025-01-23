@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <POU Name="FB_NC_TorqueHoming" Id="{b49888eb-a462-40ce-8db0-e00870650460}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_NC_TorqueHoming
+VAR_INPUT
+	
+	Cmd_StartHoming :		BOOL;
+	Cfg_HomingDirection :	INT ;		// 0 = Frw, 1 = rev
+	Cfg_HomingPosition :	LREAL;		// What position the axis is in when homig is done
+	Cfg_HomingOffset :		LREAL;		// Move distance for the axis when the torque has been reached
+	Cfg_HomingSpeed :		LREAL;		// Speed of homing towards torque
+	Cfg_HomingTorque :		LREAL;		// Setpoint of torque
+	Cfg_HomingTimeout :		TIME;		// Time the axis has to complete torque homing.
+
+END_VAR
+VAR_OUTPUT
+	Sts_StatusString :		STRING;
+	Sts_Homing 		:		BOOL;
+	Sts_HomingDone 	:		BOOL;
+	Sts_Error 		:		BOOL;
+END_VAR
+VAR
+	Step 			:	INT;
+	StepOld			:	INT;
+	StepTON 		:	TON;
+	MoveVelocity 	:	Tc2_MC2.MC_MoveVelocity;
+	MoveRelative 	:	Tc2_MC2.MC_MoveRelative;
+	HomeAxis		:	Tc2_MC2.MC_Home;
+	StopAxis		:	Tc2_MC2.MC_Halt;
+	Cfg_TorqueLimit_NEG :	LREAL;
+	Cfg_HomingTorqueLimit_NEG : LREAL;
+	
+	_HomeFrw 		:	BOOL;
+	_HomeRev		:	BOOL;
+	
+END_VAR
+VAR_IN_OUT
+	AxisRef :	tc2_mc2.AXIS_REF;		
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// NC TorqueHoming - With standard blocks
+// This block is made for inspirational purposes.
+// Please make your ovn version that comlies with your / your company´s programming vision
+// Version 1.0 - Initial Version
+// Version 1.1 - Changed JOG to MoveRelative
+//-----------------------------------------------------------------------------------------
+// Scantime for this function needs to be the same as the NC task to be as accurate as possible. If the scantime is more than the NC task scantime, the torque precision decrease. 
+AxisRef.ReadStatus();
+StepTON(IN:=StepOld = Step , PT:=T#16D , Q=> , ET=> );
+IF StepOld <> Step THEN
+	StepOld := Step;
+END_IF
+
+
+Cfg_HomingTorqueLimit_NEG := 0 - Cfg_HomingTorque;	
+
+
+MoveVelocity(Axis:=AxisRef);
+	
+MoveRelative(Axis:=AxisRef);
+
+StopAxis(
+	Axis:=AxisRef ,
+	Deceleration:=100000 , 
+	Jerk:=1000000);
+HomeAxis(
+	Axis:=AxisRef , 
+	Position:=Cfg_HomingPosition , 
+	HomingMode:=Tc2_MC2.MC_HomingMode.MC_Direct);
+
+
+CASE step OF
+	
+	0:
+		IF Cmd_StartHoming THEN
+			Sts_StatusString := 'Starting Torque homing...';
+			Sts_HomingDone := 0;
+			Step :=50;
+		END_IF
+
+	50:
+		IF  Cfg_HomingTorque = 0 THEN
+			Sts_StatusString := 'Homing is unable to run. 0 is set as homing torque';
+			Step :=666;
+			ELSE
+			Step :=51;
+		END_IF	
+	51:
+	
+		IF  Cfg_HomingSpeed = 0 THEN
+			Sts_StatusString := 'Homing is unable to run. 0 is set as homing speed';
+			Step :=666;
+			ELSE
+			Step :=52;
+		END_IF	
+			
+	52:
+	
+		IF  Cfg_HomingOffset = 0 THEN
+			Sts_StatusString := 'Homing is unable to run. 0 is set as homing offset';
+			Step :=666;
+			ELSE
+			Step :=53;
+		END_IF
+		
+	53:
+	
+		IF  AxisRef.Status.Disabled THEN
+			Sts_StatusString := 'Homing is unable to run. Axis is disabled';
+			Step :=666;
+			ELSE
+			Step :=54;
+		END_IF
+		
+	54:
+	
+		IF  AxisRef.NcToPlc.ActTorque = 0.0000 THEN
+			Sts_StatusString := 'Homing is unable to run. Actual Torque is not mapped in the drive';
+			Step :=666;
+			ELSE
+			Step :=55;
+		END_IF
+		
+	55:
+	
+		IF  Cfg_HomingDirection > 1  THEN
+			Sts_StatusString := 'Homing is unable to run. Homing Direction is not configured correctly. Select 0 or 1.';
+			Step :=666;
+			ELSE
+			Step :=70;
+		END_IF
+		
+	70:
+		IF Cfg_HomingDirection = 0 THEN
+			MoveVelocity.Direction := MC_Direction.MC_Positive_Direction;
+			MoveVelocity.Velocity := Cfg_HomingSpeed;
+			MoveVelocity.Execute :=1;
+			Sts_StatusString := 'Starting homing on torque in FORWARD direction';
+			Step :=72;
+		END_IF
+		
+		IF Cfg_HomingDirection = 1 THEN
+			MoveVelocity.Direction := MC_Direction.MC_Negative_Direction;
+			MoveVelocity.Velocity := Cfg_HomingSpeed;
+			MoveVelocity.Execute :=1;
+			Sts_StatusString := 'Starting homing on torque in REVERSE direction';
+			Step :=72;
+		END_IF	
+		Sts_Homing :=1;
+		
+	72:
+		IF AxisRef.NcToPlc.ActTorque >= Cfg_HomingTorque OR AxisRef.NcToPlc.ActTorque <= Cfg_HomingTorqueLimit_NEG THEN
+			MoveVelocity.Execute :=0;
+			StopAxis.Execute :=1;
+			Sts_StatusString := 'Homing torque reached';
+			Step :=75;
+		END_IF
+		IF StepTON.ET > (Cfg_HomingTimeout * 1000) THEN
+			MoveVelocity.Execute :=0;
+			StopAxis.Execute :=1;
+			Step :=73;
+			Sts_StatusString := 'Homing stopped due to TIMEOUT';
+		END_IF
+		
+		IF MoveVelocity.Error THEN
+			Sts_StatusString := 'ERROR in MC_MoveVelocity';
+			Sts_Error :=1;
+			step :=666;
+		END_IF
+		
+	73:
+		IF StopAxis.Done THEN
+			step :=666;
+		END_IF
+		IF StopAxis.Error THEN
+			Sts_StatusString := 'ERROR in MC_Halt';
+			Sts_Error :=1;
+			step :=666;
+		END_IF
+
+	75:
+	
+		IF StopAxis.Done THEN
+			Sts_StatusString := 'Going to homing offset';
+			step :=76;
+		END_IF
+		IF StopAxis.Error THEN
+			Sts_StatusString := 'ERROR in MC_Halt';
+			Sts_Error :=1;
+			step :=666;
+		END_IF
+
+	
+	76:
+		IF StepTON.ET > T#200MS THEN
+			MoveRelative.Execute :=1;
+			MoveRelative.Distance := Cfg_HomingOffset;
+			MoveRelative.Velocity := Cfg_HomingSpeed * 3;
+			step :=77;
+		END_IF
+	
+		
+	77:
+		IF MoveRelative.Done THEN
+			MoveRelative.Execute :=0;
+			Sts_StatusString := 'Homing Offset Reached';
+			step :=80;
+		END_IF
+		IF MoveRelative.Error THEN
+			Sts_StatusString := 'ERROR in MC_MoveRelative';
+			Sts_Error :=1;
+			step :=666;
+		END_IF
+		
+	80:
+		HomeAxis.Execute :=1;
+		HomeAxis.Position := Cfg_HomingPosition;
+		Sts_StatusString := 'Setting Homing Position';
+		step :=81;
+			
+		
+	81:
+		IF HomeAxis.Done THEN
+			HomeAxis.Execute :=0;
+			step :=82;
+		END_IF
+		IF HomeAxis.Error THEN
+			Sts_StatusString := 'ERROR in MC_Home';
+			Sts_Error :=1;
+			step :=666;
+		END_IF
+		
+	82:
+		Sts_StatusString := 'Homing is done.';
+		Sts_Homing :=0;
+		Sts_HomingDone :=0;
+		step :=85;
+		
+	85:
+		IF NOT Cmd_StartHoming THEN
+			step :=0;
+		END_IF
+
+		
+	666: // Error step
+		Sts_Homing :=0;
+		MoveVelocity.Execute :=0;
+		MoveRelative.Execute :=0;
+		HomeAxis.Execute :=0;
+		StopAxis.Execute :=0;
+		Step :=667;
+		
+	667: // Reset
+		IF NOT Cmd_StartHoming THEN
+			step :=0;
+			Sts_Error :=0;
+		END_IF
+		
+END_CASE		]]></ST>
+    </Implementation>
+    <LineIds Name="FB_NC_TorqueHoming">
+      <LineId Id="288" Count="4" />
+      <LineId Id="3" Count="212" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,828 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <POU Name="FB_SIEMENS_FRQ" Id="{f47ba0bc-97fd-40c6-8ba8-8952a26f9d89}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SIEMENS_FRQ
+VAR_INPUT
+	In_Reset :					BOOL;
+	In_SafetyOK :				BOOL;
+	In_StartMotor_Frw :			BOOL;
+	In_StartMotor_Rev :			BOOL;
+	In_SelectManuel :			BOOL;
+	In_StartManuel_Frw :		BOOL;
+	In_StartManuel_Rev :		BOOL;
+	In_SafetySwitch :			BOOL;
+	Cfg_SpeedSetPoint :			REAL;
+	Cfg_RampTimeSetPoint :		REAL;
+	Set_TimerCounter :			INT;
+	
+	Sts_ReadyToStart :			BOOL;
+	Sts_ActualSpeed_Hz :		REAL;
+	Sts_ActualSpeed_m_min :		REAL;
+	Sts_ActualTorque :			REAL;
+	Sts_ErrorActive :			BOOL;
+	Sts_WarningActive :			BOOL;
+	Sts_SetpointReached :		BOOL;
+	Sts_MotorRunningFrw :		BOOL;
+	Sts_MotorRunningRev :		BOOL;
+	Sts_MotorRunning :			BOOL;
+	Sts_StatusINT :				INT;
+	
+	In_Actual AT %I*		:	ARRAY [1..8] OF WORD;
+	ProfinetState AT %I*	:	UINT;
+END_VAR
+VAR_OUTPUT
+	Out_Actual AT %Q*	:		ARRAY [1..4] OF WORD;
+	StatusSTRING :				STRING(250);
+END_VAR
+VAR_IN_OUT
+
+	
+END_VAR
+VAR
+	
+	ControlWord :				UINT;
+	StatusWord :				UINT;
+	Step :						UINT;
+	Losts_ReadyForSwtichingOn :	BOOL;
+	Losts_Ready :				BOOL;
+	Losts_OperationEnabled :	BOOL;
+	Losts_FaultPresent :		BOOL;
+	Losts_NoCoastingActive :	BOOL;
+	Losts_NoQuickStopActive :	BOOL;
+	Losts_SwitchingOnInhibitActive :	BOOL;
+	Losts_AlarmPresent :		BOOL;
+	Losts_SpeedSetpointDeviOff :	BOOL;
+	Losts_ControlRecuest :		BOOL;
+	Losts_ffornCompValueReached :	BOOL;
+	Losts_TorqueLimitReached :	BOOL;
+	Losts_OpenHoldingBrake :	BOOL;
+	Losts_NotMotorOvertemp_Alarm :	BOOL;
+	Losts_ClockWise :				BOOL;
+	Losts_PowerUnitThermalAlarm :	BOOL;
+	
+	LoSts_ActualSpeed :			WORD;
+	LoSts_ActualTorque :		WORD;
+	LoSts_ActualCurrent :		WORD;
+	LoSts_ActualActivePower :	WORD;
+	LoSts_FaultAndAlarmCode :	WORD;
+	
+	MotorStartFRW :						BOOL;
+	MotorStartREV :						BOOL;
+	MotorChangeDirectionToFrw :			BOOL;
+	MotorChangeDirectionToRev :			BOOL;
+	MotorChangeDirectionTON :			TON;
+	MotorStartFRWONS :					R_TRIG;
+	MotorStartRevONS :					R_TRIG;
+	StopMovementONS :					R_TRIG;
+	ErrorINT :							INT;
+	ErrorString :						STRING;
+	ErrorDetectionONS :					R_TRIG;
+	ErrorDetected :						BOOL;
+	
+	FRQCTRL_RESET :						UINT;
+	FRQCTRL_ENABLE :					UINT;
+	FRQCTRL_GOFRW :						UINT;
+	FRQCTRL_GOREV :						UINT;
+	FRQCTRL_QUICKSTOP :					UINT;
+	
+	FRQCTRL :							UINT;
+	
+	ActivityCounterSECTON :				TON;
+	ActivityCounter_Sec :				INT;
+	ActivityCounter_Min :				INT;
+
+	SpeedSetpoint :						REAL;
+
+	ActualHzINT :						INT;
+	
+	FaultTextString :					STRING;
+	ProfinetString :					STRING;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+
+Input Word 1 = Statusword
+Input Word 2 = Actual Frequency
+Input Word 3 = Actual Current
+Input Word 4 = Actual Torque
+Input Word 5 = Errorword
+
+Output Word 1 = Controlword
+Output Word 2 = Setpoint Frequency
+
+
+*)
+
+
+// Transfer StatusBits
+	//ReadFromTarget
+	(*
+	StatusWord.0 := In_Actual[1].0;
+	StatusWord.1 := In_Actual[1].1;
+	StatusWord.2 := In_Actual[1].2;
+	StatusWord.3 := In_Actual[1].3;
+	Sts_ErrorActive := In_Actual[1].3;
+	StatusWord.4 := In_Actual[1].4;
+	StatusWord.5 := In_Actual[1].5;
+	StatusWord.6 := In_Actual[1].6;
+	StatusWord.7 := In_Actual[1].7;
+	Sts_WarningActive := In_Actual[1].7;
+	StatusWord.8 := In_Actual[1].8;
+	StatusWord.9 := In_Actual[1].9;
+	StatusWord.10 := In_Actual[1].10;
+	StatusWord.11 := In_Actual[1].11;
+	Sts_MotorRunningFrw := In_Actual[1].11 ;
+	StatusWord.12 := In_Actual[1].12;
+	Sts_MotorRunningRev := In_Actual[1].12;
+	StatusWord.13 := In_Actual[1].13;
+	StatusWord.14 := In_Actual[1].14;
+	StatusWord.15 := In_Actual[1].15;
+	*)
+	
+	Losts_ReadyForSwtichingOn :=  In_Actual[1].0 ;
+	Losts_Ready :=  In_Actual[1].1;
+	Losts_OperationEnabled :=  In_Actual[1].2;
+	Sts_ErrorActive := In_Actual[1].3;
+
+	Losts_NoCoastingActive :=  In_Actual[1].4;
+	Losts_NoQuickStopActive :=  In_Actual[1].5;
+	Losts_SwitchingOnInhibitActive :=  In_Actual[1].6;
+	Losts_AlarmPresent :=  In_Actual[1].7;
+	Losts_SpeedSetpointDeviOff :=  In_Actual[1].8;
+	Losts_ControlRecuest :=  In_Actual[1].9;
+	Losts_ffornCompValueReached :=  In_Actual[1].10;
+	Losts_TorqueLimitReached :=  In_Actual[1].11;
+	Losts_OpenHoldingBrake :=  In_Actual[1].12;
+	Losts_NotMotorOvertemp_Alarm :=  In_Actual[1].13;
+	Losts_ClockWise :=  In_Actual[1].14;
+	Losts_PowerUnitThermalAlarm :=  In_Actual[1].15;
+	LoSts_ActualSpeed := In_Actual[2];
+	LoSts_ActualTorque := In_Actual[3];
+		
+	IF Losts_OperationEnabled AND Losts_ClockWise THEN
+		Sts_MotorRunningFrw := 1;
+		Sts_MotorRunningRev := 0;
+	END_IF
+	IF Losts_OperationEnabled AND NOT Losts_ClockWise THEN
+		Sts_MotorRunningFrw := 0;
+		Sts_MotorRunningRev := 1;
+	END_IF
+	IF NOT Losts_OperationEnabled THEN
+		Sts_MotorRunningFrw := 0;
+		Sts_MotorRunningRev := 0;
+	END_IF
+	
+// Scaling status torque 
+Sts_ActualTorque := FUN_ScalingREAL(
+	rInput:=LoSts_ActualTorque , 
+	rInputMin:=0.0 , 
+	rInputMax:=32787.0 , 
+	rOutputMin:=0.0 , 
+	rOutputMax:=200.0 );
+	
+	
+//Scaling status HZ
+Sts_ActualSpeed_Hz := FUN_ScalingREAL(
+	rInput:=LoSts_ActualSpeed , 
+	rInputMin:=0.0 , 
+	rInputMax:=16384.0 , 
+	rOutputMin:=0.0 , 
+	rOutputMax:=100.0 );
+	
+	
+	In_SafetyOK := In_SafetyOK;
+	
+
+	IF Sts_StatusINT =1 OR Sts_StatusINT = 11 THEN
+		Sts_SetpointReached := StatusWord.8;
+		Sts_MotorRunning :=1;
+	ELSE
+		Sts_SetpointReached := 0;
+		Sts_MotorRunning :=0;
+	END_IF
+	
+//SpeedSetpont
+IF Cfg_SpeedSetPoint = 0 THEN
+	Cfg_SpeedSetPoint := 20;
+END_IF
+
+Out_Actual[2] := REAL_TO_WORD((16384.0/100)*Cfg_SpeedSetPoint);
+	
+//Out_Actual[2] := REAL_TO_WORD((16384.0/1500)*Cfg_SpeedSetPoint);
+//Scaling status m/min
+
+	
+// RAMPTIME
+IF Cfg_RampTimeSetPoint = 0 THEN
+	Cfg_RampTimeSetPoint := 1;
+END_IF	
+
+// Scaling setpoint ramp
+Out_Actual[3] := REAL_TO_WORD(FUN_ScalingREAL(
+	rInput:=Cfg_RampTimeSetPoint , 
+	rInputMin:=0.0 , 
+	rInputMax:=5.0 , 
+	rOutputMin:=0 , 
+	rOutputMax:=16384.0 ));
+Out_Actual[4] := Out_Actual[3];
+
+
+
+// Motor Directionbit control	
+MotorStartFRWONS(CLK:=In_StartMotor_Frw , Q=> );
+MotorStartRevONS(CLK:=In_StartMotor_Rev , Q=> );
+  
+IF MotorStartFRWONS.Q THEN
+	IF In_StartMotor_Rev THEN
+		In_StartMotor_Rev :=0;
+		MotorStartRev :=0;
+		MotorChangeDirectionToFrw :=1;	
+		ELSE
+		MotorStartFrw :=1;
+	END_IF
+END_IF
+IF MotorStartRevONS.Q THEN
+	IF In_StartMotor_Frw THEN
+		In_StartMotor_Frw :=0;
+		MotorStartFrw :=0;
+		MotorChangeDirectionToRev :=1;	
+		ELSE
+		MotorStartRev :=1;
+	END_IF
+END_IF
+MotorChangeDirectionTON(IN:=MotorChangeDirectionToFrw OR MotorChangeDirectionToRev , PT:=T#1S , Q=> , ET=> );
+IF MotorChangeDirectionTON.Q THEN
+	IF MotorChangeDirectionToFrw THEN
+		MotorChangeDirectionToFrw :=0;
+		In_StartMotor_Frw :=1;
+		MotorStartFrw :=1;
+	END_IF
+	IF MotorChangeDirectionToRev THEN
+		MotorChangeDirectionToRev :=0;
+		In_StartMotor_Rev :=1;
+		MotorStartRev :=1;
+	END_IF
+END_IF
+
+//Stopmotor Bit control
+StopMovementONS(CLK:=NOT In_StartMotor_Rev AND NOT In_StartMotor_Frw AND NOT MotorChangeDirectionToFrw AND NOT MotorChangeDirectionToRev, Q=> );
+IF StopMovementONS.Q THEN
+	MotorStartRev :=0;
+	MotorStartFrw :=0;
+END_IF
+
+FRQCTRL_RESET :=16#4FE; 
+FRQCTRL_GOFRW :=16#47F;
+FRQCTRL_GOREV :=16#C7F;			
+FRQCTRL_QUICKSTOP := 16#47E;
+FRQCTRL_ENABLE := 16#47E;
+
+Out_Actual[1] := FRQCTRL;
+
+// Program Sequence
+	
+	CASE Step OF
+	0:
+		Step  := 666;
+		Sts_StatusINT :=0;
+		StatusSTRING := 'PLC Reboot detected. Reset Drive!';
+	
+	10:
+		IF In_SafetyOK THEN
+			StatusSTRING := 'Resetting the drive...';
+			Step  := 20;
+			ELSE
+			StatusSTRING := 'Estop is not ok. Aborting reset of drive.';	
+			Step  := 666;
+		END_IF
+		
+	20:
+		FRQCTRL := FRQCTRL_RESET;
+		Step  := 30;
+		
+	30:
+		IF ErrorINT = 0 THEN
+			StatusSTRING := 'Drive reset done, Drive is ready';
+			Sts_ReadyToStart :=1;
+			Step  := 50;
+			FRQCTRL := FRQCTRL_ENABLE; // ???
+			ErrorDetected :=0;
+			Sts_StatusINT :=0;
+		END_IF
+
+		
+	50:
+		IF In_Reset THEN
+			In_Reset :=0;
+			Step :=10;
+		END_IF
+		IF MotorStartFRW  THEN
+			Step :=100;
+			StatusSTRING := 'Drive running FRW';
+
+		END_IF
+		IF MotorStartRev THEN
+			StatusSTRING := 'Drive running REV';
+
+			Step :=200;
+		END_IF
+		IF In_StartManuel_Frw THEN
+			StatusSTRING := 'Drive running FRW in manual';
+
+			Step :=150;
+		END_IF
+		
+		IF In_StartManuel_Rev THEN
+			StatusSTRING := 'Drive running REV in manual';
+
+			Step :=250;
+		END_IF
+		
+				
+		
+		IF ErrorDetected THEN
+			Step :=500;
+		END_IF
+		IF NOT In_SafetyOK THEN
+			Sts_StatusINT :=0;
+			StatusSTRING := 'E-Stop was activated';
+			Step  := 666;
+		END_IF
+		IF ProfinetState <> 0 THEN
+			Step :=666;
+		END_IF
+		
+	100:
+		Sts_StatusINT :=1;
+		FRQCTRL := FRQCTRL_GOFRW;
+		Step :=110;
+	110:
+		IF NOT MotorStartFRW THEN
+			FRQCTRL := FRQCTRL_ENABLE;
+			Step :=300;
+		END_IF	
+		IF ErrorDetected THEN
+			Step :=500;
+		END_IF
+		IF NOT In_SafetyOK THEN
+			Sts_StatusINT :=0;
+			StatusSTRING := 'E-Stop was activated';
+			Step  := 666;
+		END_IF
+	150:
+		Sts_StatusINT :=1;
+		FRQCTRL := FRQCTRL_GOFRW;
+			Out_Actual[2] := 4096;
+			Out_Actual[3] := 8000;
+		Step :=160;
+	160:
+			Out_Actual[2] := 4096;
+			Out_Actual[3] := 8000;
+		IF NOT In_StartManuel_Frw  THEN
+			FRQCTRL := FRQCTRL_ENABLE;
+			Step :=300;
+		END_IF	
+		IF ErrorDetected THEN
+			Step :=500;
+		END_IF
+		IF NOT In_SafetyOK THEN
+			Sts_StatusINT :=0;
+			StatusSTRING := 'E-Stop was activated';
+			Step  := 666;
+		END_IF
+
+	
+	200:
+		Sts_StatusINT :=11;
+		FRQCTRL := FRQCTRL_GOREV;
+		Step :=210;
+	210:
+		IF NOT MotorStartRev THEN
+			FRQCTRL := FRQCTRL_ENABLE;
+			Step :=300;
+		END_IF	
+		IF ErrorDetected THEN
+			Step :=500;
+		END_IF
+		IF NOT In_SafetyOK THEN
+			Sts_StatusINT :=0;
+			StatusSTRING := 'E-Stop was activated';
+			Step  := 666;
+		END_IF
+		
+	250:
+		Sts_StatusINT :=11;
+		FRQCTRL := FRQCTRL_GOREV;
+			Out_Actual[2] := 4096;
+			Out_Actual[3] := 8000;
+		Step :=260;
+		
+	260:
+			Out_Actual[2] := 4096;
+			Out_Actual[3] := 8000;
+		IF NOT In_StartManuel_Rev THEN
+			FRQCTRL := FRQCTRL_ENABLE;
+			Step :=300;
+		END_IF	
+		IF ErrorDetected THEN
+			Step :=500;
+		END_IF
+		IF NOT In_SafetyOK THEN
+			Sts_StatusINT :=0;
+			StatusSTRING := 'E-Stop was activated';
+			Step  := 666;
+		END_IF
+		
+	300:
+		IF Sts_ActualSpeed_Hz = 0 THEN
+			StatusSTRING := 'Running done, Drive is ready';
+			Sts_StatusINT :=0;
+			Step  := 50;
+		END_IF
+		IF NOT In_SafetyOK THEN
+			Sts_StatusINT :=0;
+			StatusSTRING := 'E-Stop was activated';
+			Step  := 666;
+		END_IF
+		IF ErrorDetected THEN
+			Step :=500;
+		END_IF
+		
+		
+	500:
+		Sts_StatusINT :=3;
+		StatusSTRING := Concat('Drive error : ',FaultTextString);
+		Step :=666;
+		
+	666:
+		Sts_ReadyToStart :=0;
+		MotorStartRev :=0;
+		MotorStartFrw :=0;		
+		In_StartMotor_Frw :=0;
+		In_StartMotor_Rev :=0;
+		In_StartManuel_Frw :=0;
+		In_StartManuel_Rev :=0;
+		FRQCTRL := FRQCTRL_QUICKSTOP;
+		Step :=667;
+		
+	667:
+		IF MotorStartFRW AND NOT ErrorDetected THEN
+			Step :=100;
+		END_IF
+		
+		IF MotorStartRev AND NOT ErrorDetected THEN
+			Step :=200;
+		END_IF
+			
+		IF In_Reset THEN
+			In_Reset :=0;
+			Step :=10;
+		END_IF
+			
+		IF ProfinetState <> 0 THEN
+			Step :=700;
+		END_IF
+	
+	700:
+	
+			CASE ProfinetState OF
+			0: StatusSTRING := 'Profinet connection OK, drive is now ready to reset.';
+				Step :=666;
+				
+			1: ProfinetString 	:= 'Profinet device state machine is in boot mode';
+			2: ProfinetString 	:= 'Device NOT found';
+			3: ProfinetString 	:= 'The stationname is NOT unique';
+			4: ProfinetString 	:= 'IP could NOT be set';
+			5: ProfinetString 	:= 'IP conflict';
+			6: ProfinetString 	:= 'DCP set was NOT successful';
+			7: ProfinetString 	:= 'Watchdog error';
+			8: ProfinetString 	:= 'Datahold error';
+			9: ProfinetString 	:= 'RTC3: Sync mode could NOT be initiated';
+			10: ProfinetString	:= 'Profinet controller has a link error';
+			11: ProfinetString 	:= 'The aliasname is NOT unique';
+			12: ProfinetString  	:= 'The automatic name assignement isnt possible - wrong device TYPE';
+			13: ProfinetString 	:= 'IOC-AR is established but no application ready';
+			14: ProfinetString 	:= 'IOC-AR is established but module difference';
+			15: ProfinetString  	:= 'AT least one InputCR is invalid, provider in stop OR problemindicator is set';
+			16: ProfinetString 	:= 'AT least one OutputCR is invalid, provider in stop OR problemindicator is set';
+			31: ProfinetString 	:= 'Only for EtherCAT gateways: WC-State of cyclic EtherCAT frame is 1';
+			
+			END_CASE
+			StatusSTRING := CONCAT('Profinet status: ',ProfinetString);
+	END_CASE
+
+
+ErrorINT := WORD_TO_INT(In_Actual[6]);
+ErrorDetectionONS(CLK:=ErrorINT <> 0   , Q=> ); //OR Sts_ErrorActive
+IF ErrorDetectionONS.Q THEN
+ErrorDetected :=1;
+
+END_IF
+
+CASE ErrorINT OF 
+	1: FaultTextString := 'Uspecificeret fejl. Reset omformer';
+1000: FaultTextString := 'Internal software error';
+1001: FaultTextString := 'FloatingPoint exception';
+1002: FaultTextString := 'Internal software error';
+1003: FaultTextString := 'Acknowledgement delay when accessing the memory';
+1004: FaultTextString := 'Internal software error';
+1005: FaultTextString := 'File upload/download error';
+1009: FaultTextString := 'CU: Control module overtemperature';
+1010: FaultTextString := 'Drive type unknown';
+1015: FaultTextString := 'Internal software error';
+1016: FaultTextString := 'Firmware changed';
+1017: FaultTextString := 'Component lists changed';
+1018: FaultTextString := 'Booting has been interrupted several times';
+1019: FaultTextString := 'Writing to the removable data medium unsuccessful';
+1020: FaultTextString := 'Writing to RAM disk unsuccessful';
+1021: FaultTextString := 'Removable data medium as USB data storage medium from the PC used';
+1023: FaultTextString := 'Software timeout (internal)';
+1028: FaultTextString := 'Configuration error';
+1030: FaultTextString := 'Sign-of-life failure for master control';
+1033: FaultTextString := 'Units changeover: Reference parameter value invalid';
+1034: FaultTextString := 'Units changeover: Calculation parameter values after reference value change unsuccessful';
+1035: FaultTextString := 'ACX: Parameter back-up file corrupted';
+1036: FaultTextString := 'ACX: Parameter back-up file missing';
+1038: FaultTextString := 'ACX: Loading the parameter back-up file unsuccessful';
+1039: FaultTextString := 'ACX: Writing to the parameter back-up file was unsuccessful';
+1040: FaultTextString := 'Save parameter settings and carry out a POWER ON';
+1042: FaultTextString := 'Parameter error during project download';
+1043: FaultTextString := 'Fatal error at project download';
+1044: FaultTextString := 'CU: Descriptive data error';
+1045: FaultTextString := 'Configuring data invalid';
+1049: FaultTextString := 'It is not possible to write to file';
+1054: FaultTextString := 'CU: System limit exceeded';
+1064: FaultTextString := 'CU: Internal error (CRC)';
+1066: FaultTextString := 'Buffer memory: 70% fill level reached or exceeded';
+1067: FaultTextString := 'Buffer memory: 100 % fill level reached';
+1068: FaultTextString := 'CU: Data memory memory overflow';
+1069: FaultTextString := 'Parameter backup and device incompatible';
+1072: FaultTextString := 'Memory card restored from the backup copy';
+1073: FaultTextString := 'POWER ON required for backup copy on memory card';
+1105: FaultTextString := 'CU: Insufficient memory';
+1107: FaultTextString := 'Save to memory card unsuccessful';
+1112: FaultTextString := ' CU: Power unit not permissible';
+1120: FaultTextString := 'Terminal initialization has failed';
+1122: FaultTextString := 'Frequency at the measuring probe input too high';
+1152: FaultTextString := 'CU: Invalid constellation of drive object types';
+1205: FaultTextString := 'CU: Time slice overflow';
+1250: FaultTextString := 'CU: CU-EEPROM incorrect read-only data';
+1251: FaultTextString := 'CU: CU-EEPROM incorrect read-write data';
+1257: FaultTextString := 'CU: Firmware version out of date';
+1340: FaultTextString := 'Topology: Too many components on one line';
+1505: FaultTextString := 'BICO: Interconnection cannot be established';
+1510: FaultTextString := 'BICO: Signal source is not float type';
+1511: FaultTextString := 'BICO: Interconnection with different scalings';
+1512: FaultTextString := 'BICO: No scaling available';
+1513: FaultTextString := 'BICO: Interconnection cross DO with different scalings';
+1514: FaultTextString := 'BICO: Error when writing during a reconnect';
+1515: FaultTextString := 'BICO: Writing to parameter not permitted as the master control is active';
+1590: FaultTextString := 'Drive: Motor maintenance interval expired';
+1600: FaultTextString := 'SI P1 (CU): STOP A initiated';
+1611: FaultTextString := 'SI P1 (CU): Defect in a monitoring channel';
+1620: FaultTextString := 'SI P1 (CU): Safe Torque Off active';
+1625: FaultTextString := 'SI P1 (CU): Sign-of-life error in safety data';
+1640: FaultTextString := 'SI P1 (CU): component replacement identified and acknowledgment/save required';
+1641: FaultTextString := 'SI P1 (CU): component replacement identified and save required';
+1649: FaultTextString := 'SI P1 (CU): Internal software error';
+1650: FaultTextString := 'SI P1 (CU): Acceptance test required';
+1651: FaultTextString := 'SI P1 (CU): Synchronization safety time slices unsuccessful';
+1653: FaultTextString := 'SI P1 (CU): PROFIBUS/PROFINET configuration error';
+1654: FaultTextString := 'SI P1 (CU): Deviating PROFIsafe configuration';
+1655: FaultTextString := 'SI P1 (CU): Align monitoring functions';
+1656: FaultTextString := 'SI P1 (CU): Parameter processor 2 error';
+1658: FaultTextString := 'SI P1 (CU): PROFIsafe telegram number not suitable';
+1659: FaultTextString := 'SI P1 (CU): Write request for parameter rejected';
+1660: FaultTextString := 'SI P1 (CU): Safety-related functions not supported';
+1662: FaultTextString := 'Error internal communications';
+1663: FaultTextString := 'SI P1 (CU): Copying the SI parameters rejected';
+1665: FaultTextString := 'SI P1 (CU): System is defective';
+1693: FaultTextString := 'SI P1 (CU): Safety parameter setting changed, POWER ON required';
+1698: FaultTextString := 'SI P1 (CU): Commissioning mode active';
+1699: FaultTextString := 'SI P1 (CU): Shutdown path must be tested';
+1788: FaultTextString := 'Automatic test stop: wait for STO deselection via SMM';
+1796: FaultTextString := 'SI P1 (CU): Wait for communication';
+1900: FaultTextString := 'PROFIBUS: Configuration telegram error';
+1910: FaultTextString := 'Fieldbus interface setpoint timeout';
+1920: FaultTextString := 'PROFIBUS: Interruption cyclic connection';
+1945: FaultTextString := 'PROFIBUS: Connection to the Publisher failed';
+1946: FaultTextString := 'PROFIBUS: Connection to the Publisher aborted';
+1951: FaultTextString := 'CU SYNC: Synchronization application clock cycle missing';
+1953: FaultTextString := 'CU SYNC: Synchronization not completed';
+2050: FaultTextString := 'Trace: Start not possible';
+2051: FaultTextString := 'Trace: recording not possible as a result of know-how protection';
+2055: FaultTextString := 'Trace: Recording time too short';
+2056: FaultTextString := 'Trace: Recording cycle too short';
+2057: FaultTextString := 'Trace: Time slice clock cycle invalid';
+2058: FaultTextString := 'Trace: Time slice clock cycle for endless trace not valid';
+2059: FaultTextString := 'Trace: Time slice clock cycle for 2 x 8 recording channels not valid';
+2060: FaultTextString := 'Trace: Signal to be traced missing';
+2061: FaultTextString := 'Trace: Invalid signal';
+2062: FaultTextString := 'Trace: Invalid trigger signal';
+2063: FaultTextString := 'Trace: Invalid data type';
+2070: FaultTextString := 'Trace: Parameter cannot be changed';
+2075: FaultTextString := 'Trace: Pretrigger time too long';
+2080: FaultTextString := 'Trace: Parameterization deleted due to unit changeover';
+2095: FaultTextString := 'MTrace 0: multiple trace cannot be activated';
+2096: FaultTextString := 'MTrace 0: cannot be saved';
+2097: FaultTextString := 'MTrace 1: multiple trace cannot be activated';
+2098: FaultTextString := 'MTrace 1: cannot be saved';
+2099: FaultTextString := 'Trace: Insufficient Control Unit memory';
+2150: FaultTextString := 'OA: Application cannot be loaded';
+2151: FaultTextString := 'OA: Internal software error';
+2152: FaultTextString := 'OA: Insufficient memory';
+3000: FaultTextString := 'NVRAM fault on action';
+3001: FaultTextString := 'NVRAM checksum incorrec';
+3505: FaultTextString := 'Analog input wire breakage';
+3510: FaultTextString := 'Calibration data not plausible';
+5000: FaultTextString := 'Power unit: Overtemperature heat sink AC inverter';
+5001: FaultTextString := 'Power unit: Overtemperature depletion layer chip';
+5002: FaultTextString := 'Power unit: Air intake overtemperature';
+5004: FaultTextString := 'Power unit: Rectifier overtemperature';
+5006: FaultTextString := 'Power unit: Overtemperature thermal model';
+5065: FaultTextString := 'Voltage measured values not plausible';
+6310: FaultTextString := 'Supply voltage (p0210) incorrectly parameterized';
+6921: FaultTextString := 'Braking resistor phase unsymmetry';
+6922: FaultTextString := 'Braking resistor phase failure';
+7011: FaultTextString := 'Drive: Motor overtemperature';
+7012: FaultTextString := 'Drive: Motor temperature model 1 overtemperature';
+7014: FaultTextString := 'Drive: Motor temperature model configuration alarm';
+7015: FaultTextString := 'Drive: Motor temperature sensor alarm';
+7016: FaultTextString := 'Drive: Motor temperature sensor fault';
+7080: FaultTextString := 'Drive: Incorrect control parameter';
+7082: FaultTextString := 'Macro: Execution not possible';
+7083: FaultTextString := 'Macro: ACX file not found';
+7084: FaultTextString := 'Macro: Condition for WaitUntil not fulfilled';
+7086: FaultTextString := 'Units changeover: Parameter limit violation due to reference value change';
+7088: FaultTextString := 'Units changeover: Parameter limit violation due to units changeover';
+7089: FaultTextString := 'Changing over units: Function module activation is blocked because the units have been changed over';
+7092: FaultTextString := 'Drive: moment of inertia estimator still not ready';
+7200: FaultTextString := 'Drive: Master control ON command present';
+7220: FaultTextString := 'Drive: Master control by PLC missing';
+7320: FaultTextString := 'Drive: Master control by PLC missing';
+7321: FaultTextString := 'Drive: Automatic restart active';
+7330: FaultTextString := 'Flying restart: Measured search current too low';
+7331: FaultTextString := 'Flying restart: Function not supported';
+7400: FaultTextString := 'Drive: DC link voltage maximum controller active';
+7401: FaultTextString := 'Drive: DC link voltage maximum controller de-activated';
+7402: FaultTextString := 'Drive: DC link voltage minimum controller active';
+7404: FaultTextString := 'Drive: DC link voltage monitoring Vdc_max';
+7405: FaultTextString := 'Drive: Kinetic buffering minimum speed not reached';
+7406: FaultTextString := 'Drive: Kinetic buffering maximum time exceeded';
+7409: FaultTextString := 'Drive: U/f control, current limiting controller active';
+7410: FaultTextString := 'Drive: Current controller output limited';
+7426: FaultTextString := 'Technology controller actual value limited';
+7428: FaultTextString := 'Technology controller parameterizing error';
+7435: FaultTextString := 'Drive: Setting the ramp-function generator for sensorless vector control';
+7530: FaultTextString := 'Drive: Drive Data Set DDS not present';
+7531: FaultTextString := 'Drive: Command Data Set CDS not present';
+7754: FaultTextString := 'Drive: Incorrect shutoff valve configuration';
+7800: FaultTextString := 'Drive: No power unit present';
+7801: FaultTextString := 'Drive: Motor overcurrent';
+7802: FaultTextString := 'Drive: Infeed or power unit not ready';
+7805: FaultTextString := 'Drive: Power unit overload I2t';
+7807: FaultTextString := 'Drive: Short-circuit/ground fault detected';
+7810: FaultTextString := 'Drive: Power unit EEPROM without rated data';
+7850: FaultTextString := 'External alarm 1';
+7860: FaultTextString := 'External fault 1';
+7900: FaultTextString := 'Drive: Motor blocked';
+7901: FaultTextString := 'Drive: Motor overspeed';
+7902: FaultTextString := 'Drive: Motor stalled';
+7910: FaultTextString := 'Drive: Motor overtemperature';
+7927: FaultTextString := 'DC braking active';
+7929: FaultTextString := 'Drive: No motor detected';
+7950: FaultTextString := 'Motor parameter incorrect';
+7967: FaultTextString := 'Drive: Incorrect pole position identification';
+7968: FaultTextString := 'Drive: Lq-Ld measurement incorrect';
+7969: FaultTextString := 'Drive: Incorrect pole position identification';
+7976: FaultTextString := 'Drive: Fine encoder calibration activated';
+7980: FaultTextString := 'Drive: Rotating measurement activated';
+7981: FaultTextString := 'Drive: Enable signals for the rotating measurement missing';
+7983: FaultTextString := 'Drive: Rotating measurement saturation characteristic';
+7984: FaultTextString := 'Drive: Speed controller optimization, moment of inertia';
+7985: FaultTextString := 'Drive: Speed controller optimization (oscillation test)';
+7986: FaultTextString := 'Drive: Rotating measurement ramp-function generator';
+7988: FaultTextString := 'Drive: Rotating measurement, no configuration selected';
+7990: FaultTextString := 'Drive: Incorrect motor data identification';
+7991: FaultTextString := 'Drive: Motor data identification activated';
+7994: FaultTextString := 'Drive: motor data identification not performed';
+8010: FaultTextString := 'CU: Analog-to-digital converter';
+8501: FaultTextString := 'PROFINET: Setpoint timeout';
+8502: FaultTextString := 'PROFINET: Monitoring time sign-of-life expired';
+8511: FaultTextString := 'PROFINET: Receive configuration data invalid';
+8526: FaultTextString := 'PROFINET: No cyclic connection';
+8565: FaultTextString := 'PROFINET: Consistency error affecting adjustable parameters';
+8700: FaultTextString := 'CAN: Communications error';
+8701: FaultTextString := 'CAN: NMT state change';
+8702: FaultTextString := 'CAN: RPDO Timeout';
+8751: FaultTextString := 'CAN: Telegram loss';
+8752: FaultTextString := 'CAN: Error counter for error passive exceeded';
+8753: FaultTextString := 'CAN: Message buffer overflow';
+8754: FaultTextString := 'CAN: Incorrect communications mode';
+8755: FaultTextString := 'CAN: Obj cannot be mapped';
+8756: FaultTextString := 'CAN: Number of mapped bytes exceeded';
+8757: FaultTextString := 'CAN: Set COB-ID invalid';
+8759: FaultTextString := 'CAN: PDO COB-ID already available';
+8760: FaultTextString := 'CAN: maximum size of the IF PZD exceeded';
+8800: FaultTextString := 'PROFIenergy energy-saving mode active';
+8802: FaultTextString := 'PROFIenergy not possible to switch off incremental encoder supply';
+13009: FaultTextString := 'Licensing OA application not licensed';
+13100: FaultTextString := 'Know-how protection: Copy protection error';
+13101: FaultTextString := 'Know-how protection: Copy protection cannot be activated';
+13102: FaultTextString := 'Know-how protection: Consistency error of the protected data';
+30001: FaultTextString := 'Power unit: Overcurrent';
+30002: FaultTextString := 'Power unit: DC link voltage overvoltage';
+30003: FaultTextString := 'Power unit: DC link voltage undervoltage';
+30004: FaultTextString := 'Power unit: Overtemperature heat sink AC inverter';
+30005: FaultTextString := 'Power unit: Overload I2t';
+30011: FaultTextString := 'Power unit: Line phase failure in main circuit';
+30012: FaultTextString := 'Power unit: Temperature sensor heat sink wire breakage';
+30013: FaultTextString := 'Power unit: Temperature sensor heat sink short-circuit';
+30015: FaultTextString := 'Power unit: Phase failure motor cable';
+30016: FaultTextString := 'Power unit: Load supply switched out';
+30017: FaultTextString := 'Power unit: Hardware current limit has responded too often';
+30021: FaultTextString := 'Power unit: Ground fault';
+30022: FaultTextString := 'Power unit: Monitoring U_ce';
+30024: FaultTextString := 'Power unit: Overtemperature thermal model';
+30025: FaultTextString := 'Power unit: Chip overtemperature';
+30027: FaultTextString := 'Power unit: Precharging DC link time monitoring';
+30030: FaultTextString := 'Power unit: Internal overtemperature alarm';
+30031: FaultTextString := 'Power unit: Hardware current limiting in phase U';
+30032: FaultTextString := 'Power unit: Hardware current limiting in phase V';
+30033: FaultTextString := 'Power unit: Hardware current limiting in phase W';
+30034: FaultTextString := 'Power unit: Internal overtemperature';
+30035: FaultTextString := 'Power unit: Air intake overtemperature';
+30036: FaultTextString := 'Power unit: Internal overtemperature';
+30037: FaultTextString := 'Power unit: Rectifier overtemperature';
+30042: FaultTextString := 'Power unit: Fan has reached the maximum operating hours';
+30049: FaultTextString := 'Power unit: Internal fan faulty';
+30051: FaultTextString := 'Power unit: Motor holding brake short circuit detected';
+30052: FaultTextString := 'EEPROM data error';
+30054: FaultTextString := 'Power unit: Undervoltage when opening the brake';
+30055: FaultTextString := 'Power unit: Braking chopper overcurrent';
+30057: FaultTextString := 'Power unit: Line asymmetry';
+30059: FaultTextString := 'Power unit: Internal fan faulty';
+30065: FaultTextString := 'Voltage measured values not plausible';
+30071: FaultTextString := 'No new actual values received from the Power Module';
+30072: FaultTextString := 'Setpoints can no longer be transferred to the Power Module';
+30074: FaultTextString := 'Communication error between the Control Unit and Power Module';
+30075: FaultTextString := 'Configuration of the power unit unsuccessful';
+30080: FaultTextString := 'Power unit: Current increasing too quickly';
+30081: FaultTextString := 'Power unit: Switching operations too frequent';
+30105: FaultTextString := 'PU: Actual value sensing fault';
+30502: FaultTextString := 'Power unit: DC link overvoltage';
+30600: FaultTextString := 'SI P2: STOP A initiated';
+30611: FaultTextString := 'SI P2: Defect in a monitoring channel';
+30620: FaultTextString := 'SI P2: Safe Torque Off active';
+30625: FaultTextString := 'SI P2: Sign-of-life error in safety data';
+30649: FaultTextString := 'SI P2: Internal software error';
+30650: FaultTextString := 'SI P2: Acceptance test required';
+30651: FaultTextString := 'SI P2: Synchronization with Control Unit unsuccessful';
+30655: FaultTextString := 'SI P2: Align monitoring functions';
+30656: FaultTextString := 'SI P2: Parameter processor 2 parameter error';
+30659: FaultTextString := 'SI P2: Write request for parameter rejected';
+30662: FaultTextString := 'Error in internal communications';
+30664: FaultTextString := 'Error while booting';
+30665: FaultTextString := 'SI P2: System is defective';
+30693: FaultTextString := 'SI P2: Safety parameter settings changed, POWER ON required';
+30788: FaultTextString := 'Automatic test stop: wait for STO deselection via SMM';
+30800: FaultTextString := 'Power unit: Group signal';
+30802: FaultTextString := 'Power unit: Time slice overflow';
+30804: FaultTextString := 'Power unit: CRC';
+30805: FaultTextString := 'Power unit: EEPROM checksum error';
+30809: FaultTextString := 'Power unit: Switching information not valid';
+30810: FaultTextString := 'Power unit: Watchdog timer';
+30850: FaultTextString := 'Power unit: Internal software error';
+30903: FaultTextString := 'Power unit: I2C bus error occurred';
+30920: FaultTextString := 'Temperature sensor fault';
+30950: FaultTextString := 'Power unit: Internal software error';
+30999: FaultTextString := 'Power unit: Unknown alarm';
+32768: FaultTextString := 'Unknown Alarm';
+35005: FaultTextString := 'TM54F:parallel connection not supported';
+35950: FaultTextString := 'TM: Internal software error';
+50001: FaultTextString := 'PROFINET configuration error';
+50010: FaultTextString := 'PROFINET Name of Station invalid';
+
+END_CASE
+
+
+
+
+(*
+MessageHandler(
+	In_Reset:= , 
+	In_NewEntry:= , 
+	Out_ActiveMessageArray=> , 
+	Out_LatestEntry=> , 
+	Out_LatestCategory=> , 
+	Out_ActiveMessageCount=> );
+*)
+//Out_Actual[1].10 := 1;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_SIEMENS_FRQ">
+      <LineId Id="3" Count="717" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
