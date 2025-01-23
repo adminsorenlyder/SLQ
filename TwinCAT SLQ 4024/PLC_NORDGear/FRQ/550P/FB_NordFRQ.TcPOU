@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
-  <POU Name="AOI_NordFRQ" Id="{98d6de23-655e-4bdf-a73a-21126be48940}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK AOI_NordFRQ
+  <POU Name="FB_NordFRQ" Id="{98d6de23-655e-4bdf-a73a-21126be48940}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_NordFRQ
 VAR_INPUT
 	Cmd_Reset :					BOOL;
 	Cmd_StartMotor_Frw :			BOOL;
@@ -355,7 +355,7 @@ IF ErrorDetectionONS.Q THEN
 END_IF
 ]]></ST>
     </Implementation>
-    <LineIds Name="AOI_NordFRQ">
+    <LineIds Name="FB_NordFRQ">
       <LineId Id="3" Count="15" />
       <LineId Id="20" Count="1" />
       <LineId Id="811" Count="6" />
