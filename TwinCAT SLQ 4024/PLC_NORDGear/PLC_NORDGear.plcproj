@@ -53,6 +53,9 @@
     <Content Include="FRQ\550P\EtherCAT Slave To Insert In IO %28NORDACpro%29.xti">
       <SubType>Content</SubType>
     </Content>
+    <None Include="PLC_NORDGear.tmc">
+      <SubType>Content</SubType>
+    </None>
   </ItemGroup>
   <ProjectExtensions>
     <PlcProjectOptions>

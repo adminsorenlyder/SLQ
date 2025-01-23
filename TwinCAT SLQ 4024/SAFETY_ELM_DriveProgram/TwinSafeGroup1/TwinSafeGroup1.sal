@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<safetyApplication Crc="1587172458" xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.5.0.0" Id="504305ab-5f92-48cd-84d8-3984915058f6" name="" mapState="false" mapDiag="false" groupOrderId="0" passificationAllowed="false" temporaryDeactivationAllowed="false" permamentDeactivationAllowed="false" xmlid="0" analogFBOutputReplacementValues="Zero" verifyAnalogFBInputsIfStart="false" userFbId="00000000-0000-0000-0000-000000000000" xmlns="http://schemas.microsoft.com/dsltools/SafetyApplicationLanguage">
+  <networks>
+    <safetyApplicationHasNetworks Id="a14eb1f7-433b-4ae5-8d66-ccb7016c7b86">
+      <Network Id="242e4c4d-9821-4023-9106-5ba343b7b12b" name="Network1" networkName="Network1" intId="1" networkOrderId="0" />
+    </safetyApplicationHasNetworks>
+  </networks>
+  <twinSAFEGroupAliasPorts>
+    <safetyApplicationHasTwinSAFEGroupAliasPort Id="29432d58-4002-450a-b798-b3ea2b3bd6be">
+      <twinSAFEGroupAliasPort Id="0da0d9f4-ebf0-4f8e-a819-99092ad3512d" name="ErrAck" sdsId="0" channelId="0" portName="ErrAck" functionId="0" />
+    </safetyApplicationHasTwinSAFEGroupAliasPort>
+  </twinSAFEGroupAliasPorts>
+  <variables>
+    <safetyApplicationHasVariables Id="c3ce5e96-f753-4c45-a142-acbd6d6bfc1f">
+      <variable Id="80a0499f-caae-4ce3-ac70-1dd948cea30b" name="GroupPort_ErrAck" isLocal="false">
+        <sourceUsages>
+          <variableHasSourceUsages Id="67934c88-107f-470d-89c5-8a199cc68703">
+            <variableUsages Id="57503f1c-ca0e-4f56-8bfe-39d0f929b358">
+              <usages>
+                <variableUsagesHasUsages Id="d1048f5f-d462-446a-b5fa-17d04176c2cf">
+                  <aliasDeviceIoUsage Id="7daeb3c1-bfd2-4f7b-b3da-184f0c6d3835" sdsId="1" channelId="1" functionId="0" />
+                </variableUsagesHasUsages>
+              </usages>
+            </variableUsages>
+          </variableHasSourceUsages>
+        </sourceUsages>
+        <targetUsages>
+          <variableHasTargetUsages Id="2bf979b9-dcae-43ed-8588-6b1097a1797b">
+            <variableUsages Id="edcade78-3a45-40a0-ac1a-ccb839469927">
+              <usages>
+                <variableUsagesHasUsages Id="bb8305b6-9a2b-4d2a-8fe9-86f47b613bea">
+                  <groupPortUsage Id="9bd864df-6975-49dc-8c34-3bb128eab4c7">
+                    <twinSAFEGroupAliasPort>
+                      <groupPortUsageReferencesTwinSAFEGroupAliasPort Id="55c4a52d-a8bb-4d85-86d0-285e5eceb5e5">
+                        <twinSAFEGroupAliasPortMoniker name="//ErrAck" />
+                      </groupPortUsageReferencesTwinSAFEGroupAliasPort>
+                    </twinSAFEGroupAliasPort>
+                  </groupPortUsage>
+                </variableUsagesHasUsages>
+              </usages>
+            </variableUsages>
+          </variableHasTargetUsages>
+        </targetUsages>
+      </variable>
+    </safetyApplicationHasVariables>
+  </variables>
+</safetyApplication>

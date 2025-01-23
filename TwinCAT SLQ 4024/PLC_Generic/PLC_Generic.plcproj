@@ -43,6 +43,11 @@
     <Folder Include="MathFunctions" />
     <Folder Include="Sequence Control" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="PLC_Generic.tmc">
+      <SubType>Content</SubType>
+    </None>
+  </ItemGroup>
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
