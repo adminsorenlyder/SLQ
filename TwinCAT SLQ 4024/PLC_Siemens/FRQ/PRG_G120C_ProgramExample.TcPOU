@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="PRG_G120C_ProgramExample" Id="{a9267421-350d-44fc-8e82-c1b3219975e3}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_G120C_ProgramExample
+VAR
+	
+	FRQ		:	FB_SIEMENS_G120C_FRQ;
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+FRQ(
+	Cmd_Reset:= , 
+	Cmd_StartMotor_Frw:= , 
+	Cmd_StartMotor_Rev:= , 
+	Cfg_SpeedSetPoint:= , 
+	Cfg_RampTimeSetPoint:= , 
+	Sts_ReadyToStart=> , 
+	Sts_ActualSpeed_Hz=> , 
+	Sts_ActualSpeed_m_min=> , 
+	Sts_ActualTorque=> , 
+	Sts_ErrorActive=> , 
+	Sts_WarningActive=> , 
+	Sts_SetpointReached=> , 
+	Sts_MotorRunningFrw=> , 
+	Sts_MotorRunningRev=> , 
+	Sts_MotorRunning=> , 
+	StatusSTRING=> );]]></ST>
+    </Implementation>
+    <LineIds Name="PRG_G120C_ProgramExample">
+      <LineId Id="9" Count="7" />
+      <LineId Id="18" Count="10" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

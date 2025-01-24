@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FUN_ScalingREAL" Id="{ac046a91-522f-4b19-825d-1e4adb0fa04d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FUN_ScalingREAL : REAL
+VAR_INPUT
+rInput:REAL;
+rInputMin:REAL;
+rInputMax:REAL;
+rOutputMin:REAL;
+rOutputMax:REAL;
+END_VAR
+VAR
+trOutputMin:REAL;
+trOutputMax:REAL;
+rInputRange:REAL;
+rOutpuRange:REAL;
+rScaleFactor: REAL;
+rInputWithoutOffset: REAL;
+rOutputWithoutOffset: REAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF rInput < rInputMin THEN
+rInput := rInputMin;
+END_IF
+
+IF rInput > rInputMax THEN
+rInput := rInputMax;
+END_IF
+
+rInputRange:=rInputMax-rInputMin;
+rOutpuRange:=rOutputMax-rOutputMin;
+
+rInputWithoutOffset:=rInput-rInputMin;
+
+rScaleFactor:=rOutpuRange/rInputRange;
+
+rOutputWithoutOffset:=rInputWithoutOffset*rScaleFactor;
+
+FUN_ScalingREAL:=(rOutputWithoutOffset+rOutputMin);]]></ST>
+    </Implementation>
+    <LineIds Name="FUN_ScalingREAL">
+      <LineId Id="54" Count="16" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

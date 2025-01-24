@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="PRG_550P_ProgramExample" Id="{3fbac5fb-677c-4970-85d1-abe4b3c4d0b4}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_550P_ProgramExample
+VAR
+
+	FRQ		:	FB_NORDGear_P550_FRQ;
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+FRQ(
+	Cmd_Reset:= , 
+	Cmd_StartMotor_Frw:= , 
+	Cmd_StartMotor_Rev:= , 
+	Cfg_SpeedSetPoint:= , 
+	Cfg_RampTimeSetPoint:= , 
+	Sts_ReadyToStart=> , 
+	Sts_ActualSpeed_Hz=> , 
+	Sts_ActualSpeed_m_min=> , 
+	Sts_ActualTorque=> , 
+	Sts_ErrorActive=> , 
+	Sts_WarningActive=> , 
+	Sts_SetpointReached=> , 
+	Sts_MotorRunningFrw=> , 
+	Sts_MotorRunningRev=> , 
+	Sts_MotorRunning=> , 
+	Sts_StatusMessage=> );]]></ST>
+    </Implementation>
+    <LineIds Name="PRG_550P_ProgramExample">
+      <LineId Id="9" Count="7" />
+      <LineId Id="19" Count="10" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

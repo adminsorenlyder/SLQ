@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
-  <POU Name="FB_NordFRQ" Id="{98d6de23-655e-4bdf-a73a-21126be48940}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_NordFRQ
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_NORDGear_P550_FRQ" Id="{98d6de23-655e-4bdf-a73a-21126be48940}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_NORDGear_P550_FRQ
 VAR_INPUT
 	Cmd_Reset :					BOOL;
 	Cmd_StartMotor_Frw :			BOOL;
@@ -9,8 +9,8 @@ VAR_INPUT
 	Cfg_SpeedSetPoint :			REAL;
 	Cfg_RampTimeSetPoint :		REAL;
 
-	In_Status AT %I*	:				UINT;
-	In_Actual AT %I*	:				ARRAY [1..5] OF INT;
+	HWin_StatusWord AT %I*	:				UINT;
+	HWin_ActualValue AT %I*	:				ARRAY [1..5] OF INT;
 END_VAR
 VAR_OUTPUT
 	Sts_ReadyToStart :			BOOL;
@@ -25,8 +25,8 @@ VAR_OUTPUT
 	Sts_MotorRunning :			BOOL;
 	Sts_StatusMessage :			STRING;
 
-	Out_Status AT %Q*	:				UINT;
-	Out_Actual AT %Q*	:				ARRAY [1..5] OF INT;
+	HWout_StatusWord AT %Q*	:				UINT;
+	HWout_SetValue AT %Q*	:				ARRAY [1..5] OF INT;
 END_VAR
 
 VAR
@@ -78,10 +78,10 @@ Output Word 3 = ??
 Output Word 4 = ??
 Output Word 5 = ??
 *)
-Out_Actual[1] := REAL_TO_INT((16384.0/80)*Cfg_SpeedSetPoint);
+HWout_SetValue[1] := REAL_TO_INT((16384.0/80)*Cfg_SpeedSetPoint);
 
 // Scaling setpoint ramp
-Out_Actual[2] := REAL_TO_INT(FUN_ScalingREAL(
+HWout_SetValue[2] := REAL_TO_INT(FUN_ScalingREAL(
 	rInput:=Cfg_RampTimeSetPoint , 
 	rInputMin:=0.0 , 
 	rInputMax:=10.0 , 
@@ -90,17 +90,17 @@ Out_Actual[2] := REAL_TO_INT(FUN_ScalingREAL(
 
 // Transfer StatusBits
 	//ReadFromTarget
-	Sts_ErrorActive := StatusWord.3;
-	Sts_WarningActive := StatusWord.7;
-	Sts_SetpointReached := StatusWord.8;
-	Sts_MotorRunningFrw := StatusWord.11 ;
-	Sts_MotorRunningRev := StatusWord.12;
+	Sts_ErrorActive := HWin_StatusWord.3;
+	Sts_WarningActive := HWin_StatusWord.7;
+	Sts_SetpointReached := HWin_StatusWord.8;
+	Sts_MotorRunningFrw := HWin_StatusWord.11 ;
+	Sts_MotorRunningRev := HWin_StatusWord.12;
 	
 
 	
 // Scaling status torque 
 Sts_ActualTorque := FUN_ScalingREAL(
-	rInput:=In_Actual[2] , 
+	rInput:=HWin_ActualValue[2] , 
 	rInputMin:=0.0 , 
 	rInputMax:=32787.0 , 
 	rOutputMin:=0.0 , 
@@ -110,7 +110,7 @@ Sts_ActualTorque := FUN_ScalingREAL(
 	
 //Scaling status HZ
 Sts_ActualSpeed_Hz := FUN_ScalingREAL(
-	rInput:=In_Actual[1] , 
+	rInput:=HWin_ActualValue[1] , 
 	rInputMin:=0.0 , 
 	rInputMax:=16384.0 , 
 	rOutputMin:=0.0 , 
@@ -168,13 +168,14 @@ IF StopMovementONS.Q THEN
 	MotorStartRev :=0;
 	MotorStartFrw :=0;
 END_IF
+
 FRQCTRL_RESET :=1278; 
 FRQCTRL_ENABLE :=1150;		
 FRQCTRL_GOFRW :=1151;			
 FRQCTRL_GOREV :=5247;
 FRQCTRL_QUICKSTOP := 0000;
 
-Out_Status := FRQCTRL;
+HWout_StatusWord := FRQCTRL;
 
 // Program Sequence
 	
@@ -189,13 +190,15 @@ Out_Status := FRQCTRL;
 		Stepcontrol  := 30;
 		
 	30:
-		Sts_StatusMessage := 'Drive reset done, Drive is ready';
-		Sts_ReadyToStart :=1;
-		Stepcontrol  := 50;
-		FRQCTRL := FRQCTRL_ENABLE;
-
-
 		
+		IF NOT Sts_ErrorActive THEN
+			Sts_StatusMessage := 'Drive reset done, Drive is ready';
+			Sts_ReadyToStart :=1;
+			Stepcontrol  := 50;
+			FRQCTRL := FRQCTRL_ENABLE;
+		END_IF
+
+
 	50:
 		IF Cmd_Reset THEN
 			Cmd_Reset :=0;
@@ -283,7 +286,7 @@ Out_Status := FRQCTRL;
 	END_CASE
 
 
-ErrorINT := In_Actual[3];
+ErrorINT := HWin_ActualValue[3];
 ErrorDetectionONS(CLK:=ErrorINT <> 0   , Q=> );
 IF ErrorDetectionONS.Q THEN
 	ErrorDetected :=1;
@@ -355,7 +358,7 @@ IF ErrorDetectionONS.Q THEN
 END_IF
 ]]></ST>
     </Implementation>
-    <LineIds Name="FB_NordFRQ">
+    <LineIds Name="FB_NORDGear_P550_FRQ">
       <LineId Id="3" Count="15" />
       <LineId Id="20" Count="1" />
       <LineId Id="811" Count="6" />
@@ -370,12 +373,18 @@ END_IF
       <LineId Id="45" Count="19" />
       <LineId Id="77" Count="3" />
       <LineId Id="341" Count="4" />
-      <LineId Id="369" Count="55" />
+      <LineId Id="369" Count="42" />
+      <LineId Id="934" Count="0" />
+      <LineId Id="412" Count="12" />
       <LineId Id="426" Count="2" />
       <LineId Id="437" Count="4" />
-      <LineId Id="443" Count="3" />
+      <LineId Id="443" Count="0" />
+      <LineId Id="935" Count="0" />
+      <LineId Id="937" Count="0" />
+      <LineId Id="444" Count="2" />
+      <LineId Id="936" Count="0" />
       <LineId Id="449" Count="0" />
-      <LineId Id="453" Count="9" />
+      <LineId Id="454" Count="8" />
       <LineId Id="464" Count="2" />
       <LineId Id="468" Count="1" />
       <LineId Id="483" Count="3" />

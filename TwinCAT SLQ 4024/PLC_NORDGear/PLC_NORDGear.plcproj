@@ -18,10 +18,13 @@
     <LibraryReferences>{5c5f6239-9d28-4346-842e-e8583f240420}</LibraryReferences>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FRQ\550P\FB_NordFRQ.TcPOU">
+    <Compile Include="FRQ\550P\FB_NORDGear_P550_FRQ.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="FRQ\550P\FUN_ScalingREAL.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FRQ\550P\PRG_550P_ProgramExample.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MAIN.TcPOU">
@@ -50,9 +53,6 @@
     <Folder Include="FRQ\550P" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="FRQ\550P\EtherCAT Slave To Insert In IO %28NORDACpro%29.xti">
-      <SubType>Content</SubType>
-    </Content>
     <None Include="PLC_NORDGear.tmc">
       <SubType>Content</SubType>
     </None>

@@ -1,8 +1,35 @@
 <?xml version="1.0"?>
-<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.64">
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.65">
 	<DataTypes>
 		<DataType>
-			<Name GUID="{18071995-0000-0000-0000-00200000000D}" IecBaseType="true" BitType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..12] OF BIT</Name>
+			<Name GUID="{F968F625-51E0-7F1A-4725-62E4C83F1288}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..6] OF WORD</Name>
+			<BitSize>96</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000004}">WORD</BaseType>
+			<ArrayInfo>
+				<LBound>1</LBound>
+				<Elements>6</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{EA55AFA5-173A-B1D8-E585-84C23FB5C985}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..4] OF WORD</Name>
+			<BitSize>64</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000004}">WORD</BaseType>
+			<ArrayInfo>
+				<LBound>1</LBound>
+				<Elements>4</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{41A59402-DED6-BA84-4477-2F4D680064AD}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..5] OF INT</Name>
+			<BitSize>80</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
+			<ArrayInfo>
+				<LBound>1</LBound>
+				<Elements>5</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{18071995-0000-0000-0000-00200000000D}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..12] OF BIT</Name>
 			<BitSize>13</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000010}">BIT</BaseType>
 			<ArrayInfo>
@@ -11,7 +38,7 @@
 			</ArrayInfo>
 		</DataType>
 		<DataType>
-			<Name GUID="{18071995-0000-0000-0000-002000000004}" IecBaseType="true" BitType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..3] OF BIT</Name>
+			<Name GUID="{18071995-0000-0000-0000-002000000004}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..3] OF BIT</Name>
 			<BitSize>4</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000010}">BIT</BaseType>
 			<ArrayInfo>
@@ -29,7 +56,7 @@
 			</ArrayInfo>
 		</DataType>
 		<DataType>
-			<Name GUID="{18071995-0000-0000-0000-002000000009}" IecBaseType="true" BitType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..8] OF BIT</Name>
+			<Name GUID="{18071995-0000-0000-0000-002000000009}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..8] OF BIT</Name>
 			<BitSize>9</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000010}">BIT</BaseType>
 			<ArrayInfo>
@@ -92,7 +119,7 @@
 			</ArrayInfo>
 		</DataType>
 		<DataType>
-			<Name GUID="{18071995-0000-0000-0000-00200000000A}" IecBaseType="true" BitType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..9] OF BIT</Name>
+			<Name GUID="{18071995-0000-0000-0000-00200000000A}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..9] OF BIT</Name>
 			<BitSize>10</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000010}">BIT</BaseType>
 			<ArrayInfo>
@@ -101,7 +128,7 @@
 			</ArrayInfo>
 		</DataType>
 		<DataType>
-			<Name GUID="{18071995-0000-0000-0000-00200000000C}" IecBaseType="true" BitType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..11] OF BIT</Name>
+			<Name GUID="{18071995-0000-0000-0000-00200000000C}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..11] OF BIT</Name>
 			<BitSize>12</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000010}">BIT</BaseType>
 			<ArrayInfo>
@@ -110,7 +137,7 @@
 			</ArrayInfo>
 		</DataType>
 		<DataType>
-			<Name GUID="{18071995-0000-0000-0000-00200000000E}" IecBaseType="true" BitType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..13] OF BIT</Name>
+			<Name GUID="{18071995-0000-0000-0000-00200000000E}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..13] OF BIT</Name>
 			<BitSize>14</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000010}">BIT</BaseType>
 			<ArrayInfo>
@@ -153,6 +180,7 @@
 		<ImageData Id="1003">424dd6020000000000003600000028000000100000000e0000000100180000000000a002000000000000000000000000000000000000ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ff808080808080808080808080808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ff000000ff00ffff00ffff00ffc0c0c0c0c0c0c0c0c0c0c0c08080800000ff000000000000000000000000000000000000000000ff00ffff00ffff00ffc0c0c0c0c0c0c0c0c0c0c0c08080800000ff0000000000000000000000000000000000000000000000ff0000ffff00ffc0c0c0c0c0c0c0c0c0c0c0c08080800000ff000000000000000000000000000000000000000000ff00ffff00ffff00ffff0000ff0000ff0000ff00008080800000ffff00ffff00ffff00ff000000ff00ffff00ff000000ff00ffff00ffff00ffff0000c0c0c0c0c0c0c0c0c0808080000000000000000000000000000000ff00ffff00ffff00ffff00ffff00ffff00ffc0c0c0ff0000c0c0c0c0c0c0808080000000ff00ffff00ffff00ffff00ffff00ffff00ff000000ff00ffff00ffff00ffc0c0c0c0c0c0ff0000c0c0c0808080000000000000000000000000000000000000000000000000ff00ffff00ffff00ffc0c0c0c0c0c0c0c0c0ff00008080800000000000000000000000000000000000000000000000000000ff0000ffff00ffff0000c0c0c0c0c0c0ff0000808080000000000000000000000000000000000000000000000000ff00ffff00ffff00ffc0c0c0ff0000ff0000c0c0c0808080000000ff00ffff00ffff00ff000000ff00ffff00ff000000ff00ffff00ffff00ffc0c0c0c0c0c0c0c0c0c0c0c0808080000000000000000000000000000000ff00ffff00ffff00ffff00ffff00ffff00ffc0c0c0c0c0c0c0c0c0c0c0c0808080000000ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc0c0c0c0c0c0c0c0c0c0c0c0808080</ImageData>
 		<ImageData Id="1004">424dd6020000000000003600000028000000100000000e0000000100180000000000a002000074120000741200000000000000000000c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3000000000000000000ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3000000000000000000ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3000000000000000000ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3c3c3c3241cedc3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3c3c3c3241cedc3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3000000c3c3c3c3c3c3241cedc3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3c3c3c3241cedc3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3000000c3c3c3c3c3c3241cedc3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3c3c3c3241cedc3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ff000000000000000000000000000000000000ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ff</ImageData>
 		<ImageData Id="1005">424dd6020000000000003600000028000000100000000e000000010018000000000000000000c40e0000c40e00000000000000000000c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3000000000000000000ff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3000000000000000000ff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c3c3c3c3c3c3c4c4c4c3c3c3050505000000000000ff00ffff00ffff00ffff00ffff00ffff00ffff00ffc2c3c3c2c3c3c3c3c3c0c4c4c3c3c3c3c3c3c3c3c3c3c3c3c0c4c4ff00ffff00ffff00ffff00ffff00ffff00ffff00ff01f2ff00f2ff00f2ff00f2ff00000000f1fe09f0fc00020200f2ffff00ffff00ffff00ffff00ffff00ffff00ffff00ff02f1fe01f2ff05f1fd00f1fe00000000f2ff02f1fe00000000f2ffff00ffff00ffff00ffff00ffff00ffff00ffff00ff03f1fe01f2ff00f2ff00f2ff01f2ff06f1fe03f1fe00000002f1feff00ffff00ffff00ffff00ffff00ffff00ffff00ff02f1fe00f2ff02f1fe01f2ff01f2ff01f2ff01f2ff00000006f1fdff00ffff00ffff00ffff00ffff00ffff00ffff00ffbfc4c4c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c0c4c4ff00ffff00ffff00ffff00ffff00ffff00ffff00ff000000000000000000000000000000000000000000000000000202ff00ffff00ffff00ffff00ffff00ffff00ffff00ffc3c3c3c3c3c3c1c1c1c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3ff00ffff00ffff00ffff00ffff00ffff00ffff00ff</ImageData>
+		<ImageData Id="1006">424de6000000000000007600000028000000100000000e000000010004000000000070000000000000000000000000000000000000000000000000008000008000000080800080000000800080008080000080808000c0c0c0000000ff0000ff000000ffff00ff000000ff00ff00ffff0000ffffff00ffffcccccccccfffffffccccccccc4ffffffccccccccc4ffffffccccccccc4ffffffccccccccc4ffffffccccccccc4ffffffcffffff8c4ffffffcf77f778c4ffffffcffffff8c4ffffffcfeeeee8c4ffffffcfeeeee8c4ffffffcffffff8c4ffffffccccccccc4ffffffff44444444ff</ImageData>
 	</ImageDatas>
 	<Project ProjectGUID="{62095E55-259A-4C85-B65B-C3F357422185}" Target64Bit="true" ShowHideConfigurations="#x346">
 		<System>
@@ -173,7 +201,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{190F3B06-98C9-4E17-B67E-910FC8D078F4}" Name="PLC_Beckhoff" PrjFilePath="PLC_Beckhoff\PLC_Beckhoff.plcproj" TmcFilePath="PLC_Beckhoff\PLC_Beckhoff.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Beckhoff\PLC_Beckhoff.tmc" TmcHash="{A046FB0F-707F-8334-3896-FFAAFB32E441}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Beckhoff\PLC_Beckhoff.tmc" TmcHash="{7EE941C1-C807-9A3C-E043-13EC890F5013}">
 					<Name>PLC_Beckhoff Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Contexts>
@@ -193,9 +221,23 @@
 				</Instance>
 			</Project>
 			<Project GUID="{2304FC89-6D60-4C92-B837-CFE433D3D856}" Name="PLC_Siemens" PrjFilePath="PLC_Siemens\PLC_Siemens.plcproj" TmcFilePath="PLC_Siemens\PLC_Siemens.tmc" ReloadTmc="true" AmsPort="852" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502040" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Siemens\PLC_Siemens.tmc" TmcHash="{4D3843C1-7160-B513-FC4A-6A8B4E48FBBC}">
+				<Instance Id="#x08502040" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Siemens\PLC_Siemens.tmc" TmcHash="{C9016FD5-E931-A7D7-B8DF-8345FE43AC1D}">
 					<Name>PLC_Siemens Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+					<Vars VarGrpType="1">
+						<Name>PlcTask Inputs</Name>
+						<Var>
+							<Name>PRG_G120C_ProgramExample.FRQ.HWin_Word</Name>
+							<Type GUID="{F968F625-51E0-7F1A-4725-62E4C83F1288}">ARRAY [1..6] OF WORD</Type>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2" AreaNo="1">
+						<Name>PlcTask Outputs</Name>
+						<Var>
+							<Name>PRG_G120C_ProgramExample.FRQ.Hwout_Word</Name>
+							<Type GUID="{EA55AFA5-173A-B1D8-E585-84C23FB5C985}">ARRAY [1..4] OF WORD</Type>
+						</Var>
+					</Vars>
 					<Contexts>
 						<Context>
 							<Id>0</Id>
@@ -213,9 +255,31 @@
 				</Instance>
 			</Project>
 			<Project GUID="{7ED2757A-0EAC-4587-AC05-9BDDA25E7CA6}" Name="PLC_NORDGear" PrjFilePath="PLC_NORDGear\PLC_NORDGear.plcproj" TmcFilePath="PLC_NORDGear\PLC_NORDGear.tmc" ReloadTmc="true" AmsPort="853" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502080" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_NORDGear\PLC_NORDGear.tmc" TmcHash="{D151170B-8115-68BC-1170-B9EB25805C67}">
+				<Instance Id="#x08502080" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_NORDGear\PLC_NORDGear.tmc" TmcHash="{94763020-52E1-9A44-6D02-03B320435687}">
 					<Name>PLC_NORDGear Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+					<Vars VarGrpType="1">
+						<Name>PlcTask Inputs</Name>
+						<Var>
+							<Name>PRG_550P_ProgramExample.FRQ.HWin_StatusWord</Name>
+							<Type>UINT</Type>
+						</Var>
+						<Var>
+							<Name>PRG_550P_ProgramExample.FRQ.HWin_ActualValue</Name>
+							<Type GUID="{41A59402-DED6-BA84-4477-2F4D680064AD}">ARRAY [1..5] OF INT</Type>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2" AreaNo="1">
+						<Name>PlcTask Outputs</Name>
+						<Var>
+							<Name>PRG_550P_ProgramExample.FRQ.HWout_StatusWord</Name>
+							<Type>UINT</Type>
+						</Var>
+						<Var>
+							<Name>PRG_550P_ProgramExample.FRQ.HWout_SetValue</Name>
+							<Type GUID="{41A59402-DED6-BA84-4477-2F4D680064AD}">ARRAY [1..5] OF INT</Type>
+						</Var>
+					</Vars>
 					<Contexts>
 						<Context>
 							<Id>0</Id>
@@ -287,8 +351,8 @@
 			<Project File="SAFETY_SimpleSafetyProgram.xti"/>
 		</Safety>
 		<Io>
-			<Device Id="1" DevType="111" DevFlags="#x0003" AmsPort="28673" AmsNetId="10.75.2.8.2.1" RemoteName="EtherCAT Master" InfoImageId="2">
-				<Name>EtherCAT Master</Name>
+			<Device Id="1" DevType="111" DevFlags="#x0003" AmsPort="28673" AmsNetId="10.75.2.8.2.1" RemoteName="EtherCAT Master (Beckhoff)" InfoImageId="2">
+				<Name>EtherCAT Master (Beckhoff)</Name>
 				<AddressInfo>
 					<Pnp>
 						<DeviceDesc>Ethernet0 2 (TwinCAT-Intel PCI Ethernet Adapter (Gi</DeviceDesc>
@@ -2527,6 +2591,487 @@ Bit 8 - 15 : reserved]]></Comment>
 				</Box>
 				<EtherCAT DcSyncMode="3"/>
 			</Device>
+			<Device Id="2" DevType="111" DevFlags="#x0003" AmsPort="28674" AmsNetId="30.11.11.164.3.1" RemoteName="EtherCAT Master (NORDGear)" InfoImageId="4">
+				<Name>EtherCAT Master (NORDGear)</Name>
+				<AddressInfo>
+					<Pci>
+						<Address>0</Address>
+						<Size>0</Size>
+						<BusNo>0</BusNo>
+						<SlotNo>0</SlotNo>
+						<VendorId>5612</VendorId>
+					</Pci>
+				</AddressInfo>
+				<Image Id="3" AddrType="9" ImageType="3">
+					<Name>Image</Name>
+				</Image>
+				<Box Id="29" BoxType="9099" BoxFlags="#x00000020">
+					<Name>EtherCAT Slave To Insert In IO (NORDACpro)</Name>
+					<ImageId>1006</ImageId>
+					<EtherCAT SlaveType="2" PdiType="#x0006" MboxDataLinkLayer="true" StateMBoxPolling="true" CycleMBoxPollingTime="0" CoeType="13" FoeType="1" VendorId="#x00000538" ProductCode="#x00002000" InfoDataAddr="true" InfoDataSoeDS401="true" PortPhys="17" IdentificationAdo="308" SlotPdoIncrement="1" SlotIndexIncrement="2048" Type="NORDACpro" Desc="NORDACpro" PortABoxInfo="#x00ffffff">
+						<SyncMan>001080003600010001000000800080008000001036010000</SyncMan>
+						<SyncMan>801080003200010002000000800080008000801032010000</SyncMan>
+						<SyncMan>00110c0074000100030000000000c800c800001174010000</SyncMan>
+						<SyncMan>001d0c0030000100040000000000c800c800001d30010000</SyncMan>
+						<Fmmu>0000000000000000001100020100000001000000000000000000000000000000</Fmmu>
+						<Fmmu>0000000000000000001d00010100000002000000000000000000000000000000</Fmmu>
+						<Fmmu>00000000000000000d0800010100000003000000000000000000000000000000</Fmmu>
+						<BootStrapData>0010800080108000</BootStrapData>
+						<SuName>EM03</SuName>
+						<SuTask>#x02010030</SuTask>
+						<MBoxUserCmdData>020003000a00000017000000030000000000000000000000000000000000000020a92100020000000000503432352046756e6374696f6e2050544320696e70757400</MBoxUserCmdData>
+						<MBoxUserCmdData>020003000a00000021000000030000000000000000000000000000000000000020692001020000002003537562496e64657820303031202d20284d6178206672657175656e63792038302900</MBoxUserCmdData>
+						<MBoxUserCmdData>020003000a0000001f00000003000000000000000000000000000000000000002066200102000000e803537562496e64657820303031202d20282041636374696d652031307365632900</MBoxUserCmdData>
+						<MBoxUserCmdData>020003000a0000002800000000000000000000000000000000000000000000002067200102000000e803537562496e6465782030303120202d2041444420534c4e20282044656374696d652031307365632900</MBoxUserCmdData>
+						<MBoxUserCmdData>020003000a00000022000000000000000000000000000000000000000000000020fd21000200000008005035303920536f7572636520636f6e74726f6c20776f7264202d2041444420534c4e00</MBoxUserCmdData>
+						<MBoxUserCmdData>020003000a000000350000000000000000000000000000000000000000000000201f220d020000000200537562496e64657820303133202d20534c4e2041444420286164642061637475616c737065656420746f20696e746572666163652900</MBoxUserCmdData>
+						<MBoxUserCmdData>020003000a00000032000000000000000000000000000000000000000000000020222205020000003100537562496e64657820303035202d2041444420534c4e20286164642072616d7074696d6520746f20696e746572666163652900</MBoxUserCmdData>
+						<MBoxUserCmdData>020003000a000000260000000000000000000000000000000000000000000000201f2201020000001700537562496e64657820303031202d20534c4e204144442028465257207769746820736c69702900</MBoxUserCmdData>
+						<MBoxUserCmdData>020003000a00000030000000000000000000000000000000000000000000000020d42001020000000000537562496e6465782030303120534c4e20414444202844697361626c6520536c697020436f6d70656e736174696f6e2900</MBoxUserCmdData>
+						<Pdo Name="Process data in" Index="#x1a00" Flags="#x0280" SyncMan="3">
+							<Entry Name="Status word" Index="#x2401" Sub="#x01">
+								<Type>UINT</Type>
+							</Entry>
+							<Entry Name="Actual value 1" Index="#x2401" Sub="#x02">
+								<Type>INT</Type>
+							</Entry>
+							<Entry Name="Actual value 2" Index="#x2401" Sub="#x03">
+								<Type>INT</Type>
+							</Entry>
+							<Entry Name="Actual value 3" Index="#x2401" Sub="#x04">
+								<Type>INT</Type>
+							</Entry>
+							<Entry Name="Actual value 4" Index="#x2401" Sub="#x05">
+								<Type>INT</Type>
+							</Entry>
+							<Entry Name="Actual value 5" Index="#x2401" Sub="#x06">
+								<Type>INT</Type>
+							</Entry>
+						</Pdo>
+						<Pdo Name="Process data out" Index="#x1600" InOut="1" Flags="#x0280" SyncMan="2">
+							<Entry Name="Control Word" Index="#x2400" Sub="#x01">
+								<Type>UINT</Type>
+							</Entry>
+							<Entry Name="Set Value 1" Index="#x2400" Sub="#x02">
+								<Type>INT</Type>
+							</Entry>
+							<Entry Name="Set Value 2" Index="#x2400" Sub="#x03">
+								<Type>INT</Type>
+							</Entry>
+							<Entry Name="Set Value 3" Index="#x2400" Sub="#x04">
+								<Type>INT</Type>
+							</Entry>
+							<Entry Name="Set Value 4" Index="#x2400" Sub="#x05">
+								<Type>INT</Type>
+							</Entry>
+							<Entry Name="Set Value 5" Index="#x2400" Sub="#x06">
+								<Type>INT</Type>
+							</Entry>
+						</Pdo>
+						<CoeProfile ProfileNo="402"/>
+						<Slot Name="Axis 1">
+							<SlotData>0000010001000000010000000008000000000000000000000000000000000000</SlotData>
+							<ModuleIdent>16896</ModuleIdent>
+							<ModuleIdent>16384</ModuleIdent>
+							<ModuleIdent>16640</ModuleIdent>
+							<ModuleIdent>16901</ModuleIdent>
+							<ModuleIdent>16976</ModuleIdent>
+							<Module Id="#x03090002" Type="SK550P" Class="">
+								<Name>Module 1 (SK550P)</Name>
+								<ImageId>411</ImageId>
+								<ModuleData>3805000000420000000004000000000000000000000000000000000000000000</ModuleData>
+								<PdoIndex>6656</PdoIndex>
+								<PdoIndex>5632</PdoIndex>
+							</Module>
+						</Slot>
+						<Slot Name="Axis 2">
+							<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+							<ModuleIdent>16384</ModuleIdent>
+							<ModuleIdent>16640</ModuleIdent>
+							<ModuleIdent>16896</ModuleIdent>
+						</Slot>
+						<Slot Name="Axis 3">
+							<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+							<ModuleIdent>16384</ModuleIdent>
+							<ModuleIdent>16640</ModuleIdent>
+							<ModuleIdent>16896</ModuleIdent>
+						</Slot>
+						<Slot Name="Axis 4">
+							<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+							<ModuleIdent>16384</ModuleIdent>
+							<ModuleIdent>16640</ModuleIdent>
+							<ModuleIdent>16896</ModuleIdent>
+						</Slot>
+						<Slot Name="Axis 5">
+							<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+							<ModuleIdent>16384</ModuleIdent>
+							<ModuleIdent>16640</ModuleIdent>
+							<ModuleIdent>16896</ModuleIdent>
+						</Slot>
+						<Slot Name="Axis 6">
+							<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+							<ModuleIdent>16384</ModuleIdent>
+							<ModuleIdent>16640</ModuleIdent>
+							<ModuleIdent>16896</ModuleIdent>
+						</Slot>
+						<Slot Name="Axis 7">
+							<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+							<ModuleIdent>16384</ModuleIdent>
+							<ModuleIdent>16640</ModuleIdent>
+							<ModuleIdent>16896</ModuleIdent>
+						</Slot>
+						<Slot Name="Axis 8">
+							<SlotData>0000000001000000010000000008000000000000000000000000000000000000</SlotData>
+							<ModuleIdent>16384</ModuleIdent>
+							<ModuleIdent>16640</ModuleIdent>
+							<ModuleIdent>16896</ModuleIdent>
+						</Slot>
+					</EtherCAT>
+				</Box>
+				<EtherCAT/>
+			</Device>
+			<Device Id="3" DevType="113" AmsPort="28675" AmsNetId="30.11.11.164.4.1" RemoteName="Profinet Master (Siemens)">
+				<Name>Profinet Master (Siemens)</Name>
+				<DevData>0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000</DevData>
+				<Image Id="5" AddrType="1" ImageType="3" SizeIn="16" SizeOut="22">
+					<Name>Image</Name>
+				</Image>
+				<Box Id="8" BoxType="9124">
+					<Name>sinamics-g120c-pn</Name>
+					<Comment><![CDATA[GSDML Name: GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml
+Path: $(TWINCAT3DIR)Config\Io\Profinet\
+VendorName: Siemens AG
+OrderNumber: 6SL3 210-1KExx-xxFx
+HW Release Version: V1.0
+SW Release Version: V4.70]]></Comment>
+					<ImageId>75</ImageId>
+					<Vars VarGrpType="1">
+						<Name>Inputs</Name>
+						<Var>
+							<Name>PnIoBoxState</Name>
+							<Comment><![CDATA[0 = No error
+1 = Profinet device state machine is in boot mode
+2 = Device not found
+3 = The stationname is not unique
+4 = IP could not be set
+5 = IP conflict
+6 = DCP set was not successful
+7 = Watchdog error
+8 = Datahold error
+9 = RTC3: Sync mode could not be initiated
+10 = Profinet controller has a link error
+11 = The aliasname is not unique
+12 = The automatic name assignement isn't possible - wrong device type
+13 = IOC-AR is established but no application ready
+14 = IOC-AR is established but module difference
+15 = At least one InputCR is invalid, provider in stop or problemindicator is set
+16 = At least one OutputCR is invalid, provider in stop or problemindicator is set
+31 = Only for EtherCAT gateways: WC-State of cyclic EtherCAT frame is 1
+]]></Comment>
+							<Type>UINT</Type>
+						</Var>
+						<Var>
+							<Name>PnIoBoxDiag</Name>
+							<Comment><![CDATA[0x0000 = No diagnosis
+0x0001 = IOC-AR is not established
+0x0002 = IOC-AR is established
+0x0004 = IOC-AR is established but no application ready
+0x0008 = IOC-AR is established but module difference
+0x0010 = At least one AlarmCR got a diagnosis alarm
+0x0100 = At least one InputCR is invalid
+0x0200 = At least one InputCR Provider is in stop
+0x0400 = At least one InputCR Problemindicator is set
+0x1000 = At least one OutputCR is invalid
+0x2000 = At least one OutputCR Provider is in stop
+0x4000 = At least one OutputCR Problemindicator is set
+]]></Comment>
+							<Type>UINT</Type>
+							<BitOffs>16</BitOffs>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2">
+						<Name>Outputs</Name>
+						<Var>
+							<Name>PnIoBoxCtrl</Name>
+							<Type>UINT</Type>
+						</Var>
+					</Vars>
+					<Profinet DeviceId="1296" VendorId="42" FrameOffset="32768" Flags="16" IPAdd="c0a80102" ProtocolType="3" BoxOnDeviceTyp="113" MaxPhysSlotNr="1" AvailableSlots="0..1" InstanceServerPort="61000" InstanceClientPort="60000" InstanceNumberOfARs="1" InstanceNumberOfAPIs="1" MinDeviceInterval="8" NrOfGsdmlDap="3" SavePnIoBoxValues="0500" MultipleWriteSupported="true" Phase="1" WatchdogFaktor="3" ReductionRatio="1" SendClockFaktor="32" MaxInputLen="60" MaxOutputLen="50" SendClockFactorData="1000200040008000" SendClockFactorRTC3="08001000200040008000" RedRatio="0100020004000800100020004000800000010002" RedRatioRTC3="01000200040008001000" BoxTypeInfo="IO device SINAMICS G120C PN V4.7 with PROFINET-IO interface (RT, IRT and non-cyclic communications, PROFIsafe, Shared Device)" GSDMLPath="$(TWINCAT3DIR)Config\Io\Profinet\GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml" ImagePath="C:\TwinCAT\3.1\Config\Io\Profinet\GSDML-002A-0510-G120C.bmp" MainFamily="Drives" ProductFamily="SINAMICS" OrderNr="6SL3 210-1KExx-xxFx" DefaultDNSName="SINAMICS-G120C-PN" VendorName="Siemens AG" FamDescription="SINAMICS, the unified family of drives with scalable performance, from the chassis to the cabinet unit in a power range from 120 W to several MW." GraphicFile="GSDML-002A-0510-G120C" SWVersion="V4.70" HWVersion="V1.0" AltLanguage="7">
+						<GsdmlValue Id="VAL_DIAG_ACTIVATION" Content="00000100">
+							<RecordText>Inactive</RecordText>
+							<RecordText>Standard alarms (PROFIdrive)</RecordText>
+						</GsdmlValue>
+						<GsdmlChannelDiag TypeInfo="Hardware/software error" ErrorType="36864" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Network fault" ErrorType="36865" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Supply voltage fault" ErrorType="36866" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="DC link overvoltage" ErrorType="36867" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Power electronics faulted" ErrorType="36868" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Overtemperature of the electronic components" ErrorType="36869" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Ground fault / inter-phase short-circuit detected" ErrorType="36870" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Motor overload" ErrorType="36871" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Communication error to the higher-level control system" ErrorType="36872" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Safety monitoring channel has identified an error" ErrorType="36873" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Actual position/speed value incorrect or not available" ErrorType="36874" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Internal (DRIVE-CLiQ) communication error" ErrorType="36875" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Infeed faulted" ErrorType="36876" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Braking Module faulted" ErrorType="36877" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Line filter faulted" ErrorType="36878" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="External measured value / signal state outside the permissible range" ErrorType="36879" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Application/technological function faulted" ErrorType="36880" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Error in the parameterization / configuration / commissioning procedure" ErrorType="36881" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="General drive fault" ErrorType="36882" API="14848"/>
+						<GsdmlChannelDiag TypeInfo="Auxiliary unit faulted" ErrorType="36883" API="14848"/>
+						<UsedGsdmlModule ModuleIdentNumber="132105" ModuleName="DAP Module" InfoText="IO device SINAMICS G120C PN V4.7 with PROFINET-IO interface (RT, IRT and non-cyclic communications, PROFIsafe, Shared Device)" OrderNumber="6SL3 210-1KExx-xxFx">
+							<Slot>0</Slot>
+						</UsedGsdmlModule>
+						<UsedGsdmlModule ModuleIdentNumber="66368" Id="IDM_DRIVE" ModuleName="Drive" InfoText="Drive object">
+							<Slot>1</Slot>
+							<SubSlot InsertedSubModuleID="IDS_MAP1" SubSlotNumber="1" IsFixed="true">
+								<PossibleSubModule>IDS_MAP1</PossibleSubModule>
+							</SubSlot>
+							<SubSlot SubSlotNumber="2">
+								<PossibleSubModule>IDS_EMPTY</PossibleSubModule>
+								<PossibleSubModule>IDS_PS30</PossibleSubModule>
+							</SubSlot>
+							<SubSlot SubSlotNumber="3">
+								<PossibleSubModule>IDS_EMPTY</PossibleSubModule>
+								<PossibleSubModule>IDS_TEL1</PossibleSubModule>
+								<PossibleSubModule>IDS_TEL20</PossibleSubModule>
+								<PossibleSubModule>IDS_TEL350</PossibleSubModule>
+								<PossibleSubModule>IDS_TEL352</PossibleSubModule>
+								<PossibleSubModule>IDS_TEL353</PossibleSubModule>
+								<PossibleSubModule>IDS_TEL354</PossibleSubModule>
+								<PossibleSubModule>IDS_TEL993</PossibleSubModule>
+								<PossibleSubModule>IDS_TEL994</PossibleSubModule>
+								<PossibleSubModule>IDS_TEL997</PossibleSubModule>
+							</SubSlot>
+							<SubSlot SubSlotNumber="4">
+								<PossibleSubModule>IDS_EMPTY</PossibleSubModule>
+								<PossibleSubModule>IDS_ADD22</PossibleSubModule>
+								<PossibleSubModule>IDS_ADD24</PossibleSubModule>
+								<PossibleSubModule>IDS_ADD26</PossibleSubModule>
+							</SubSlot>
+						</UsedGsdmlModule>
+						<UsedGsdmlSubModule SubModuleIdentNumber="2" SubSlotNumber="1" TypeOfSubmodule="3" Id="IDS_DAP_CU240C-V4.7" SubModuleName="SINAMICS G120C PN V4.7" InfoText="IO device SINAMICS G120C PN V4.7 with PROFINET-IO interface (RT, IRT and non-cyclic communications, PROFIsafe, Shared Device)">
+							<Record Name="General settings" Length="1" Index="1">
+								<ConstData>0</ConstData>
+								<RecordDataDef Name="Activate diagnostics" DataType="Integer8" DataLength="1" Visible="true" Changeable="true" ValueItemTarget="VAL_DIAG_ACTIVATION">
+									<AllowedValue>0</AllowedValue>
+									<AllowedValue>1</AllowedValue>
+								</RecordDataDef>
+							</Record>
+						</UsedGsdmlSubModule>
+						<UsedGsdmlSubModule SubModuleIdentNumber="268500991" TypeOfSubmodule="4" Id="IDS_MAP1" SubModuleName="Module Access Point" APINr="14848" InfoText="Module Access Point"/>
+						<UsedGsdmlSubModule SubModuleIdentNumber="993" TypeOfSubmodule="4" Id="IDS_TEL993" SubModuleName="Free telegram, PZD-6/6" APINr="14848" InfoText="Free telegram, PZD length 6/6 words">
+							<DataItemIn Name="Status word or actual value" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
+							<DataItemIn Name="Status word or actual value" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
+							<DataItemIn Name="Status word or actual value" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
+							<DataItemIn Name="Status word or actual value" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
+							<DataItemIn Name="Status word or actual value" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
+							<DataItemIn Name="Status word or actual value" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
+							<DataItemOut Name="Control word or setpoint" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
+							<DataItemOut Name="Control word or setpoint" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
+							<DataItemOut Name="Control word or setpoint" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
+							<DataItemOut Name="Control word or setpoint" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
+							<DataItemOut Name="Control word or setpoint" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
+							<DataItemOut Name="Control word or setpoint" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
+						</UsedGsdmlSubModule>
+						<API Id="1">
+							<Name>API</Name>
+							<ImageId>4</ImageId>
+							<Module Id="#x031d0001" DAP="true" ModuleIdentNumber="132105" ModuleInfo="IO device SINAMICS G120C PN V4.7 with PROFINET-IO interface (RT, IRT and non-cyclic communications, PROFIsafe, Shared Device)">
+								<Name>Term 1 (DAP Module)</Name>
+								<Comment><![CDATA[GSDML: GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml
+Module Info: IO device SINAMICS G120C PN V4.7 with PROFINET-IO interface (RT, IRT and non-cyclic communications, PROFIsafe, Shared Device)
+OrderNumber: 6SL3 210-1KExx-xxFx]]></Comment>
+								<ImageId>182</ImageId>
+								<SubModule Id="#x031c0001" SubModuleIdentNumber="2" TypeOfSubModule="3" SubSlotNumber="1" IsFixSubmodule="true" SubModuleID="IDS_DAP_CU240C-V4.7" AddSubModFlags="60">
+									<Name>Subterm 1 (SINAMICS G120C PN V4.7)</Name>
+									<Comment><![CDATA[GSDML: GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml
+Submodule Info: IO device SINAMICS G120C PN V4.7 with PROFINET-IO interface (RT, IRT and non-cyclic communications, PROFIsafe, Shared Device)
+]]></Comment>
+									<ImageId>183</ImageId>
+									<Record Length="1" Index="1"/>
+									<Vars VarGrpType="1">
+										<Name>Inputs</Name>
+									</Vars>
+									<Vars VarGrpType="2">
+										<Name>Outputs</Name>
+									</Vars>
+								</SubModule>
+								<SubModule Id="#x031c0002" SubModuleIdentNumber="3" TypeOfSubModule="1" SubSlotNumber="32768" IsFixSubmodule="true" SubModuleID="IDS_IF_CU240C-V4.7" InterfaceData="0503680b82003200e8030000000000000000000000009e000300000000000000" IrtPropData="00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000">
+									<Name>Subterm 2 (Interface)</Name>
+									<Comment><![CDATA[GSDML: GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml
+]]></Comment>
+									<ImageId>183</ImageId>
+									<Vars VarGrpType="1">
+										<Name>Inputs</Name>
+									</Vars>
+									<Vars VarGrpType="2">
+										<Name>Outputs</Name>
+									</Vars>
+								</SubModule>
+								<SubModule Id="#x031c0003" SubModuleIdentNumber="4" TypeOfSubModule="2" SubSlotNumber="32769" IsFixSubmodule="true" SubModuleID="IDS_P1_CU240C-V4.7" PortData="76011801000000000000000000000000000000000000000000000000">
+									<Name>Subterm 3 (Port 1)</Name>
+									<Comment><![CDATA[GSDML: GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml
+]]></Comment>
+									<ImageId>183</ImageId>
+									<Vars VarGrpType="1">
+										<Name>Inputs</Name>
+									</Vars>
+									<Vars VarGrpType="2">
+										<Name>Outputs</Name>
+									</Vars>
+								</SubModule>
+								<SubModule Id="#x031c0004" SubModuleIdentNumber="5" TypeOfSubModule="2" SubSlotNumber="32770" IsFixSubmodule="true" SubModuleID="IDS_P2_CU240C-V4.7" PortData="76011801000000000000000000000000000000000000000000000000">
+									<Name>Subterm 4 (Port 2)</Name>
+									<Comment><![CDATA[GSDML: GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml
+]]></Comment>
+									<ImageId>183</ImageId>
+									<Vars VarGrpType="1">
+										<Name>Inputs</Name>
+									</Vars>
+									<Vars VarGrpType="2">
+										<Name>Outputs</Name>
+									</Vars>
+								</SubModule>
+							</Module>
+							<Module Id="#x031d0002" ModuleIdentNumber="66368" SlotNumber="1" ModuleInfo="Drive object" ModuleID="IDM_DRIVE">
+								<Name>Term 2 (Drive)</Name>
+								<Comment><![CDATA[GSDML: GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml
+Module Info: Drive object
+]]></Comment>
+								<ImageId>38</ImageId>
+								<SubModule Id="#x031c0005" SubModuleIdentNumber="268500991" TypeOfSubModule="4" SubSlotNumber="1" IsFixSubmodule="true" APINr="14848" P1005="1024" P0880="16384" SubModuleID="IDS_MAP1" AddSubModFlags="2048">
+									<Name>Subterm 5 (Module Access Point)</Name>
+									<Comment><![CDATA[GSDML: GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml
+Submodule Info: Module Access Point
+]]></Comment>
+									<ImageId>183</ImageId>
+									<Vars VarGrpType="1">
+										<Name>Inputs</Name>
+									</Vars>
+									<Vars VarGrpType="2">
+										<Name>Outputs</Name>
+									</Vars>
+								</SubModule>
+								<SubModule Id="#x031c0006" SubModuleIdentNumber="993" TypeOfSubModule="4" SubSlotNumber="3" APINr="14848" P1005="1024" P0880="16384" SubModuleID="IDS_TEL993" ChnInfoIn="e8030000e9030000ea030000eb030000ec030000ed030000" ChnInfoOut="e8030000e9030000ea030000eb030000ec030000ed030000">
+									<Name>Subterm 6 (Free telegram, PZD-6/6)</Name>
+									<Comment><![CDATA[GSDML: GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml
+Submodule Info: Free telegram, PZD length 6/6 words
+]]></Comment>
+									<ImageId>183</ImageId>
+									<Vars VarGrpType="1">
+										<Name>Inputs</Name>
+										<Var Swapping="#x1">
+											<Name>Status word or actual value[0]</Name>
+											<Type>UINT</Type>
+											<BitOffs>32</BitOffs>
+										</Var>
+										<Var Swapping="#x1">
+											<Name>Status word or actual value[1]</Name>
+											<Type>UINT</Type>
+											<BitOffs>48</BitOffs>
+										</Var>
+										<Var Swapping="#x1">
+											<Name>Status word or actual value[2]</Name>
+											<Type>UINT</Type>
+											<BitOffs>64</BitOffs>
+										</Var>
+										<Var Swapping="#x1">
+											<Name>Status word or actual value[3]</Name>
+											<Type>UINT</Type>
+											<BitOffs>80</BitOffs>
+										</Var>
+										<Var Swapping="#x1">
+											<Name>Status word or actual value[4]</Name>
+											<Type>UINT</Type>
+											<BitOffs>96</BitOffs>
+										</Var>
+										<Var Swapping="#x1">
+											<Name>Status word or actual value[5]</Name>
+											<Type>UINT</Type>
+											<BitOffs>112</BitOffs>
+										</Var>
+									</Vars>
+									<Vars VarGrpType="2">
+										<Name>Outputs</Name>
+										<Var Swapping="#x1">
+											<Name>Control word or setpoint[0]</Name>
+											<Type>UINT</Type>
+											<BitOffs>16</BitOffs>
+										</Var>
+										<Var Swapping="#x1">
+											<Name>Control word or setpoint[1]</Name>
+											<Type>UINT</Type>
+											<BitOffs>32</BitOffs>
+										</Var>
+										<Var Swapping="#x1">
+											<Name>Control word or setpoint[2]</Name>
+											<Type>UINT</Type>
+											<BitOffs>48</BitOffs>
+										</Var>
+										<Var Swapping="#x1">
+											<Name>Control word or setpoint[3]</Name>
+											<Type>UINT</Type>
+											<BitOffs>64</BitOffs>
+										</Var>
+										<Var Swapping="#x1">
+											<Name>Control word or setpoint[4]</Name>
+											<Type>UINT</Type>
+											<BitOffs>80</BitOffs>
+										</Var>
+										<Var Swapping="#x1">
+											<Name>Control word or setpoint[5]</Name>
+											<Type>UINT</Type>
+											<BitOffs>96</BitOffs>
+										</Var>
+									</Vars>
+								</SubModule>
+							</Module>
+						</API>
+					</Profinet>
+				</Box>
+				<Profinet PLCPortNr="851" AddPortCount="1">
+					<Ethernet/>
+					<PNController ClientPort="60000" ServerPort="61000" VendorId="288" DeviceId="35" IPData="00000000c0a80101ffffff00c0a80101" SystemName="tc-pncontroller" IRTSendClock="32">
+						<RTData CableLength="10"/>
+					</PNController>
+				</Profinet>
+			</Device>
 		</Io>
 	</Project>
+	<Mappings>
+		<MappingInfo Identifier="{00000000-2081-0850-8020-500830000403}" Id="#x02030010"/>
+		<OwnerA Name="TIPC^PLC_NORDGear^PLC_NORDGear Instance">
+			<OwnerB Name="TIID^EtherCAT Master (NORDGear)^EtherCAT Slave To Insert In IO (NORDACpro)">
+				<Link VarA="PlcTask Inputs^PRG_550P_ProgramExample.FRQ.HWin_ActualValue" VarB="Module 1 (SK550P)^Process data in^Actual value 1"/>
+				<Link VarA="PlcTask Inputs^PRG_550P_ProgramExample.FRQ.HWin_ActualValue" VarB="Module 1 (SK550P)^Process data in^Actual value 2" Size="16" OffsA="16"/>
+				<Link VarA="PlcTask Inputs^PRG_550P_ProgramExample.FRQ.HWin_ActualValue" VarB="Module 1 (SK550P)^Process data in^Actual value 3" Size="16" OffsA="32"/>
+				<Link VarA="PlcTask Inputs^PRG_550P_ProgramExample.FRQ.HWin_ActualValue" VarB="Module 1 (SK550P)^Process data in^Actual value 4" Size="16" OffsA="48"/>
+				<Link VarA="PlcTask Inputs^PRG_550P_ProgramExample.FRQ.HWin_ActualValue" VarB="Module 1 (SK550P)^Process data in^Actual value 5" Size="16" OffsA="64"/>
+				<Link VarA="PlcTask Inputs^PRG_550P_ProgramExample.FRQ.HWin_StatusWord" VarB="Module 1 (SK550P)^Process data in^Status word"/>
+				<Link VarA="PlcTask Outputs^PRG_550P_ProgramExample.FRQ.HWout_SetValue" VarB="Module 1 (SK550P)^Process data out^Set Value 1"/>
+				<Link VarA="PlcTask Outputs^PRG_550P_ProgramExample.FRQ.HWout_SetValue" VarB="Module 1 (SK550P)^Process data out^Set Value 2" Size="16" OffsA="16"/>
+				<Link VarA="PlcTask Outputs^PRG_550P_ProgramExample.FRQ.HWout_SetValue" VarB="Module 1 (SK550P)^Process data out^Set Value 3" Size="16" OffsA="32"/>
+				<Link VarA="PlcTask Outputs^PRG_550P_ProgramExample.FRQ.HWout_SetValue" VarB="Module 1 (SK550P)^Process data out^Set Value 4" Size="16" OffsA="48"/>
+				<Link VarA="PlcTask Outputs^PRG_550P_ProgramExample.FRQ.HWout_SetValue" VarB="Module 1 (SK550P)^Process data out^Set Value 5" Size="16" OffsA="64"/>
+				<Link VarA="PlcTask Outputs^PRG_550P_ProgramExample.FRQ.HWout_StatusWord" VarB="Module 1 (SK550P)^Process data out^Control Word"/>
+			</OwnerB>
+		</OwnerA>
+		<OwnerA Name="TIPC^PLC_Siemens^PLC_Siemens Instance">
+			<OwnerB Name="TIID^Profinet Master (Siemens)^sinamics-g120c-pn">
+				<Link VarA="PlcTask Inputs^PRG_G120C_ProgramExample.FRQ.HWin_Word" VarB="API^Term 2 (Drive)^Subterm 6 (Free telegram, PZD-6/6)^Inputs^Status word or actual value[0]"/>
+				<Link VarA="PlcTask Inputs^PRG_G120C_ProgramExample.FRQ.HWin_Word" VarB="API^Term 2 (Drive)^Subterm 6 (Free telegram, PZD-6/6)^Inputs^Status word or actual value[1]" Size="16" OffsA="16"/>
+				<Link VarA="PlcTask Inputs^PRG_G120C_ProgramExample.FRQ.HWin_Word" VarB="API^Term 2 (Drive)^Subterm 6 (Free telegram, PZD-6/6)^Inputs^Status word or actual value[2]" Size="16" OffsA="32"/>
+				<Link VarA="PlcTask Inputs^PRG_G120C_ProgramExample.FRQ.HWin_Word" VarB="API^Term 2 (Drive)^Subterm 6 (Free telegram, PZD-6/6)^Inputs^Status word or actual value[3]" Size="16" OffsA="48"/>
+				<Link VarA="PlcTask Inputs^PRG_G120C_ProgramExample.FRQ.HWin_Word" VarB="API^Term 2 (Drive)^Subterm 6 (Free telegram, PZD-6/6)^Inputs^Status word or actual value[4]" Size="16" OffsA="64"/>
+				<Link VarA="PlcTask Inputs^PRG_G120C_ProgramExample.FRQ.HWin_Word" VarB="API^Term 2 (Drive)^Subterm 6 (Free telegram, PZD-6/6)^Inputs^Status word or actual value[5]" Size="16" OffsA="80"/>
+				<Link VarA="PlcTask Outputs^PRG_G120C_ProgramExample.FRQ.Hwout_Word" VarB="API^Term 2 (Drive)^Subterm 6 (Free telegram, PZD-6/6)^Outputs^Control word or setpoint[0]"/>
+				<Link VarA="PlcTask Outputs^PRG_G120C_ProgramExample.FRQ.Hwout_Word" VarB="API^Term 2 (Drive)^Subterm 6 (Free telegram, PZD-6/6)^Outputs^Control word or setpoint[1]" Size="16" OffsA="16"/>
+				<Link VarA="PlcTask Outputs^PRG_G120C_ProgramExample.FRQ.Hwout_Word" VarB="API^Term 2 (Drive)^Subterm 6 (Free telegram, PZD-6/6)^Outputs^Control word or setpoint[2]" Size="16" OffsA="32"/>
+				<Link VarA="PlcTask Outputs^PRG_G120C_ProgramExample.FRQ.Hwout_Word" VarB="API^Term 2 (Drive)^Subterm 6 (Free telegram, PZD-6/6)^Outputs^Control word or setpoint[3]" Size="16" OffsA="48"/>
+			</OwnerB>
+		</OwnerA>
+	</Mappings>
 </TcSmProject>

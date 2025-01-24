@@ -18,7 +18,13 @@
     <LibraryReferences>{6cfc681e-660a-40a6-be9c-f612f2a020ec}</LibraryReferences>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FRQ\FB_SIEMENS_FRQ.TcPOU">
+    <Compile Include="FRQ\FB_SIEMENS_G120C_FRQ.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FRQ\FUN_ScalingREAL.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FRQ\PRG_G120C_ProgramExample.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MAIN.TcPOU">

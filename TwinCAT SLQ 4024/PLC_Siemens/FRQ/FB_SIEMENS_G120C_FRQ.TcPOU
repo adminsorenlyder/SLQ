@@ -1,20 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
-  <POU Name="FB_SIEMENS_FRQ" Id="{f47ba0bc-97fd-40c6-8ba8-8952a26f9d89}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_SIEMENS_FRQ
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_SIEMENS_G120C_FRQ" Id="{f47ba0bc-97fd-40c6-8ba8-8952a26f9d89}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SIEMENS_G120C_FRQ
 VAR_INPUT
-	In_Reset :					BOOL;
-	In_SafetyOK :				BOOL;
-	In_StartMotor_Frw :			BOOL;
-	In_StartMotor_Rev :			BOOL;
-	In_SelectManuel :			BOOL;
-	In_StartManuel_Frw :		BOOL;
-	In_StartManuel_Rev :		BOOL;
-	In_SafetySwitch :			BOOL;
+	Cmd_Reset :					BOOL;
+	Cmd_StartMotor_Frw :			BOOL;
+	Cmd_StartMotor_Rev :			BOOL;
 	Cfg_SpeedSetPoint :			REAL;
 	Cfg_RampTimeSetPoint :		REAL;
-	Set_TimerCounter :			INT;
 	
+	HWin_Word AT %I*		:	ARRAY [1..6] OF WORD;
+END_VAR
+VAR_OUTPUT
 	Sts_ReadyToStart :			BOOL;
 	Sts_ActualSpeed_Hz :		REAL;
 	Sts_ActualSpeed_m_min :		REAL;
@@ -25,46 +22,37 @@ VAR_INPUT
 	Sts_MotorRunningFrw :		BOOL;
 	Sts_MotorRunningRev :		BOOL;
 	Sts_MotorRunning :			BOOL;
-	Sts_StatusINT :				INT;
-	
-	In_Actual AT %I*		:	ARRAY [1..8] OF WORD;
-	ProfinetState AT %I*	:	UINT;
-END_VAR
-VAR_OUTPUT
-	Out_Actual AT %Q*	:		ARRAY [1..4] OF WORD;
 	StatusSTRING :				STRING(250);
+	
+	Hwout_Word AT %Q*	:		ARRAY [1..4] OF WORD;
+	
 END_VAR
-VAR_IN_OUT
 
-	
-END_VAR
 VAR
-	
-	ControlWord :				UINT;
-	StatusWord :				UINT;
+
 	Step :						UINT;
-	Losts_ReadyForSwtichingOn :	BOOL;
-	Losts_Ready :				BOOL;
-	Losts_OperationEnabled :	BOOL;
-	Losts_FaultPresent :		BOOL;
-	Losts_NoCoastingActive :	BOOL;
-	Losts_NoQuickStopActive :	BOOL;
-	Losts_SwitchingOnInhibitActive :	BOOL;
-	Losts_AlarmPresent :		BOOL;
-	Losts_SpeedSetpointDeviOff :	BOOL;
-	Losts_ControlRecuest :		BOOL;
-	Losts_ffornCompValueReached :	BOOL;
-	Losts_TorqueLimitReached :	BOOL;
-	Losts_OpenHoldingBrake :	BOOL;
-	Losts_NotMotorOvertemp_Alarm :	BOOL;
-	Losts_ClockWise :				BOOL;
-	Losts_PowerUnitThermalAlarm :	BOOL;
+	sts_ReadyForSwtichingOn :	BOOL;
+	sts_Ready :				BOOL;
+	sts_OperationEnabled :	BOOL;
+	sts_FaultPresent :		BOOL;
+	sts_NoCoastingActive :	BOOL;
+	sts_NoQuickStopActive :	BOOL;
+	sts_SwitchingOnInhibitActive :	BOOL;
+	sts_AlarmPresent :		BOOL;
+	sts_SpeedSetpointDeviOff :	BOOL;
+	sts_ControlRecuest :		BOOL;
+	sts_ffornCompValueReached :	BOOL;
+	sts_TorqueLimitReached :	BOOL;
+	sts_OpenHoldingBrake :	BOOL;
+	sts_NotMotorOvertemp_Alarm :	BOOL;
+	sts_ClockWise :				BOOL;
+	sts_PowerUnitThermalAlarm :	BOOL;
 	
-	LoSts_ActualSpeed :			WORD;
-	LoSts_ActualTorque :		WORD;
-	LoSts_ActualCurrent :		WORD;
-	LoSts_ActualActivePower :	WORD;
-	LoSts_FaultAndAlarmCode :	WORD;
+	Sts_ActualSpeedRaw :			WORD;
+	Sts_ActualTorqueRaw :			WORD;
+	Sts_ActualCurrent :			WORD;
+	Sts_ActualActivePower :		WORD;
+	Sts_FaultAndAlarmCode :		WORD;
 	
 	MotorStartFRW :						BOOL;
 	MotorStartREV :						BOOL;
@@ -87,16 +75,13 @@ VAR
 	
 	FRQCTRL :							UINT;
 	
-	ActivityCounterSECTON :				TON;
-	ActivityCounter_Sec :				INT;
-	ActivityCounter_Min :				INT;
 
 	SpeedSetpoint :						REAL;
 
 	ActualHzINT :						INT;
 	
 	FaultTextString :					STRING;
-	ProfinetString :					STRING;
+
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -110,6 +95,8 @@ Input Word 5 = Errorword
 
 Output Word 1 = Controlword
 Output Word 2 = Setpoint Frequency
+Output Word 3 = Ramp
+Output Word 4 = Ramp
 
 
 *)
@@ -117,65 +104,42 @@ Output Word 2 = Setpoint Frequency
 
 // Transfer StatusBits
 	//ReadFromTarget
-	(*
-	StatusWord.0 := In_Actual[1].0;
-	StatusWord.1 := In_Actual[1].1;
-	StatusWord.2 := In_Actual[1].2;
-	StatusWord.3 := In_Actual[1].3;
-	Sts_ErrorActive := In_Actual[1].3;
-	StatusWord.4 := In_Actual[1].4;
-	StatusWord.5 := In_Actual[1].5;
-	StatusWord.6 := In_Actual[1].6;
-	StatusWord.7 := In_Actual[1].7;
-	Sts_WarningActive := In_Actual[1].7;
-	StatusWord.8 := In_Actual[1].8;
-	StatusWord.9 := In_Actual[1].9;
-	StatusWord.10 := In_Actual[1].10;
-	StatusWord.11 := In_Actual[1].11;
-	Sts_MotorRunningFrw := In_Actual[1].11 ;
-	StatusWord.12 := In_Actual[1].12;
-	Sts_MotorRunningRev := In_Actual[1].12;
-	StatusWord.13 := In_Actual[1].13;
-	StatusWord.14 := In_Actual[1].14;
-	StatusWord.15 := In_Actual[1].15;
-	*)
-	
-	Losts_ReadyForSwtichingOn :=  In_Actual[1].0 ;
-	Losts_Ready :=  In_Actual[1].1;
-	Losts_OperationEnabled :=  In_Actual[1].2;
-	Sts_ErrorActive := In_Actual[1].3;
+	sts_ReadyForSwtichingOn :=  HWin_Word[1].0 ;
+	sts_Ready :=  HWin_Word[1].1;
+	sts_OperationEnabled :=  HWin_Word[1].2;
+	Sts_ErrorActive := HWin_Word[1].3;
 
-	Losts_NoCoastingActive :=  In_Actual[1].4;
-	Losts_NoQuickStopActive :=  In_Actual[1].5;
-	Losts_SwitchingOnInhibitActive :=  In_Actual[1].6;
-	Losts_AlarmPresent :=  In_Actual[1].7;
-	Losts_SpeedSetpointDeviOff :=  In_Actual[1].8;
-	Losts_ControlRecuest :=  In_Actual[1].9;
-	Losts_ffornCompValueReached :=  In_Actual[1].10;
-	Losts_TorqueLimitReached :=  In_Actual[1].11;
-	Losts_OpenHoldingBrake :=  In_Actual[1].12;
-	Losts_NotMotorOvertemp_Alarm :=  In_Actual[1].13;
-	Losts_ClockWise :=  In_Actual[1].14;
-	Losts_PowerUnitThermalAlarm :=  In_Actual[1].15;
-	LoSts_ActualSpeed := In_Actual[2];
-	LoSts_ActualTorque := In_Actual[3];
+	sts_NoCoastingActive :=  HWin_Word[1].4;
+	sts_NoQuickStopActive :=  HWin_Word[1].5;
+	sts_SwitchingOnInhibitActive :=  HWin_Word[1].6;
+	sts_AlarmPresent :=  HWin_Word[1].7;
+	sts_SpeedSetpointDeviOff :=  HWin_Word[1].8;
+	sts_ControlRecuest :=  HWin_Word[1].9;
+	sts_ffornCompValueReached :=  HWin_Word[1].10;
+	sts_TorqueLimitReached :=  HWin_Word[1].11;
+	sts_OpenHoldingBrake :=  HWin_Word[1].12;
+	sts_NotMotorOvertemp_Alarm :=  HWin_Word[1].13;
+	sts_ClockWise :=  HWin_Word[1].14;
+	sts_PowerUnitThermalAlarm :=  HWin_Word[1].15;
+	Sts_ActualSpeedRaw := HWin_Word[2];
+	Sts_ActualTorqueRaw := HWin_Word[3];
 		
-	IF Losts_OperationEnabled AND Losts_ClockWise THEN
+	IF sts_OperationEnabled AND sts_ClockWise THEN
 		Sts_MotorRunningFrw := 1;
 		Sts_MotorRunningRev := 0;
 	END_IF
-	IF Losts_OperationEnabled AND NOT Losts_ClockWise THEN
+	IF sts_OperationEnabled AND NOT sts_ClockWise THEN
 		Sts_MotorRunningFrw := 0;
 		Sts_MotorRunningRev := 1;
 	END_IF
-	IF NOT Losts_OperationEnabled THEN
+	IF NOT sts_OperationEnabled THEN
 		Sts_MotorRunningFrw := 0;
 		Sts_MotorRunningRev := 0;
 	END_IF
 	
 // Scaling status torque 
 Sts_ActualTorque := FUN_ScalingREAL(
-	rInput:=LoSts_ActualTorque , 
+	rInput:=Sts_ActualTorqueRaw , 
 	rInputMin:=0.0 , 
 	rInputMax:=32787.0 , 
 	rOutputMin:=0.0 , 
@@ -184,30 +148,20 @@ Sts_ActualTorque := FUN_ScalingREAL(
 	
 //Scaling status HZ
 Sts_ActualSpeed_Hz := FUN_ScalingREAL(
-	rInput:=LoSts_ActualSpeed , 
+	rInput:=Sts_ActualSpeedRaw , 
 	rInputMin:=0.0 , 
 	rInputMax:=16384.0 , 
 	rOutputMin:=0.0 , 
 	rOutputMax:=100.0 );
 	
-	
-	In_SafetyOK := In_SafetyOK;
-	
 
-	IF Sts_StatusINT =1 OR Sts_StatusINT = 11 THEN
-		Sts_SetpointReached := StatusWord.8;
-		Sts_MotorRunning :=1;
-	ELSE
-		Sts_SetpointReached := 0;
-		Sts_MotorRunning :=0;
-	END_IF
 	
 //SpeedSetpont
 IF Cfg_SpeedSetPoint = 0 THEN
 	Cfg_SpeedSetPoint := 20;
 END_IF
 
-Out_Actual[2] := REAL_TO_WORD((16384.0/100)*Cfg_SpeedSetPoint);
+Hwout_Word[2] := REAL_TO_WORD((16384.0/100)*Cfg_SpeedSetPoint);
 	
 //Out_Actual[2] := REAL_TO_WORD((16384.0/1500)*Cfg_SpeedSetPoint);
 //Scaling status m/min
@@ -219,23 +173,23 @@ IF Cfg_RampTimeSetPoint = 0 THEN
 END_IF	
 
 // Scaling setpoint ramp
-Out_Actual[3] := REAL_TO_WORD(FUN_ScalingREAL(
+Hwout_Word[3] := REAL_TO_WORD(FUN_ScalingREAL(
 	rInput:=Cfg_RampTimeSetPoint , 
 	rInputMin:=0.0 , 
 	rInputMax:=5.0 , 
 	rOutputMin:=0 , 
 	rOutputMax:=16384.0 ));
-Out_Actual[4] := Out_Actual[3];
+Hwout_Word[4] := Hwout_Word[3];
 
 
 
 // Motor Directionbit control	
-MotorStartFRWONS(CLK:=In_StartMotor_Frw , Q=> );
-MotorStartRevONS(CLK:=In_StartMotor_Rev , Q=> );
+MotorStartFRWONS(CLK:=Cmd_StartMotor_Frw , Q=> );
+MotorStartRevONS(CLK:=Cmd_StartMotor_Rev , Q=> );
   
 IF MotorStartFRWONS.Q THEN
-	IF In_StartMotor_Rev THEN
-		In_StartMotor_Rev :=0;
+	IF Cmd_StartMotor_Rev THEN
+		Cmd_StartMotor_Rev :=0;
 		MotorStartRev :=0;
 		MotorChangeDirectionToFrw :=1;	
 		ELSE
@@ -243,8 +197,8 @@ IF MotorStartFRWONS.Q THEN
 	END_IF
 END_IF
 IF MotorStartRevONS.Q THEN
-	IF In_StartMotor_Frw THEN
-		In_StartMotor_Frw :=0;
+	IF Cmd_StartMotor_Frw THEN
+		Cmd_StartMotor_Frw :=0;
 		MotorStartFrw :=0;
 		MotorChangeDirectionToRev :=1;	
 		ELSE
@@ -255,18 +209,18 @@ MotorChangeDirectionTON(IN:=MotorChangeDirectionToFrw OR MotorChangeDirectionToR
 IF MotorChangeDirectionTON.Q THEN
 	IF MotorChangeDirectionToFrw THEN
 		MotorChangeDirectionToFrw :=0;
-		In_StartMotor_Frw :=1;
+		Cmd_StartMotor_Frw :=1;
 		MotorStartFrw :=1;
 	END_IF
 	IF MotorChangeDirectionToRev THEN
 		MotorChangeDirectionToRev :=0;
-		In_StartMotor_Rev :=1;
+		Cmd_StartMotor_Rev :=1;
 		MotorStartRev :=1;
 	END_IF
 END_IF
 
 //Stopmotor Bit control
-StopMovementONS(CLK:=NOT In_StartMotor_Rev AND NOT In_StartMotor_Frw AND NOT MotorChangeDirectionToFrw AND NOT MotorChangeDirectionToRev, Q=> );
+StopMovementONS(CLK:=NOT Cmd_StartMotor_Rev AND NOT Cmd_StartMotor_Frw AND NOT MotorChangeDirectionToFrw AND NOT MotorChangeDirectionToRev, Q=> );
 IF StopMovementONS.Q THEN
 	MotorStartRev :=0;
 	MotorStartFrw :=0;
@@ -278,43 +232,33 @@ FRQCTRL_GOREV :=16#C7F;
 FRQCTRL_QUICKSTOP := 16#47E;
 FRQCTRL_ENABLE := 16#47E;
 
-Out_Actual[1] := FRQCTRL;
+Hwout_Word[1] := FRQCTRL;
 
 // Program Sequence
 	
 	CASE Step OF
 	0:
 		Step  := 666;
-		Sts_StatusINT :=0;
 		StatusSTRING := 'PLC Reboot detected. Reset Drive!';
 	
 	10:
-		IF In_SafetyOK THEN
-			StatusSTRING := 'Resetting the drive...';
-			Step  := 20;
-			ELSE
-			StatusSTRING := 'Estop is not ok. Aborting reset of drive.';	
-			Step  := 666;
-		END_IF
-		
-	20:
+
 		FRQCTRL := FRQCTRL_RESET;
 		Step  := 30;
 		
 	30:
-		IF ErrorINT = 0 THEN
+		IF NOT Sts_ErrorActive THEN 
 			StatusSTRING := 'Drive reset done, Drive is ready';
 			Sts_ReadyToStart :=1;
 			Step  := 50;
-			FRQCTRL := FRQCTRL_ENABLE; // ???
+			FRQCTRL := FRQCTRL_ENABLE; 
 			ErrorDetected :=0;
-			Sts_StatusINT :=0;
 		END_IF
 
 		
 	50:
-		IF In_Reset THEN
-			In_Reset :=0;
+		IF Cmd_Reset THEN
+			Cmd_Reset :=0;
 			Step :=10;
 		END_IF
 		IF MotorStartFRW  THEN
@@ -327,34 +271,15 @@ Out_Actual[1] := FRQCTRL;
 
 			Step :=200;
 		END_IF
-		IF In_StartManuel_Frw THEN
-			StatusSTRING := 'Drive running FRW in manual';
-
-			Step :=150;
-		END_IF
 		
-		IF In_StartManuel_Rev THEN
-			StatusSTRING := 'Drive running REV in manual';
-
-			Step :=250;
-		END_IF
-		
-				
 		
 		IF ErrorDetected THEN
 			Step :=500;
 		END_IF
-		IF NOT In_SafetyOK THEN
-			Sts_StatusINT :=0;
-			StatusSTRING := 'E-Stop was activated';
-			Step  := 666;
-		END_IF
-		IF ProfinetState <> 0 THEN
-			Step :=666;
-		END_IF
+
 		
 	100:
-		Sts_StatusINT :=1;
+
 		FRQCTRL := FRQCTRL_GOFRW;
 		Step :=110;
 	110:
@@ -365,36 +290,9 @@ Out_Actual[1] := FRQCTRL;
 		IF ErrorDetected THEN
 			Step :=500;
 		END_IF
-		IF NOT In_SafetyOK THEN
-			Sts_StatusINT :=0;
-			StatusSTRING := 'E-Stop was activated';
-			Step  := 666;
-		END_IF
-	150:
-		Sts_StatusINT :=1;
-		FRQCTRL := FRQCTRL_GOFRW;
-			Out_Actual[2] := 4096;
-			Out_Actual[3] := 8000;
-		Step :=160;
-	160:
-			Out_Actual[2] := 4096;
-			Out_Actual[3] := 8000;
-		IF NOT In_StartManuel_Frw  THEN
-			FRQCTRL := FRQCTRL_ENABLE;
-			Step :=300;
-		END_IF	
-		IF ErrorDetected THEN
-			Step :=500;
-		END_IF
-		IF NOT In_SafetyOK THEN
-			Sts_StatusINT :=0;
-			StatusSTRING := 'E-Stop was activated';
-			Step  := 666;
-		END_IF
 
 	
 	200:
-		Sts_StatusINT :=11;
 		FRQCTRL := FRQCTRL_GOREV;
 		Step :=210;
 	210:
@@ -405,45 +303,13 @@ Out_Actual[1] := FRQCTRL;
 		IF ErrorDetected THEN
 			Step :=500;
 		END_IF
-		IF NOT In_SafetyOK THEN
-			Sts_StatusINT :=0;
-			StatusSTRING := 'E-Stop was activated';
-			Step  := 666;
-		END_IF
+
 		
-	250:
-		Sts_StatusINT :=11;
-		FRQCTRL := FRQCTRL_GOREV;
-			Out_Actual[2] := 4096;
-			Out_Actual[3] := 8000;
-		Step :=260;
-		
-	260:
-			Out_Actual[2] := 4096;
-			Out_Actual[3] := 8000;
-		IF NOT In_StartManuel_Rev THEN
-			FRQCTRL := FRQCTRL_ENABLE;
-			Step :=300;
-		END_IF	
-		IF ErrorDetected THEN
-			Step :=500;
-		END_IF
-		IF NOT In_SafetyOK THEN
-			Sts_StatusINT :=0;
-			StatusSTRING := 'E-Stop was activated';
-			Step  := 666;
-		END_IF
-		
+			
 	300:
 		IF Sts_ActualSpeed_Hz = 0 THEN
 			StatusSTRING := 'Running done, Drive is ready';
-			Sts_StatusINT :=0;
 			Step  := 50;
-		END_IF
-		IF NOT In_SafetyOK THEN
-			Sts_StatusINT :=0;
-			StatusSTRING := 'E-Stop was activated';
-			Step  := 666;
 		END_IF
 		IF ErrorDetected THEN
 			Step :=500;
@@ -451,7 +317,6 @@ Out_Actual[1] := FRQCTRL;
 		
 		
 	500:
-		Sts_StatusINT :=3;
 		StatusSTRING := Concat('Drive error : ',FaultTextString);
 		Step :=666;
 		
@@ -459,10 +324,8 @@ Out_Actual[1] := FRQCTRL;
 		Sts_ReadyToStart :=0;
 		MotorStartRev :=0;
 		MotorStartFrw :=0;		
-		In_StartMotor_Frw :=0;
-		In_StartMotor_Rev :=0;
-		In_StartManuel_Frw :=0;
-		In_StartManuel_Rev :=0;
+		Cmd_StartMotor_Frw :=0;
+		Cmd_StartMotor_Rev :=0;
 		FRQCTRL := FRQCTRL_QUICKSTOP;
 		Step :=667;
 		
@@ -475,45 +338,16 @@ Out_Actual[1] := FRQCTRL;
 			Step :=200;
 		END_IF
 			
-		IF In_Reset THEN
-			In_Reset :=0;
+		IF Cmd_Reset THEN
+			Cmd_Reset :=0;
 			Step :=10;
 		END_IF
-			
-		IF ProfinetState <> 0 THEN
-			Step :=700;
-		END_IF
+
 	
-	700:
-	
-			CASE ProfinetState OF
-			0: StatusSTRING := 'Profinet connection OK, drive is now ready to reset.';
-				Step :=666;
-				
-			1: ProfinetString 	:= 'Profinet device state machine is in boot mode';
-			2: ProfinetString 	:= 'Device NOT found';
-			3: ProfinetString 	:= 'The stationname is NOT unique';
-			4: ProfinetString 	:= 'IP could NOT be set';
-			5: ProfinetString 	:= 'IP conflict';
-			6: ProfinetString 	:= 'DCP set was NOT successful';
-			7: ProfinetString 	:= 'Watchdog error';
-			8: ProfinetString 	:= 'Datahold error';
-			9: ProfinetString 	:= 'RTC3: Sync mode could NOT be initiated';
-			10: ProfinetString	:= 'Profinet controller has a link error';
-			11: ProfinetString 	:= 'The aliasname is NOT unique';
-			12: ProfinetString  	:= 'The automatic name assignement isnt possible - wrong device TYPE';
-			13: ProfinetString 	:= 'IOC-AR is established but no application ready';
-			14: ProfinetString 	:= 'IOC-AR is established but module difference';
-			15: ProfinetString  	:= 'AT least one InputCR is invalid, provider in stop OR problemindicator is set';
-			16: ProfinetString 	:= 'AT least one OutputCR is invalid, provider in stop OR problemindicator is set';
-			31: ProfinetString 	:= 'Only for EtherCAT gateways: WC-State of cyclic EtherCAT frame is 1';
-			
-			END_CASE
-			StatusSTRING := CONCAT('Profinet status: ',ProfinetString);
-	END_CASE
+END_CASE
 
 
-ErrorINT := WORD_TO_INT(In_Actual[6]);
+ErrorINT := WORD_TO_INT(HWin_Word[6]);
 ErrorDetectionONS(CLK:=ErrorINT <> 0   , Q=> ); //OR Sts_ErrorActive
 IF ErrorDetectionONS.Q THEN
 ErrorDetected :=1;
@@ -820,8 +654,31 @@ MessageHandler(
 *)
 //Out_Actual[1].10 := 1;]]></ST>
     </Implementation>
-    <LineIds Name="FB_SIEMENS_FRQ">
-      <LineId Id="3" Count="717" />
+    <LineIds Name="FB_SIEMENS_G120C_FRQ">
+      <LineId Id="3" Count="9" />
+      <LineId Id="835" Count="1" />
+      <LineId Id="13" Count="6" />
+      <LineId Id="43" Count="16" />
+      <LineId Id="833" Count="0" />
+      <LineId Id="61" Count="31" />
+      <LineId Id="103" Count="84" />
+      <LineId Id="189" Count="2" />
+      <LineId Id="200" Count="10" />
+      <LineId Id="212" Count="17" />
+      <LineId Id="240" Count="0" />
+      <LineId Id="243" Count="3" />
+      <LineId Id="254" Count="13" />
+      <LineId Id="272" Count="0" />
+      <LineId Id="295" Count="1" />
+      <LineId Id="298" Count="9" />
+      <LineId Id="312" Count="1" />
+      <LineId Id="330" Count="0" />
+      <LineId Id="337" Count="2" />
+      <LineId Id="341" Count="1" />
+      <LineId Id="348" Count="5" />
+      <LineId Id="355" Count="8" />
+      <LineId Id="366" Count="16" />
+      <LineId Id="412" Count="308" />
       <LineId Id="2" Count="0" />
     </LineIds>
   </POU>
