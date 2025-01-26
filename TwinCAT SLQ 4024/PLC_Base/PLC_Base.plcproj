@@ -8,7 +8,7 @@
     <DownloadApplicationInfo>true</DownloadApplicationInfo>
     <WriteProductVersion>true</WriteProductVersion>
     <GenerateTpy>false</GenerateTpy>
-    <Name>PLC_Generic</Name>
+    <Name>PLC_Base</Name>
     <ProgramVersion>3.1.4024.0</ProgramVersion>
     <Application>{c77fd40b-a1fc-4d88-b868-8aaa729fa24b}</Application>
     <TypeSystem>{ecbc4687-d8c8-42a1-bb74-cbcce8e7eb8c}</TypeSystem>
@@ -18,10 +18,31 @@
     <LibraryReferences>{aa857bea-fe8c-4d09-9c30-9e2b276749f2}</LibraryReferences>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DateAndTime\FB_DateAndTimeHandling.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EventLogging\FB_EventLogger.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EventLogging\FUN_EventTrigger.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="PersistantData\PersistantDataHandling.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PID\FB_PI_Regulator.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PID\PRG_PI_Regulator_ProgramExample.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Sequence Control\FB_SequenceControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -34,6 +55,9 @@
       <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_System</Namespace>
     </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Utilities">
+      <DefaultResolution>Tc2_Utilities, * (Beckhoff Automation GmbH)</DefaultResolution>
+    </PlaceholderReference>
     <PlaceholderReference Include="Tc3_Module">
       <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc3_Module</Namespace>
@@ -41,12 +65,47 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MathFunctions" />
+    <Folder Include="EventLogging" />
+    <Folder Include="DateAndTime" />
+    <Folder Include="PID" />
+    <Folder Include="PersistantData" />
     <Folder Include="Sequence Control" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="PLC_Generic.tmc">
+    <None Include="PLC_Base.tmc">
       <SubType>Content</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <SubObject Include="FB_DateAndTimeHandling.Enable" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualDayOfMonthAsINT" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualDayOfMonthAsINT.Get" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualHourAsINT" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualHourAsINT.Get" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualMillisecondAsINT" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualMillisecondAsINT.Get" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualMinuteAsINT" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualMinuteAsINT.Get" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualMonthAsINT" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualMonthAsINT.Get" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualSecondAsINT" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualSecondAsINT.Get" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualWeekdayAsINT" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualWeekdayAsINT.Get" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualYearAsINT" />
+    <SubObject Include="FB_DateAndTimeHandling.GetActualYearAsINT.Get" />
+    <SubObject Include="FB_DateAndTimeHandling.GetDateAsSTRING" />
+    <SubObject Include="FB_DateAndTimeHandling.GetDateAsSTRING.Get" />
+    <SubObject Include="FB_DateAndTimeHandling.GetDateTimeAsSTRING" />
+    <SubObject Include="FB_DateAndTimeHandling.GetDateTimeAsSTRING.Get" />
+    <SubObject Include="FB_DateAndTimeHandling.GetRawDateTimeAsSTRING" />
+    <SubObject Include="FB_DateAndTimeHandling.GetRawDateTimeAsSTRING.Get" />
+    <SubObject Include="FB_DateAndTimeHandling.GetTimeAsSTRING" />
+    <SubObject Include="FB_DateAndTimeHandling.GetTimeAsSTRING.Get" />
+    <SubObject Include="FB_SequenceControl.LogNow" />
+    <SubObject Include="PersistantDataHandling.Enable" />
+    <SubObject Include="PersistantDataHandling.WriteDataNow" />
+    <SubObject Include="PersistantDataHandling.WriteDataWithTimeInterval" />
   </ItemGroup>
   <ProjectExtensions>
     <PlcProjectOptions>

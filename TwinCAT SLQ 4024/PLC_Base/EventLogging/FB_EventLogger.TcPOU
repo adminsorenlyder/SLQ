@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_EventLogger" Id="{d0cfd233-40d0-4cbe-8fbe-ca437442cd3c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_EventLogger
+VAR_INPUT
+	ModuleName 			: STRING;
+	NewMessageText 		: STRING(250);	
+	ClearEventLog 		: BOOL;
+	logEnableTimestamp		: BOOL;
+END_VAR
+VAR_OUTPUT
+	LastLoggedMessage 	: STRING(250);
+END_VAR
+VAR_IN_OUT
+	EventLogArray 		: ARRAY [1..100] OF STRING(250);
+END_VAR
+VAR
+	NewMessage_Cpy 		: STRING(250);
+	NewMessage_OLD 		: STRING(250);
+	AddtoLogMessage 	: STRING(250);
+	EmptyString 		: STRING:='';	
+	StringFIND 			: INT;
+	PrefixLength 		: INT;
+	PrefixStartPlace 	: INT;
+	Idx 				: INT;
+	DateTimeHandeling 		: FB_DateAndTimeHandling;
+	namelength 			: INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[DateTimeHandeling.Enable();
+IF NewMessageText <> NewMessage_OLD THEN
+	NewMessage_OLD := NewMessageText;
+	NewMessage_Cpy := NewMessageText;
+	
+	namelength := LEN(ModuleName);
+	IF Namelength > 0 THEN
+		IF logEnableTimestamp THEN
+			AddtoLogMessage := CONCAT(DateTimeHandeling.GetDateTimeAsSTRING,' - ');
+			AddtoLogMessage := CONCAT(AddtoLogMessage,ModuleName);
+			AddtoLogMessage := CONCAT(AddtoLogMessage,' - ');
+			AddtoLogMessage := CONCAT(AddtoLogMessage,NewMessage_Cpy);
+		ELSE
+			AddtoLogMessage := CONCAT(ModuleName,' - ');
+			AddtoLogMessage := CONCAT(AddtoLogMessage,NewMessage_Cpy);
+		END_IF	
+	ELSE
+		IF logEnableTimestamp THEN
+			AddtoLogMessage := CONCAT(DateTimeHandeling.GetDateTimeAsSTRING,' - ');
+			AddtoLogMessage := CONCAT(AddtoLogMessage,NewMessage_Cpy);
+		ELSE
+			AddtoLogMessage := NewMessage_Cpy;
+		END_IF	
+	END_IF
+
+	FOR Idx := 100 TO 2 BY -1 DO
+  			EventLogArray[Idx] := EventLogArray[Idx-1] ;
+	END_FOR ;
+		EventLogArray[1] :=AddtoLogMessage;
+		LastLoggedMessage := AddtoLogMessage;
+END_IF
+
+IF ClearEventLog THEN
+	FOR Idx := 100 TO 2 BY -1 DO
+  			EventLogArray[Idx] := '' ;
+	END_FOR ;
+	ClearEventLog :=0;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FB_EventLogger">
+      <LineId Id="3" Count="4" />
+      <LineId Id="21" Count="31" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

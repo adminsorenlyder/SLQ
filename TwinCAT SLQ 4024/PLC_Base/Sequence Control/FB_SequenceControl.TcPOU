@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_SequenceControl" Id="{6a52f94b-8522-4a7e-b7a1-e85734f4dc88}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SequenceControl
+VAR_INPUT
+	step 					: UDINT;
+	stepDescriptionText		: STRING(250);
+	logEnableStepInfo		: BOOL;
+	logEnableADSLogging		: BOOL;
+END_VAR
+VAR_OUTPUT
+	stepFirstscan 			: BOOL;
+	StepActiveTimer 		: TIME;
+	ScanCounter 			: ULINT;
+	Error					: BOOL;
+	ErrorStep				: UDINT;
+	LastStepInfo 			: STRING(250);
+	NewMessageReady 		: BOOL;
+END_VAR
+VAR
+	stepLast 				: UDINT;
+	stepTimer 				: TON;
+	LastStepDescriptionText : STRING(250);
+	
+	StepChangeONS 			: R_TRIG;
+	
+	StringLength 			: INT;
+	StringERRORFind 		: INT;
+	StringWARNINGFind 		: INT;
+	StringINFORMATIONFind 	: INT;
+	Idx 					: INT;
+	NewStringTEMP 			: STRING(250);
+	NewStringTEMP_Old		: STRING(250);
+	DateAndTimeSTRING 		: STRING;
+	
+	ParsedmessageSTRING		: STRING(250);
+	TXTCategory				: INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[stepTimer(PT := T#24D, ET =>StepActiveTimer);
+
+IF stepLast <> Step THEN
+	
+	LastStepInfo := CONCAT('Step : ',UDINT_TO_STRING(stepLast));
+	
+	LastStepInfo := CONCAT(LastStepInfo,' - ');
+	LastStepInfo := CONCAT(LastStepInfo,stepDescriptionText);
+		
+	IF logEnableStepInfo THEN
+		IF TIME_TO_DINT(StepActiveTimer) > 0 THEN
+			LastStepInfo := 'StepTime : ';
+			LastStepInfo := CONCAT(LastStepInfo,TIME_TO_STRING(StepActiveTimer));
+		END_IF
+		LastStepInfo := CONCAT(LastStepInfo,', ScanCount : ');
+		LastStepInfo := CONCAT(LastStepInfo,LINT_TO_STRING(ScanCounter));
+	END_IF
+		
+	stepTimer.IN := 0;
+	stepFirstscan := TRUE;
+	ScanCounter :=0;
+	stepLast := step;
+	Error :=0;
+	ErrorStep :=0;
+	LogNow();
+ELSE
+	stepFirstscan := FALSE;
+	stepTimer.IN := 1;
+	NewMessageReady := FALSE;
+END_IF
+
+// Timer
+ScanCounter := ScanCounter +1;]]></ST>
+    </Implementation>
+    <Action Name="LogNow" Id="{eff4a6a9-3618-4480-b636-0cb319ff8534}">
+      <Implementation>
+        <ST><![CDATA[NewStringTEMP :='';
+StringLength := LEN(stepDescriptionText);						
+	IF logEnableADSLogging THEN
+		IF StringLength <> 0 THEN
+				
+			STRINGLENGTH := FIND(stepDescriptionText,'STATUS');
+			IF STRINGLENGTH <> 0 THEN
+				stepDescriptionText := DELETE(STR:=stepDescriptionText, LEN:=7,POS:=1);
+				IF logEnableStepInfo THEN
+					stepDescriptionText := CONCAT(stepDescriptionText,' - ');
+					stepDescriptionText := CONCAT(stepDescriptionText,LastStepInfo);
+				END_IF
+				ADSLOGSTR(msgCtrlMask:=ADSLOG_MSGTYPE_LOG , msgFmtStr:=stepDescriptionText , strArg:='' );
+			ELSIF STRINGLENGTH <> 0 THEN
+		
+			STRINGLENGTH := FIND(stepDescriptionText,'ERROR');
+				ErrorStep := Step;
+				Error := 1;
+				stepDescriptionText := DELETE(STR:=stepDescriptionText, LEN:=6,POS:=1);
+				IF logEnableStepInfo THEN
+					stepDescriptionText := CONCAT(stepDescriptionText,' - ');
+					stepDescriptionText := CONCAT(stepDescriptionText,LastStepInfo);
+				END_IF
+				ADSLOGSTR(msgCtrlMask:=ADSLOG_MSGTYPE_ERROR , msgFmtStr:=ParsedmessageSTRING , strArg:='' );
+			ELSIF STRINGLENGTH <> 0 THEN
+			
+			STRINGLENGTH := FIND(stepDescriptionText,'WARNING');
+
+				stepDescriptionText := DELETE(STR:=stepDescriptionText, LEN:=8,POS:=1);
+				IF logEnableStepInfo THEN
+					stepDescriptionText := CONCAT(stepDescriptionText,' - ');
+					stepDescriptionText := CONCAT(stepDescriptionText,LastStepInfo);
+				END_IF
+				ADSLOGSTR(msgCtrlMask:=ADSLOG_MSGTYPE_WARN , msgFmtStr:=ParsedmessageSTRING , strArg:='' );
+			ELSIF STRINGLENGTH <> 0 THEN
+
+			STRINGLENGTH := FIND(stepDescriptionText,'INFORMATION');
+
+				stepDescriptionText := DELETE(STR:=stepDescriptionText, LEN:=12,POS:=1);
+				IF logEnableStepInfo THEN
+					stepDescriptionText := CONCAT(stepDescriptionText,' - ');
+					stepDescriptionText := CONCAT(stepDescriptionText,LastStepInfo);
+				END_IF
+				ADSLOGSTR(msgCtrlMask:=ADSLOG_MSGTYPE_LOG , msgFmtStr:=stepDescriptionText , strArg:='' );
+			ELSE
+				IF logEnableStepInfo THEN
+					stepDescriptionText := CONCAT(stepDescriptionText,' - ');
+					stepDescriptionText := CONCAT(stepDescriptionText,LastStepInfo);
+				END_IF
+				ADSLOGSTR(msgCtrlMask:=ADSLOG_MSGTYPE_LOG , msgFmtStr:=stepDescriptionText , strArg:='' );
+			END_IF
+		END_IF
+							
+		
+	END_IF
+	
+	IF LastStepDescriptionText <> stepDescriptionText THEN
+		NewMessageReady := TRUE;
+		LastStepDescriptionText := stepDescriptionText;
+	END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="FB_SequenceControl">
+      <LineId Id="5" Count="13" />
+      <LineId Id="21" Count="2" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="30" Count="3" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="123" Count="0" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="34" Count="6" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SequenceControl.LogNow">
+      <LineId Id="2" Count="2" />
+      <LineId Id="33" Count="1" />
+      <LineId Id="37" Count="2" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="75" Count="1" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="42" Count="3" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="78" Count="2" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="48" Count="1" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="50" Count="2" />
+      <LineId Id="82" Count="2" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="54" Count="5" />
+      <LineId Id="86" Count="2" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="61" Count="1" />
+      <LineId Id="91" Count="3" />
+      <LineId Id="89" Count="1" />
+      <LineId Id="5" Count="1" />
+      <LineId Id="19" Count="2" />
+      <LineId Id="63" Count="2" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

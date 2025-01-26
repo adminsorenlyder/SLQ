@@ -2,6 +2,15 @@
 <TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.65">
 	<DataTypes>
 		<DataType>
+			<Name GUID="{41A59402-DED6-BA84-4477-2F4D680064AD}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..5] OF INT</Name>
+			<BitSize>80</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
+			<ArrayInfo>
+				<LBound>1</LBound>
+				<Elements>5</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
 			<Name GUID="{F968F625-51E0-7F1A-4725-62E4C83F1288}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..6] OF WORD</Name>
 			<BitSize>96</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000004}">WORD</BaseType>
@@ -17,15 +26,6 @@
 			<ArrayInfo>
 				<LBound>1</LBound>
 				<Elements>4</Elements>
-			</ArrayInfo>
-		</DataType>
-		<DataType>
-			<Name GUID="{41A59402-DED6-BA84-4477-2F4D680064AD}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..5] OF INT</Name>
-			<BitSize>80</BitSize>
-			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
-			<ArrayInfo>
-				<LBound>1</LBound>
-				<Elements>5</Elements>
 			</ArrayInfo>
 		</DataType>
 		<DataType>
@@ -200,8 +200,28 @@
 			</Tasks>
 		</System>
 		<Plc>
-			<Project GUID="{190F3B06-98C9-4E17-B67E-910FC8D078F4}" Name="PLC_Beckhoff" PrjFilePath="PLC_Beckhoff\PLC_Beckhoff.plcproj" TmcFilePath="PLC_Beckhoff\PLC_Beckhoff.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Beckhoff\PLC_Beckhoff.tmc" TmcHash="{7EE941C1-C807-9A3C-E043-13EC890F5013}">
+			<Project GUID="{0D1DA551-5B45-443F-B62C-68E9CA00CE9C}" Name="PLC_Base" PrjFilePath="PLC_Base\PLC_Base.plcproj" TmcFilePath="PLC_Base\PLC_Base.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Generic\PLC_Generic.tmc" TmcHash="{E1C047CE-F8FC-F2EC-A7C6-3E3C6FD90448}">
+					<Name>PLC_Base Instance</Name>
+					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+					<Contexts>
+						<Context>
+							<Id>0</Id>
+							<Name>PlcTask</Name>
+							<ManualConfig>
+								<OTCID>#x02010060</OTCID>
+							</ManualConfig>
+							<Priority>23</Priority>
+							<CycleTime>10000000</CycleTime>
+						</Context>
+					</Contexts>
+					<TaskPouOids>
+						<TaskPouOid Prio="23" OTCID="#x08502001"/>
+					</TaskPouOids>
+				</Instance>
+			</Project>
+			<Project GUID="{190F3B06-98C9-4E17-B67E-910FC8D078F4}" Name="PLC_Beckhoff" PrjFilePath="PLC_Beckhoff\PLC_Beckhoff.plcproj" TmcFilePath="PLC_Beckhoff\PLC_Beckhoff.tmc" ReloadTmc="true" AmsPort="852" FileArchiveSettings="#x000e" SymbolicMapping="true">
+				<Instance Id="#x08502040" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Beckhoff\PLC_Beckhoff.tmc" TmcHash="{65550BA6-D940-48CA-09D8-395C05DE1DC5}">
 					<Name>PLC_Beckhoff Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Contexts>
@@ -216,46 +236,12 @@
 						</Context>
 					</Contexts>
 					<TaskPouOids>
-						<TaskPouOid Prio="20" OTCID="#x08502001"/>
-					</TaskPouOids>
-				</Instance>
-			</Project>
-			<Project GUID="{2304FC89-6D60-4C92-B837-CFE433D3D856}" Name="PLC_Siemens" PrjFilePath="PLC_Siemens\PLC_Siemens.plcproj" TmcFilePath="PLC_Siemens\PLC_Siemens.tmc" ReloadTmc="true" AmsPort="852" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502040" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Siemens\PLC_Siemens.tmc" TmcHash="{C9016FD5-E931-A7D7-B8DF-8345FE43AC1D}">
-					<Name>PLC_Siemens Instance</Name>
-					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
-					<Vars VarGrpType="1">
-						<Name>PlcTask Inputs</Name>
-						<Var>
-							<Name>PRG_G120C_ProgramExample.FRQ.HWin_Word</Name>
-							<Type GUID="{F968F625-51E0-7F1A-4725-62E4C83F1288}">ARRAY [1..6] OF WORD</Type>
-						</Var>
-					</Vars>
-					<Vars VarGrpType="2" AreaNo="1">
-						<Name>PlcTask Outputs</Name>
-						<Var>
-							<Name>PRG_G120C_ProgramExample.FRQ.Hwout_Word</Name>
-							<Type GUID="{EA55AFA5-173A-B1D8-E585-84C23FB5C985}">ARRAY [1..4] OF WORD</Type>
-						</Var>
-					</Vars>
-					<Contexts>
-						<Context>
-							<Id>0</Id>
-							<Name>PlcTask</Name>
-							<ManualConfig>
-								<OTCID>#x02010040</OTCID>
-							</ManualConfig>
-							<Priority>21</Priority>
-							<CycleTime>10000000</CycleTime>
-						</Context>
-					</Contexts>
-					<TaskPouOids>
-						<TaskPouOid Prio="21" OTCID="#x08502041"/>
+						<TaskPouOid Prio="20" OTCID="#x08502041"/>
 					</TaskPouOids>
 				</Instance>
 			</Project>
 			<Project GUID="{7ED2757A-0EAC-4587-AC05-9BDDA25E7CA6}" Name="PLC_NORDGear" PrjFilePath="PLC_NORDGear\PLC_NORDGear.plcproj" TmcFilePath="PLC_NORDGear\PLC_NORDGear.tmc" ReloadTmc="true" AmsPort="853" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502080" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_NORDGear\PLC_NORDGear.tmc" TmcHash="{94763020-52E1-9A44-6D02-03B320435687}">
+				<Instance Id="#x08502080" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_NORDGear\PLC_NORDGear.tmc" TmcHash="{265C8A2C-2911-D4CC-C459-DCA1046945BC}">
 					<Name>PLC_NORDGear Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -296,23 +282,37 @@
 					</TaskPouOids>
 				</Instance>
 			</Project>
-			<Project GUID="{0D1DA551-5B45-443F-B62C-68E9CA00CE9C}" Name="PLC_Generic" PrjFilePath="PLC_Generic\PLC_Generic.plcproj" TmcFilePath="PLC_Generic\PLC_Generic.tmc" ReloadTmc="true" AmsPort="854" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x085020c0" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Generic\PLC_Generic.tmc" TmcHash="{79F0553C-1D89-CFE0-5660-F036F61AED2D}">
-					<Name>PLC_Generic Instance</Name>
+			<Project GUID="{2304FC89-6D60-4C92-B837-CFE433D3D856}" Name="PLC_Siemens" PrjFilePath="PLC_Siemens\PLC_Siemens.plcproj" TmcFilePath="PLC_Siemens\PLC_Siemens.tmc" ReloadTmc="true" AmsPort="854" FileArchiveSettings="#x000e" SymbolicMapping="true">
+				<Instance Id="#x085020c0" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Siemens\PLC_Siemens.tmc" TmcHash="{7FB2EAA6-0E24-9E16-3F15-DDC355BF4C60}">
+					<Name>PLC_Siemens Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+					<Vars VarGrpType="1">
+						<Name>PlcTask Inputs</Name>
+						<Var>
+							<Name>PRG_G120C_ProgramExample.FRQ.HWin_Word</Name>
+							<Type GUID="{F968F625-51E0-7F1A-4725-62E4C83F1288}">ARRAY [1..6] OF WORD</Type>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2" AreaNo="1">
+						<Name>PlcTask Outputs</Name>
+						<Var>
+							<Name>PRG_G120C_ProgramExample.FRQ.Hwout_Word</Name>
+							<Type GUID="{EA55AFA5-173A-B1D8-E585-84C23FB5C985}">ARRAY [1..4] OF WORD</Type>
+						</Var>
+					</Vars>
 					<Contexts>
 						<Context>
 							<Id>0</Id>
 							<Name>PlcTask</Name>
 							<ManualConfig>
-								<OTCID>#x02010060</OTCID>
+								<OTCID>#x02010040</OTCID>
 							</ManualConfig>
-							<Priority>23</Priority>
+							<Priority>21</Priority>
 							<CycleTime>10000000</CycleTime>
 						</Context>
 					</Contexts>
 					<TaskPouOids>
-						<TaskPouOid Prio="23" OTCID="#x085020c1"/>
+						<TaskPouOid Prio="21" OTCID="#x085020c1"/>
 					</TaskPouOids>
 				</Instance>
 			</Project>
@@ -2732,7 +2732,7 @@ Bit 8 - 15 : reserved]]></Comment>
 			</Device>
 			<Device Id="3" DevType="113" AmsPort="28675" AmsNetId="30.11.11.164.4.1" RemoteName="Profinet Master (Siemens)">
 				<Name>Profinet Master (Siemens)</Name>
-				<DevData>0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000</DevData>
+				<DevData>000000000000000000000000a086010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000</DevData>
 				<Image Id="5" AddrType="1" ImageType="3" SizeIn="16" SizeOut="22">
 					<Name>Image</Name>
 				</Image>
@@ -2863,18 +2863,18 @@ SW Release Version: V4.70]]></Comment>
 						</UsedGsdmlSubModule>
 						<UsedGsdmlSubModule SubModuleIdentNumber="268500991" TypeOfSubmodule="4" Id="IDS_MAP1" SubModuleName="Module Access Point" APINr="14848" InfoText="Module Access Point"/>
 						<UsedGsdmlSubModule SubModuleIdentNumber="993" TypeOfSubmodule="4" Id="IDS_TEL993" SubModuleName="Free telegram, PZD-6/6" APINr="14848" InfoText="Free telegram, PZD length 6/6 words">
-							<DataItemIn Name="Status word or actual value" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
-							<DataItemIn Name="Status word or actual value" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
-							<DataItemIn Name="Status word or actual value" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
-							<DataItemIn Name="Status word or actual value" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
-							<DataItemIn Name="Status word or actual value" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
-							<DataItemIn Name="Status word or actual value" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
-							<DataItemOut Name="Control word or setpoint" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
-							<DataItemOut Name="Control word or setpoint" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
-							<DataItemOut Name="Control word or setpoint" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
-							<DataItemOut Name="Control word or setpoint" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
-							<DataItemOut Name="Control word or setpoint" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
-							<DataItemOut Name="Control word or setpoint" VarSize="16" VarType="{18071995-0000-0000-0000-000000000005}"/>
+							<DataItemIn/>
+							<DataItemIn/>
+							<DataItemIn/>
+							<DataItemIn/>
+							<DataItemIn/>
+							<DataItemIn/>
+							<DataItemOut/>
+							<DataItemOut/>
+							<DataItemOut/>
+							<DataItemOut/>
+							<DataItemOut/>
+							<DataItemOut/>
 						</UsedGsdmlSubModule>
 						<API Id="1">
 							<Name>API</Name>
@@ -3043,6 +3043,7 @@ Submodule Info: Free telegram, PZD length 6/6 words
 	</Project>
 	<Mappings>
 		<MappingInfo Identifier="{00000000-2081-0850-8020-500830000403}" Id="#x02030010"/>
+		<MappingInfo Identifier="{00000000-20C1-0850-C020-500850000403}" Id="#x02030020"/>
 		<OwnerA Name="TIPC^PLC_NORDGear^PLC_NORDGear Instance">
 			<OwnerB Name="TIID^EtherCAT Master (NORDGear)^EtherCAT Slave To Insert In IO (NORDACpro)">
 				<Link VarA="PlcTask Inputs^PRG_550P_ProgramExample.FRQ.HWin_ActualValue" VarB="Module 1 (SK550P)^Process data in^Actual value 1"/>

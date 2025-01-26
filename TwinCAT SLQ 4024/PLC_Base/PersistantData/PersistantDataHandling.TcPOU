@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="PersistantDataHandling" Id="{42e38123-0b31-4a54-8193-8825fb290d17}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PersistantDataHandling
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+
+	FB_WriteNow :				WritePersistentData;	
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Enable" Id="{6fb922ab-be4d-406c-9563-fd016198b7c0}">
+      <Declaration><![CDATA[METHOD Enable : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FB_WriteNow(NETID:='',PORT:=TwinCAT_SystemInfoVarList._AppInfo.AdsPort);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="WriteDataNow" Id="{d3ba3e0b-2330-40cb-9ee3-cb7e63c933a5}">
+      <Declaration><![CDATA[METHOD WriteDataNow : BOOL
+VAR
+	WritePersistantDataSTEP : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE WritePersistantDataSTEP OF
+	
+	0:
+		FB_WriteNow.START := FALSE;
+		WritePersistantDataSTEP := 2;
+		
+	2:
+		FB_WriteNow.START := FALSE;
+		WritePersistantDataSTEP := 5;
+		
+	5:
+
+		FB_WriteNow.START := TRUE;
+		WritePersistantDataSTEP := 10;
+		IF FB_WriteNow.ERR THEN
+			WritePersistantDataSTEP := 666;
+			FB_WriteNow.START := FALSE;
+		END_IF
+		
+	10:
+		IF NOT FB_WriteNow.BUSY THEN
+			FB_WriteNow.START := FALSE;
+			IF NOT FB_WriteNow.ERR THEN
+				WritePersistantDataSTEP := 20;
+			ELSE
+				WritePersistantDataSTEP := 666;
+				FB_WriteNow.START := FALSE;
+			END_IF
+		END_IF
+	20:
+		FB_WriteNow.START := FALSE;
+		WriteDataNow := TRUE;
+
+
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="WriteDataWithTimeInterval" Id="{76d144fe-c060-4838-ac3d-796ec3c50fc8}">
+      <Declaration><![CDATA[METHOD WriteDataWithTimeInterval : BOOL
+VAR_INPUT
+	
+	TimeInterval :			TIME;
+
+END_VAR
+VAR
+	WritePersistantDataIntervalSTEP :	INT;
+	WaitTimeTON :						TON;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[WaitTimeTON(IN:=WritePersistantDataIntervalSTEP = 30 , PT:=TimeInterval , Q=> , ET=> );
+
+CASE WritePersistantDataIntervalSTEP OF
+	
+	0:
+		FB_WriteNow.START := FALSE;
+		WritePersistantDataIntervalSTEP := 2;
+		
+	2:
+		FB_WriteNow.START := FALSE;
+		WritePersistantDataIntervalSTEP := 5;
+		
+	5:
+		FB_WriteNow.START := TRUE;
+		WritePersistantDataIntervalSTEP := 10;
+			
+	10:
+		IF NOT FB_WriteNow.BUSY THEN
+			FB_WriteNow.START := FALSE;
+			WriteDataWithTimeInterval := TRUE;
+			IF NOT FB_WriteNow.ERR THEN
+				WritePersistantDataIntervalSTEP := 20;
+			ELSE
+				WritePersistantDataIntervalSTEP := 666;
+				FB_WriteNow.START := FALSE;
+			END_IF
+		END_IF
+		
+	20:
+		IF TimeInterval > T#0MS THEN
+			WritePersistantDataIntervalSTEP := 30;
+			WriteDataWithTimeInterval := FALSE;
+		END_IF
+		
+	30:
+		IF WaitTimeTON.Q THEN
+			WritePersistantDataIntervalSTEP := 0;
+		END_IF
+		
+
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="PersistantDataHandling">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="PersistantDataHandling.Enable">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="PersistantDataHandling.WriteDataNow">
+      <LineId Id="3" Count="33" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="PersistantDataHandling.WriteDataWithTimeInterval">
+      <LineId Id="3" Count="39" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

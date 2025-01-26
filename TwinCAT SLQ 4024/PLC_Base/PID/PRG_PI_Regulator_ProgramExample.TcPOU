@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="PRG_PI_Regulator_ProgramExample" Id="{6b0a3beb-3a7c-4b45-a5a2-9400ffb8befc}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_PI_Regulator_ProgramExample
+VAR
+	PID_Instance :				FB_PI_Regulator;
+	Out_Error :					LREAL;
+	Out_LoopOutput :			LREAL;
+	Out_DutyOutput :			BOOL;
+	Sts_DeadBandActive :		BOOL;
+	Sts_LastReactionTime :		DINT;
+	Sts_LastReactionTime_Offset :		DINT;
+	SP_Old :					LREAL;
+	SP_ChangeTON :				TON;
+	Step_SIM :					INT;
+	Step_SIM_Old :					INT;
+	StepTON :					TON;
+	SIMDampingFactor :			LREAL :=1.0;
+	SIM_OvershootSUB :			LREAL :=10.0; 
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SP_ChangeTON(IN:=PID_Instance.In_SP = SP_Old , PT:=T#2S , Q=> , ET=> );
+IF SP_Old <> PID_Instance.In_SP THEN
+		SP_Old := PID_Instance.In_SP;
+END_IF
+// PID Regulator
+PID_Instance(Out_Error=>Out_Error , 
+	Out_LoopOutput=>Out_LoopOutput , 
+	Out_DutyOutput=>Out_DutyOutput,
+	Sts_DeadBandActive=>Sts_DeadBandActive ,	
+    Sts_LastReactionTime=>Sts_LastReactionTime_Offset);
+	
+Sts_LastReactionTime := Sts_LastReactionTime_Offset - 2000;
+	
+// SIM Control
+	StepTON(IN:=Step_SIM_Old = Step_SIM , PT:=T#16D , Q=> , ET=> );
+	IF Step_SIM_Old <> Step_SIM THEN
+		Step_SIM_Old := Step_SIM;
+	END_IF
+	
+	CASE Step_SIM OF
+		
+		0:
+			IF StepTON.ET > INT_TO_TIME(PID_Instance.In_DutyCycle) AND SP_ChangeTON.Q THEN
+				PID_Instance.In_PV := PID_Instance.In_PV + ((Out_LoopOutput) * SIMDampingFactor);	
+				
+				Step_SIM := 10;
+			END_IF
+		10:
+			IF StepTON.ET > T#20MS THEN
+				Step_SIM := 0;
+			END_IF
+			
+	
+	
+	END_CASE
+	
+	]]></ST>
+    </Implementation>
+    <LineIds Name="PRG_PI_Regulator_ProgramExample">
+      <LineId Id="21" Count="5" />
+      <LineId Id="36" Count="29" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

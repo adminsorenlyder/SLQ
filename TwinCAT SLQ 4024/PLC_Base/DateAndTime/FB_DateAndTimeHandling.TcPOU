@@ -1,0 +1,310 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_DateAndTimeHandling" Id="{db6a0d7c-3577-4ce2-a433-d0be31df9fdb}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_DateAndTimeHandling
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	
+	
+	TimeStruct :					Tc2_Utilities.TIMESTRUCT;
+	fbGetTime:						NT_GetTime;
+	
+	GetTimeTON :					TON;	
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Enable" Id="{84bb056b-d454-480f-b497-6949f4858af8}">
+      <Declaration><![CDATA[METHOD Enable : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[fbGetTime(
+	NETID:='' , 
+	START:= GetTimeTON.Q, 
+	TMOUT:= T#40S , 
+	TIMESTR=>TimeStruct );]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="GetActualDayOfMonthAsINT" Id="{b5e5be76-9282-4204-9d79-3740f13f0542}">
+      <Declaration><![CDATA[PROPERTY GetActualDayOfMonthAsINT : INT]]></Declaration>
+      <Get Name="Get" Id="{3f9fced7-5b54-42c5-b9a8-c83a0c3dc83b}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[GetActualDayOfMonthAsINT := WORD_TO_INT(TimeStruct.wDay);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="GetActualHourAsINT" Id="{0af0a903-f925-47e9-bd28-84bad65f617b}">
+      <Declaration><![CDATA[PROPERTY GetActualHourAsINT : INT]]></Declaration>
+      <Get Name="Get" Id="{199c8e4b-941e-44b3-9b42-76f6d8ba5a02}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[GetActualHourAsINT := WORD_TO_INT(TimeStruct.wHour);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="GetActualMillisecondAsINT" Id="{316bea74-ce1b-4be4-adf5-986f22615a4e}">
+      <Declaration><![CDATA[PROPERTY GetActualMillisecondAsINT : INT]]></Declaration>
+      <Get Name="Get" Id="{12543d29-4189-4ade-9011-c2a31cf8c5cc}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[GetActualMillisecondAsINT := WORD_TO_INT(TimeStruct.wMilliseconds);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="GetActualMinuteAsINT" Id="{8b9811d3-19fc-4217-8b01-d98bd8d9ffd7}">
+      <Declaration><![CDATA[PROPERTY GetActualMinuteAsINT : INT]]></Declaration>
+      <Get Name="Get" Id="{253aa4c1-2909-4e5a-873a-24ca345d5821}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[GetActualMinuteAsINT := WORD_TO_INT(TimeStruct.wMinute);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="GetActualMonthAsINT" Id="{ce63e3d7-c964-4307-a839-bb12b2fdf788}">
+      <Declaration><![CDATA[PROPERTY GetActualMonthAsINT : INT]]></Declaration>
+      <Get Name="Get" Id="{16386204-753e-4f81-997b-4c581229ef8d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[GetActualMonthAsINT := WORD_TO_INT(TimeStruct.wMonth);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="GetActualSecondAsINT" Id="{31c925ed-682c-450a-93de-5d070aa99fa7}">
+      <Declaration><![CDATA[PROPERTY GetActualSecondAsINT : INT]]></Declaration>
+      <Get Name="Get" Id="{eb3e216b-76cd-4b63-ab4a-94acd22a945c}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[GetActualSecondAsINT := WORD_TO_INT(TimeStruct.wSecond);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="GetActualWeekdayAsINT" Id="{7022b24d-b771-499f-9e9b-9d468aada62b}">
+      <Declaration><![CDATA[PROPERTY GetActualWeekdayAsINT : INT]]></Declaration>
+      <Get Name="Get" Id="{f66592c2-a168-40de-ab9e-defa0aea60b5}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[GetActualWeekdayAsINT := WORD_TO_INT(TimeStruct.wDayOfWeek);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="GetActualYearAsINT" Id="{5981dab8-27e8-4a11-b6e8-7aecaf6f3d10}">
+      <Declaration><![CDATA[PROPERTY GetActualYearAsINT : INT]]></Declaration>
+      <Get Name="Get" Id="{39569eab-afab-49a9-b487-6ed23f36b4f8}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[GetActualYearAsINT := WORD_TO_INT(TimeStruct.wYear);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="GetDateAsSTRING" Id="{bdd45043-adde-4bed-89fd-1aeeb7d85e26}">
+      <Declaration><![CDATA[PROPERTY GetDateAsSTRING : STRING]]></Declaration>
+      <Get Name="Get" Id="{f6087201-9493-4012-83db-ee84f7cdd20c}">
+        <Declaration><![CDATA[VAR
+	
+	DateTime :						DT;
+	ToUDT :							STRING;
+	WithOutDT :						STRING;
+	WithOutHyphen :					STRING;
+	WithGap :						STRING;
+	DateTimeString :				STRING;
+	TimeString :					STRING;	
+
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[//Date To String
+	//Makes TimeStruct to DateTime
+	DateTime := SYSTEMTIME_TO_DT(TIMESTR:= TimeStruct);
+	
+	//Makes DateTime to String
+	ToUDT := DT_TO_STRING(DateTime);
+	
+	//Delete #DT from String
+	WithOutDT := Tc2_Standard.DELETE(STR:=ToUDT, LEN:=4,POS:=0);
+	
+	//Delete hyphen between date and time
+	WithOutHyphen:=Tc2_Standard.DELETE(STR:=WithOutDT, LEN:=1,POS:=11);
+	
+	//Insert a gap between date and time	
+	WithGap := Tc2_Standard.INSERT(STR1:=WithOutHyphen,STR2:=' ', POS:=10);
+	DateTimeString := Tc2_Standard.DELETE(STR:=WithGap, LEN:=6,POS:=0);
+	GetDateAsSTRING := Tc2_Standard.DELETE(STR:=DateTimeString, LEN:=7,POS:=8);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="GetDateTimeAsSTRING" Id="{8e9b2525-6494-4daa-acff-d34b656004b3}">
+      <Declaration><![CDATA[PROPERTY GetDateTimeAsSTRING : STRING]]></Declaration>
+      <Get Name="Get" Id="{eea35a9c-5bac-466b-8075-eac3ef0d9d13}">
+        <Declaration><![CDATA[VAR
+
+	DateTime :						DT;
+	ToUDT :							STRING;
+	WithOutDT :						STRING;
+	WithOutHyphen :					STRING;
+	WithGap :						STRING;
+	DateTimeString :				STRING;
+	TimeString :					STRING;	
+
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[//Date To String
+	//Makes TimeStruct to DateTime
+	DateTime := SYSTEMTIME_TO_DT(TIMESTR:= TimeStruct);
+	
+	//Makes DateTime to String
+	ToUDT := DT_TO_STRING(DateTime);
+	
+	//Delete #DT from String
+	WithOutDT := Tc2_Standard.DELETE(STR:=ToUDT, LEN:=4,POS:=0);
+	
+	//Delete hyphen between date and time
+	WithOutHyphen:=Tc2_Standard.DELETE(STR:=WithOutDT, LEN:=1,POS:=11);
+	
+	//Insert a gap between date and time	
+	WithGap := Tc2_Standard.INSERT(STR1:=WithOutHyphen,STR2:=' ', POS:=10);
+	DateTimeString := Tc2_Standard.DELETE(STR:=WithGap, LEN:=6,POS:=0);
+	TimeString := Tc2_Standard.DELETE(STR:=DateTimeString, LEN:=7,POS:=0);
+	GetDateTimeAsSTRING := DateTimeString;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="GetRawDateTimeAsSTRING" Id="{c36e9886-5256-40e4-919f-8b674b133ee3}">
+      <Declaration><![CDATA[PROPERTY GetRawDateTimeAsSTRING : STRING]]></Declaration>
+      <Get Name="Get" Id="{1dd97c43-0b5f-4a2f-ac34-74195f9ee609}">
+        <Declaration><![CDATA[VAR
+	
+	DateTime :						DT;
+	ToUDT :							STRING;
+	WithOutDT :						STRING;
+	EmptyString :					STRING(1);
+	DateTimeString :				STRING;
+	TimeString :					STRING;	
+
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[//Makes TimeStruct to DateTime
+	DateTime := SYSTEMTIME_TO_DT(TIMESTR:= TimeStruct);
+	
+	//Makes DateTime to String
+	ToUDT := DT_TO_STRING(DateTime);
+
+	
+	//Delete #DT from String
+	WithOutDT := Tc2_Standard.DELETE(STR:=ToUDT, LEN:=4,POS:=0);
+
+	//Delete hyphen between date and time
+	GetRawDateTimeAsSTRING:= Tc2_Standard.REPLACE(STR1:=WithOutDT , STR2:=' ' , L:=1 , P:=11 ); //Tc2_Standard.DELETE(STR:=WithOutDT, LEN:=1,POS:=11);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="GetTimeAsSTRING" Id="{16d69dcc-e62e-490d-96d0-52b7d55bd6cc}">
+      <Declaration><![CDATA[PROPERTY GetTimeAsSTRING : STRING]]></Declaration>
+      <Get Name="Get" Id="{326bb161-5757-4721-a146-3ee454039e1e}">
+        <Declaration><![CDATA[VAR
+
+	DateTime :						DT;
+	ToUDT :							STRING;
+	WithOutDT :						STRING;
+	WithOutHyphen :					STRING;
+	WithGap :						STRING;
+	DateTimeString :				STRING;
+	TimeString :					STRING;	
+
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[//Date To String
+	//Makes TimeStruct to DateTime
+	DateTime := SYSTEMTIME_TO_DT(TIMESTR:= TimeStruct);
+	
+	//Makes DateTime to String
+	ToUDT := DT_TO_STRING(DateTime);
+	
+	//Delete #DT from String
+	WithOutDT := Tc2_Standard.DELETE(STR:=ToUDT, LEN:=4,POS:=0);
+	
+	//Delete hyphen between date and time
+	WithOutHyphen:=Tc2_Standard.DELETE(STR:=WithOutDT, LEN:=1,POS:=11);
+	
+	//Insert a gap between date and time	
+	WithGap := Tc2_Standard.INSERT(STR1:=WithOutHyphen,STR2:=' ', POS:=10);
+	DateTimeString := Tc2_Standard.DELETE(STR:=WithGap, LEN:=6,POS:=0);
+	GetTimeAsSTRING := Tc2_Standard.DELETE(STR:=DateTimeString, LEN:=7,POS:=0);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="FB_DateAndTimeHandling">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_DateAndTimeHandling.Enable">
+      <LineId Id="3" Count="3" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_DateAndTimeHandling.GetActualDayOfMonthAsINT.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_DateAndTimeHandling.GetActualHourAsINT.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_DateAndTimeHandling.GetActualMillisecondAsINT.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_DateAndTimeHandling.GetActualMinuteAsINT.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_DateAndTimeHandling.GetActualMonthAsINT.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_DateAndTimeHandling.GetActualSecondAsINT.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_DateAndTimeHandling.GetActualWeekdayAsINT.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_DateAndTimeHandling.GetActualYearAsINT.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_DateAndTimeHandling.GetDateAsSTRING.Get">
+      <LineId Id="3" Count="15" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_DateAndTimeHandling.GetDateTimeAsSTRING.Get">
+      <LineId Id="3" Count="16" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_DateAndTimeHandling.GetRawDateTimeAsSTRING.Get">
+      <LineId Id="3" Count="10" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_DateAndTimeHandling.GetTimeAsSTRING.Get">
+      <LineId Id="3" Count="15" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

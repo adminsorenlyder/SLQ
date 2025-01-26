@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FUN_EventTrigger" Id="{bff79f51-18b7-4387-ae6a-4c46dfee5a14}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FUN_EventTrigger : BOOL
+VAR_INPUT
+	IN 					: STRING(250);
+	ModuleName 			: STRING;
+	MessageText 		: STRING(250);
+END_VAR
+VAR
+	
+	STRINGLENGTH :			INT;
+	ModuleNameOK :			BOOL;
+	MessageTypeOK :			BOOL;
+	MessageTextOK :			BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[StringLength := LEN(IN);
+
+IF StringLength <> 0 THEN
+		
+			STRINGLENGTH := FIND(IN,ModuleName);
+			IF STRINGLENGTH > 0 THEN
+				ModuleNameOK :=1;
+			END_IF
+			STRINGLENGTH := FIND(IN,MessageText);
+			IF STRINGLENGTH > 0 THEN
+				MessageTextOK :=1;
+			END_IF
+			
+		IF ModuleNameOK AND MessageTextOK THEN
+			EventTrigger2 :=1;
+		END_IF
+		
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FUN_EventTrigger">
+      <LineId Id="21" Count="16" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

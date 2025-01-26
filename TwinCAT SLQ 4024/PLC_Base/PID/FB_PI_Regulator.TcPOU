@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_PI_Regulator" Id="{9a51648e-2209-412e-92ef-c2c46f134414}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PI_Regulator
+VAR_INPUT
+	In_SP :				LREAL;
+	In_PV :				LREAL;	
+	In_DutyCycle :		INT;
+	Cfg_P_Gain :		LREAL;
+	Cfg_I_Gain :		LREAL;
+	Cfg_D_Gain :		LREAL;
+	Cfg_DeadBand :		LREAL;
+	Cfg_FeedForward :	LREAL;
+END_VAR
+VAR_OUTPUT
+	Out_Error :		LREAL;
+	Out_LoopOutput :	LREAL;
+	Out_DutyOutput :	BOOL;
+	Sts_DeadBandActive :	BOOL;
+	Sts_LastReactionTime :	DINT;
+END_VAR
+VAR
+	
+	DutyCycleTON :		TON;	
+	P_LoopOutput :	LREAL;
+	I_LoopOutput :	LREAL;
+	
+	DeadbandMin :	LREAL;
+	DeadbandMax :	LREAL;
+	ReactionTimeTON :	TON;
+	ReactionTimeONS :	R_TRIG;
+	
+	Lo_DeadBandActive :	BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[DutyCycleTON(IN:=NOT DutyCycleTON.Q , PT:=INT_TO_TIME(In_DutyCycle) , Q=> , ET=> );
+
+// DeadBand
+IF Cfg_DeadBand<> 0 THEN
+
+IF In_PV < DeadbandMax AND In_PV > DeadbandMin THEN
+	Sts_DeadBandActive :=1;
+	ELSE
+	Sts_DeadBandActive :=0;
+END_IF
+
+ReactionTimeONS(CLK:=Sts_DeadBandActive , Q=> );
+
+IF ReactionTimeONS.Q THEN
+	Sts_LastReactionTime := TIME_TO_DINT(ReactionTimeTON.ET);
+END_IF
+
+ReactionTimeTON(IN:= NOT Sts_DeadBandActive , PT:=T#16D , Q=> , ET=> );
+ELSE
+	
+DeadbandMin := In_SP - 0.1;
+DeadbandMax := In_SP + 0.1;	
+IF In_PV < DeadbandMax AND In_PV > DeadbandMin THEN
+	Lo_DeadBandActive :=1;
+	ELSE
+	Lo_DeadBandActive :=0;
+END_IF
+
+ReactionTimeONS(CLK:=Lo_DeadBandActive , Q=> );
+
+IF ReactionTimeONS.Q THEN
+	Sts_LastReactionTime := TIME_TO_DINT(ReactionTimeTON.ET);
+END_IF
+
+ReactionTimeTON(IN:= NOT Lo_DeadBandActive , PT:=T#16D , Q=> , ET=> );
+END_IF	
+
+
+
+//Regulation
+IF DutyCycleTON.Q AND NOT Sts_DeadBandActive THEN
+
+Out_Error := In_SP - In_PV;
+
+// P
+P_LoopOutput := Cfg_P_Gain*Out_Error;
+
+// I
+I_LoopOutput := Out_Error * Cfg_I_Gain;
+
+
+// Calculate Output
+
+Out_LoopOutput := P_LoopOutput + I_LoopOutput + Cfg_FeedForward;
+
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FB_PI_Regulator">
+      <LineId Id="3" Count="54" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
