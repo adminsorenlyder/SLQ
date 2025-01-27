@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <POU Name="FB_AX5000_ReadDiagCode" Id="{8301114d-fc25-45be-b65b-7c58c49b2640}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_AX5000_ReadDiagCode
+VAR_INPUT
+	Cmd_ReadDiagCode						:	BOOL;
+END_VAR
+VAR_OUTPUT
+
+	Sts_ActualDiagCode						:	UDINT;
+	Sts_DiagList							:	Tc2_Drive.ST_SoE_DiagNumList;	
+	Sts_Error								:	BOOL;
+END_VAR
+VAR
+
+	// AX5000/SoE
+	SoEReset 								:	Tc2_Mc2_Drive.FB_SoEReset;
+	SoERead 								:	Tc2_Mc2_Drive.FB_SoERead;
+	SoEReadValue 							:	UINT;
+	ReadSOE_LIST 							:	Tc2_MC2_Drive.FB_SoEReadDiagNumberList;
+	StepControl								:	UINT;
+
+END_VAR
+VAR_IN_OUT
+	Axis									:	Tc2_mc2.AXIS_REF;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// AX5000 Read Diag Codes - With standard blocks
+// This block is made for inspirational purposes.
+// Please make your ovn version that comlies with your / your company´s programming vision
+// Version 1.0 - Initial Version
+//-----------------------------------------------------------------------------------------
+
+ReadSOE_LIST(Axis := Axis, Timeout := DEFAULT_ADS_TIMEOUT, pDiagNumber := ADR(Sts_DiagList),Size:= SIZEOF(Sts_DiagList));
+SoERead(Axis:=Axis,Element:=16#40,pDstBuf:=ADR(SoEReadValue),BufLen:=SIZEOF(SoEReadValue));
+SoEReset(Axis:=Axis);
+
+CASE StepControl OF
+	
+	0:
+		IF Cmd_ReadDiagCode THEN
+			StepControl := 10;
+		END_IF
+
+	10: // Sercos Axis
+	
+		ReadSOE_LIST.Execute := TRUE;
+		IF ReadSOE_LIST.Busy THEN
+			StepControl :=20;
+		END_IF
+		IF ReadSOE_LIST.Error THEN
+			Sts_Error :=1;
+			StepControl :=666;
+		END_IF
+		
+	20:
+		IF NOT ReadSOE_LIST.Busy THEN
+			Sts_ActualDiagCode := Sts_DiagList.arrDiagNumbers[Sts_DiagList.iActualSize];
+			StepControl :=30;
+		END_IF
+		
+		IF ReadSOE_LIST.Error THEN
+			Sts_Error :=1;
+			StepControl :=666;
+		END_IF
+		
+	30:
+		IF NOT Cmd_ReadDiagCode THEN
+			StepControl :=0;
+		END_IF
+	
+	
+	666:
+		IF NOT Cmd_ReadDiagCode THEN
+			Sts_Error :=0;
+			StepControl :=0;
+		END_IF
+		
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="FB_AX5000_ReadDiagCode">
+      <LineId Id="108" Count="3" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="34" Count="1" />
+      <LineId Id="102" Count="1" />
+      <LineId Id="105" Count="2" />
+      <LineId Id="36" Count="10" />
+      <LineId Id="57" Count="1" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="90" Count="2" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="94" Count="4" />
+      <LineId Id="71" Count="1" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="93" Count="0" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="115" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

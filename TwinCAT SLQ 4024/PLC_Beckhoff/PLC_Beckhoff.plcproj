@@ -24,6 +24,9 @@
     <Compile Include="MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MOTION\FB_AX5000_ReadDiagCode.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MOTION\FB_NC_MotionControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -47,9 +50,16 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <PlaceholderReference Include="Tc2_Drive">
+      <DefaultResolution>Tc2_Drive, * (Beckhoff Automation GmbH)</DefaultResolution>
+    </PlaceholderReference>
     <PlaceholderReference Include="Tc2_MC2">
       <DefaultResolution>Tc2_MC2, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_MC2</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MC2_Drive">
+      <DefaultResolution>Tc2_MC2_Drive, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MC2_Drive</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc2_Standard">
       <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
@@ -65,6 +75,7 @@
     </PlaceholderReference>
     <PlaceholderReference Include="Tc3_IPCDiag">
       <DefaultResolution>Tc3_IPCDiag, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_IPCDiag</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc3_Module">
       <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
