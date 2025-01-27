@@ -20,6 +20,7 @@ VAR
 	MC_ResetFB 			: Tc3_DriveMotionControl.MC_Reset;
 	MC_PowerFB 			: Tc3_DriveMotionControl.MC_Power;
 	MC_MoveAbsoluteFB 	: Tc3_DriveMotionControl.MC_MoveAbsolute;
+	MC_MoveRelativeFB 	: Tc3_DriveMotionControl.MC_MoveRelative;
 	MC_MoveVelocityFB 	: Tc3_DriveMotionControl.MC_MoveVelocity;
 	MC_HaltFB 			: Tc3_DriveMotionControl.MC_Halt;
 	MC_Jog 				: Tc3_DriveMotionControl.MC_Jog;
