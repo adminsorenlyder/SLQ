@@ -7,11 +7,16 @@ VAR_INPUT
 	Cmd_Enable			:	BOOL;
 	Cmd_MoveAbsolute	:	BOOL;
 	Cmd_MoveVelocity	:	BOOL;
+	Cmd_MoveRelative	:	BOOL;
 	Cmd_JogPositive		:	BOOL;
 	Cmd_JogNegative		:	BOOL;
 	Cmd_Stop			:	BOOL;
+	Cmd_SetPosition		:	BOOL;
 	Cfg_Position		:	LREAL;
 	Cfg_Velocity		:	LREAL;
+	Cfg_Acceleration	:	LREAL;
+	Cfg_Deceleration	:	LREAL;
+	Cfg_Direction		:	LREAL; //0 = Frw, 1 = Rev, 2 = shortest way
 END_VAR
 VAR_OUTPUT
 END_VAR
@@ -22,6 +27,7 @@ VAR
 	MC_MoveAbsoluteFB 	: Tc3_DriveMotionControl.MC_MoveAbsolute;
 	MC_MoveRelativeFB 	: Tc3_DriveMotionControl.MC_MoveRelative;
 	MC_MoveVelocityFB 	: Tc3_DriveMotionControl.MC_MoveVelocity;
+	MC_SetPositionFB 	: Tc3_DriveMotionControl.MC_SetPosition;
 	MC_HaltFB 			: Tc3_DriveMotionControl.MC_Halt;
 	MC_Jog 				: Tc3_DriveMotionControl.MC_Jog;
 
@@ -43,6 +49,7 @@ END_VAR
 // This block is made for inspirational purposes.
 // Please make your ovn version that comlies with your / your company´s programming vision
 // Version 1.0 - Initial Version
+// Version 1.1 - Added MoveRelative & SetPosition
 //-----------------------------------------------------------------------------------------
 
 MC_ResetFB(Axis:=AxisRef);// Reset control block
@@ -74,6 +81,10 @@ CASE Stepcontrol OF
 	  IF Cmd_MoveAbsolute THEN
 		  Cmd_MoveAbsolute :=0;
 		  Stepcontrol :=40;
+	  END_IF
+	  IF Cmd_MoveRelative THEN
+		  Cmd_MoveRelative :=0;
+		  Stepcontrol :=50;
 	  END_IF
 	  IF Cmd_MoveVelocity THEN
 		  Cmd_MoveVelocity :=0;
@@ -117,6 +128,8 @@ CASE Stepcontrol OF
        MC_MoveAbsoluteFB.Execute :=TRUE;
        MC_MoveAbsoluteFB.Velocity := Cfg_Velocity;
        MC_MoveAbsoluteFB.Position := Cfg_Position;
+	   MC_MoveAbsoluteFB.Acceleration := Cfg_Acceleration;
+	   MC_MoveAbsoluteFB.Deceleration := Cfg_Deceleration;
        IF MC_MoveAbsoluteFB.Active THEN
           MC_MoveAbsoluteFB.Execute :=FALSE;
           Stepcontrol :=45; // Back to holding step
@@ -126,11 +139,35 @@ CASE Stepcontrol OF
        IF NOT MC_MoveAbsoluteFB.Done THEN
           Stepcontrol :=0; // Back to holding step
        END_IF
+	   
+//---------------------------RELATIVE MOVEMENT--------------------------------
+   50: // Start Relative Movement
+       MC_MoveRelativeFB.Execute :=TRUE;
+       MC_MoveRelativeFB.Velocity := Cfg_Velocity;
+       MC_MoveRelativeFB.Distance := Cfg_Position;
+	   MC_MoveRelativeFB.Acceleration := Cfg_Acceleration;
+	   MC_MoveRelativeFB.Deceleration := Cfg_Deceleration;
+       IF MC_MoveRelativeFB.Active THEN
+          MC_MoveRelativeFB.Execute :=FALSE;
+          Stepcontrol :=55; // Back to holding step
+       END_IF
+
+   55:
+       IF NOT MC_MoveRelativeFB.Done THEN
+          Stepcontrol :=0; // Back to holding step
+       END_IF
 
 //-----------------------------VELOCITY RUN---------------------------------
    60: // Start Velocity run
        MC_MoveVelocityFB.Execute := TRUE;
        MC_MoveVelocityFB.Velocity := Cfg_Velocity;
+	   MC_MoveVelocityFB.Acceleration := Cfg_Acceleration;
+	   MC_MoveVelocityFB.Deceleration := Cfg_Deceleration;
+	   CASE Cfg_Direction OF
+		   0: MC_MoveVelocityFB.Direction := MC_Direction.MC_Positive_Direction;
+		   1: MC_MoveVelocityFB.Direction := MC_Direction.MC_Negative_Direction;
+		   2: MC_MoveVelocityFB.Direction := MC_Direction.MC_Shortest_Way;
+	   END_CASE
        IF MC_MoveVelocityFB.Active THEN
           MC_MoveVelocityFB.Execute := FALSE;
           Stepcontrol :=0; // Back to holding step
@@ -153,21 +190,52 @@ CASE Stepcontrol OF
    90: // Jogging Rev
        MC_Jog.JogBackwards := TRUE;
        IF MC_Jog.active AND NOT Cmd_JogNegative THEN
-          Stepcontrol :=100; // Tilbage til ventestep
+          Stepcontrol :=100; // c
        END_IF
 
    100: // Stop Jog
        MC_Jog.JogForward := FALSE;
        MC_Jog.JogBackwards := FALSE;
        Stepcontrol :=0; // Tilbage til ventestep
+	   
+//---------------------------SET POSITION--------------------------------
+   110: // Set axisposition to xx
+       MC_SetPositionFB.Execute :=TRUE;
+       MC_SetPositionFB.Position := Cfg_Position;
+       IF MC_SetPositionFB.Done THEN 
+          MC_SetPositionFB.Execute :=FALSE;
+          Stepcontrol :=115; 
+       END_IF
+
 
 END_CASE]]></ST>
     </Implementation>
     <LineIds Name="FB_DMC_MotionControl">
       <LineId Id="163" Count="0" />
-      <LineId Id="3" Count="61" />
+      <LineId Id="3" Count="2" />
+      <LineId Id="209" Count="0" />
+      <LineId Id="6" Count="31" />
+      <LineId Id="232" Count="2" />
+      <LineId Id="231" Count="0" />
+      <LineId Id="38" Count="26" />
       <LineId Id="67" Count="5" />
-      <LineId Id="75" Count="52" />
+      <LineId Id="75" Count="8" />
+      <LineId Id="204" Count="1" />
+      <LineId Id="84" Count="8" />
+      <LineId Id="210" Count="0" />
+      <LineId Id="215" Count="14" />
+      <LineId Id="214" Count="0" />
+      <LineId Id="93" Count="4" />
+      <LineId Id="206" Count="1" />
+      <LineId Id="236" Count="1" />
+      <LineId Id="239" Count="1" />
+      <LineId Id="238" Count="0" />
+      <LineId Id="98" Count="28" />
+      <LineId Id="242" Count="0" />
+      <LineId Id="244" Count="2" />
+      <LineId Id="250" Count="4" />
+      <LineId Id="243" Count="0" />
+      <LineId Id="127" Count="0" />
       <LineId Id="2" Count="0" />
     </LineIds>
   </POU>

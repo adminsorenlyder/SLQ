@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <POU Name="FB_CX9020_RAMUsage" Id="{22547f06-eb0d-4ad7-addb-d11dc24e86cc}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'hide_all_locals'}
+FUNCTION_BLOCK FB_CX9020_RAMUsage
+VAR_INPUT
+	Enable		:		BOOL;
+	ReadInterval :		TIME := T#10S;
+END_VAR
+VAR_OUTPUT
+	MemoryAllocated		:ULINT;		//Total amount of program memory
+	MemoryAvailable		:ULINT;		//Amount of available program memory
+	MemoryUsed 			:ULINT;
+	Error				:BOOL;
+END_VAR
+VAR
+	Start                 : BOOL := TRUE;           // flag to trigger (re)start of statemachine
+    SkipSettingIPAddr     : BOOL := TRUE;           // for safety reasons - set FALSE if you want to set the IP address
+    State                 : INT;
+    
+    hrErrorCode            : HRESULT;                // last error code
+    hrGetValue             : HRESULT;
+    
+   
+	
+	
+	   
+    
+    fbDiagRegister         : Tc3_IPCDiag.FB_IPCDiag_Register := (sNetId:=cNetId);
+    fbDiagRead             : Tc3_IPCDiag.FB_IPCDiag_ReadParameter := (sNetId:=cNetId);
+    fbDiagReadPeriodic     : Tc3_IPCDiag.FB_IPCDiag_ReadParameterPeriodic := (tPeriod:= T#10S, sNetId:=cNetId);
+    fbDiagWrite            : Tc3_IPCDiag.FB_IPCDiag_WriteParameter := (sNetId:=cNetId);
+	
+	RestartTON			 :	TON;
+END_VAR
+
+VAR CONSTANT
+    cNetId : T_AmsNetID := ''; // local
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[RestartTON(IN:=State = 10 AND Enable  , PT:=ReadInterval , Q=> , ET=> );
+CASE State OF
+	0:
+		IF NOT fbDiagRegister.bBusy THEN
+			fbDiagRegister(bExecute:=TRUE);
+		ELSE
+			fbDiagRegister(bExecute:=FALSE, bError=>Error, hrErrorCode=>hrErrorCode);
+		END_IF
+		IF NOT fbDiagRegister.bBusy THEN
+			IF fbDiagRegister.bError THEN
+				State := 50;
+			ELSE
+				State := 10;
+			END_IF
+		END_IF
+		
+	10:
+		IF RestartTON.Q THEN
+			Start:=FALSE;
+			Error :=0;
+			State:= 20;
+		END_IF
+		
+	20: // Read memory allocated
+		IF NOT fbDiagRead.bBusy THEN
+			fbDiagRead(bExecute:= TRUE, eParameterKey:=E_IPCDiag_ParameterKey.Memory_ProgramMemoryAllocated, fbRegister:=fbDiagRegister);    
+		ELSE
+			fbDiagRead(bExecute:= FALSE, fbRegister:=fbDiagRegister, bError=>Error, hrErrorCode=>hrErrorCode);
+		END_IF
+		IF NOT fbDiagRead.bBusy THEN
+			IF fbDiagRead.bError THEN
+				State := 50;
+			ELSE // get value
+				hrGetValue := fbDiagRead.GetParameter(pBuffer:=ADR(MemoryAllocated), nBufferSize:=SIZEOF(MemoryAllocated));    
+				IF FAILED(hrGetValue) THEN
+					State := 50;
+				ELSE
+					State := 30;
+				END_IF
+			END_IF
+		END_IF  
+
+	30: // Read Memory availeble
+		IF NOT fbDiagRead.bBusy THEN
+			fbDiagRead(bExecute:= TRUE, eParameterKey:=E_IPCDiag_ParameterKey.Memory_ProgramMemoryAvailable, fbRegister:=fbDiagRegister);    
+		ELSE
+			fbDiagRead(bExecute:= FALSE, fbRegister:=fbDiagRegister, bError=>Error, hrErrorCode=>hrErrorCode);
+		END_IF
+		IF NOT fbDiagRead.bBusy THEN
+			IF fbDiagRead.bError THEN
+				State := 50;
+			ELSE // get value
+				hrGetValue := fbDiagRead.GetParameter(pBuffer:=ADR(MemoryAvailable), nBufferSize:=SIZEOF(MemoryAvailable));    
+				IF FAILED(hrGetValue) THEN
+					State := 50;
+				ELSE
+					State := 40;
+				END_IF
+			END_IF
+		END_IF
+	40:
+		MemoryUsed := MemoryAllocated - MemoryAvailable;
+		State := 10;
+
+	50:	// ERROR 
+		Error := 1 ;
+		MemoryAllocated :=0;
+		MemoryAvailable :=0;
+		MemoryUsed :=0;
+		State := 0;
+  
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="FB_CX9020_RAMUsage">
+      <LineId Id="3" Count="70" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

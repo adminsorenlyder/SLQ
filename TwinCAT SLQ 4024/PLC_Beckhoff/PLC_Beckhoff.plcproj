@@ -18,6 +18,9 @@
     <LibraryReferences>{7024fdf8-1f95-44d4-bb3a-4f40397a3e2d}</LibraryReferences>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CX\FB_CX9020_RAMUsage.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -55,6 +58,10 @@
     </PlaceholderReference>
     <PlaceholderReference Include="Tc3_DriveMotionControl">
       <DefaultResolution>Tc3_DriveMotionControl, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_DriveMotionControl</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_IPCDiag">
+      <DefaultResolution>Tc3_IPCDiag, * (Beckhoff Automation GmbH)</DefaultResolution>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc3_Module">
       <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
@@ -63,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MOTION" />
+    <Folder Include="CX" />
     <Folder Include="SAFETY" />
   </ItemGroup>
   <ItemGroup>
