@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <POU Name="FB_AX8000_ReadDiagCode" Id="{c609d630-5d32-43bd-bd25-e8046f49cd09}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_AX8000_ReadDiagCode
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	
+	// AX8000/CoE
+	AxisIsCANOPEN 							:	BOOL;
+	CoEReset 								:	Tc2_MC2.MC_Reset;
+	CoEReadEx 								:	FB_CoERead;
+	DriveRef 								:	Tc2_Ethercat.ST_DriveRef;
+	CoEReadValue							:	UDINT;
+	
+	// Ident Drive
+	AxisParameterSet						: 	ST_AxisParameterSet;
+	ReadParameterSet						: 	MC_ReadParameterSet;
+	GetSlaveIdentity						: 	FB_EcGetSlaveIdentity;
+	SlaveIdentity							: 	ST_EcSlaveIdentity;
+	CoERead									: 	FB_CoERead;
+	GetLocalAmsNetId						: 	FB_GetLocalAmsNetId;
+	AdsReadEx								: 	ADSREADEX;
+	ReadDriveAddress						: 	MC_ReadDriveAddress;
+	DriveAddress							: 	ST_DriveAddress;
+	
+	AX8_Message								: 	FB_TcMessage;
+	AX8_RequestEventText					: 	FB_RequestEventText;
+	AX8_Args								: 	FB_TcArguments;
+	AX8_ErrList								: 	ARRAY[1..10] OF ST_AX8_ErrList;
+	AX8_ActChMsg							: 	BYTE;
+	AX8_10F3								: 	ST_AX8_10F3;
+	AX8_DiagnosisMessage					: 	ARRAY[0..63] OF BYTE;
+	nEventId								: 	UDINT;
+	myGuid									: 	GUID := (Data1 := 16#28111931, Data2 := 16#2, Data3 := 16#0, Data4 := [16#12, 16#60, 16#AC, 16#1F, 16#6E, 16#0, 16#67, 16#0]);
+	AX8_ErrorID								: 	HRESULT;
+	AX8_Overrun								: 	BOOL;
+	AX8_Counter								: 	INT;
+	AX8_CoeDiagMsgTemp						: 	STRING(512);
+	AX8_DiagCodeTemp						: 	UINT;
+	AX8_SlotnumberTemp						: 	BYTE;
+	AX8_NumberOfArguments					: 	UINT;
+	AX8_usArgumentValue						: 	USINT;
+	AX8_sArgumentValue						: 	SINT;	
+	AX8_uArgumentValue						: 	UINT;
+	AX8_iArgumentValue						: 	INT;	
+	AX8_udArgumentValue						: 	UDINT;
+	AX8_idArgumentValue						: 	DINT;
+	AX8_rArgumentValue						: 	REAL;
+	AX8_uiArgumentDataType					: 	UINT;
+	AX8_strArgumentValue					: 	STRING(255);
+	AX8_Helper								: 	UINT;
+	AX8_MessageCounter 						: 	INT;
+	AX8_Offset 								: 	UINT;
+	
+	AX8000_DiagCode							: 	UINT;
+	AX8000_Slotnumber						: 	BYTE;
+
+END_VAR
+VAR_IN_OUT
+ 	Axis									:	Tc2_Mc2.AXIS_REF;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// AX5000 Read Diag Codes - With standard blocks
+// This block is made for inspirational purposes.
+// Please make your ovn version that comlies with your / your company´s programming vision
+// NOT FINISHED!!!
+//-----------------------------------------------------------------------------------------
+
+// Axis ident
+ReadParameterSet(Axis:= Axis,Parameter:= AxisParameterSet);
+ReadDriveAddress(Axis:=Axis,DriveAddress=>DriveAddress);
+GetLocalAmsNetId();
+GetSlaveIdentity(sNetId:= AxisParameterSet.sAmsNetId,nSlaveAddr:= AxisParameterSet.nPort,identity=> SlaveIdentity);
+
+// AX8000
+CoERead(Axis:= Axis,NetId:= GetLocalAmsNetId.AddrString,Index:= 16#10F3,SubIndex:= ,pDstBuf:= ADR(AX8_10F3),BufLen:= SIZEOF(AX8_10F3),	Timeout:= T#10S,CompleteAccess:=TRUE);
+AdsReadEx(NETID	:= AxisParameterSet.sAmsNetId,PORT	:= 16#FFFF, IDXGRP	:= ECADS_IGRP_SLAVE_TCOM_EVENT_GUID, IDXOFFS:= AxisParameterSet.nPort,LEN:= SIZEOF(myGuid),	DESTADDR:= ADR(myGuid),);
+CoEReset(Axis:=Axis);
+CoEReadEx(Axis:=Axis,pDstBuf:=ADR(CoEReadValue),BufLen:=SIZEOF(CoEReadValue),CompleteAccess:=TRUE);
+
+	300: // Can Open Axis
+			Step :=310;
+			AX8_MessageCounter :=1;
+			Sts_SequenceSTRING := 'CANOpen - Reading Axis messages...';
+		
+	310:
+		CoERead.Execute := TRUE;
+		IF CoERead.Busy THEN
+			Step :=311;
+		END_IF
+		IF CoERead.Error THEN
+			Sts_SequenceSTRING := Concat('CANOpen - Reading Axis messages failed. ADSErrorID: ', UINT_TO_STRING(CoERead.AdsErrId));
+			Step :=666;
+		END_IF
+	
+	311:
+		IF NOT CoERead.Busy THEN
+			CoERead.Execute := FALSE;
+			Sts_SequenceSTRING := 'CANOpen - Reading Axis messages done!';
+			AX8_ActChMsg := AX8_10F3.NewMessage02;
+			Step :=320;
+		END_IF
+		IF CoERead.Error THEN
+			Sts_SequenceSTRING := Concat('CANOpen - Reading Axis messages failed. ADSErrorID: ', UINT_TO_STRING(CoERead.AdsErrId));
+			Step :=666;
+		END_IF
+		
+	320:
+		IF AX8_Counter > 10 THEN
+		IF AX8_MessageCounter = 1 THEN
+			AX8000_DiagCode := 0;
+			AX8000_Slotnumber := 0;
+			Sts_LatestErrorSTRING := 'No Error Message found in History';
+		END_IF
+		AX8_Counter := 1;
+		IF Cfg_ReadNCStatusIfNoDriveError THEN
+			Step := 365;
+			ELSE
+			Step := 370;	// Home
+		END_IF
+		
+	ELSE
+		IF AX8_ActChMsg < 6 THEN
+			AX8_ActChMsg := AX8_ActChMsg + 10;
+		END_IF;	
+		
+		AX8_DiagnosisMessage := AX8_10F3.DiagnosisMessages[AX8_ActChMsg].arDiagnosisMessage;
+	
+		IF (DriveAddress.Channel = 0 AND AX8_DiagnosisMessage [2] >= 33 AND AX8_DiagnosisMessage [2] <= 64) OR  
+			(DriveAddress.Channel = 0 AND AX8_DiagnosisMessage [2] >= 0 AND AX8_DiagnosisMessage [2] <= 32) OR  
+			(DriveAddress.Channel = 1 AND AX8_DiagnosisMessage [2] >= 65 AND AX8_DiagnosisMessage [2] <= 96) OR
+			(DriveAddress.Channel = 1 AND AX8_DiagnosisMessage [2] >= 0 AND AX8_DiagnosisMessage [2] <= 32) THEN
+				AX8_DiagCodeTemp := SHL(BYTE_TO_WORD(AX8_DiagnosisMessage[7]), 8) + AX8_DiagnosisMessage[6] ;
+				AX8_SlotnumberTemp := AX8_DiagnosisMessage [2];
+				AX8_NumberOfArguments := AX8_DiagnosisMessage [5];
+				AX8_Helper := 0;
+				AX8_Offset := 0;
+				AX8_Args.Clear();
+				WHILE AX8_Helper < AX8_NumberOfArguments DO
+					//uiArgumentDataType[iHelper] := SHL(BYTE_TO_UINT(arDiagnosisMessage [16 + 1 + iHelper*6]), 8) + arDiagnosisMessage [16 + iHelper*6];  //Flags Param1, Param2, ...
+					memcpy(ADR(AX8_uiArgumentDataType), ADR(AX8_DiagnosisMessage [16 + AX8_Offset]), SIZEOF(UINT));  //Flags Param1, Param2, ...					
+					
+					IF    (AX8_uiArgumentDataType AND 16#F000) = 16#0000 THEN // Bit 0..11: Data type idx
+						IF		(AX8_uiArgumentDataType AND 16#0FFF) = 1 THEN // BOOL
+						ELSIF	(AX8_uiArgumentDataType AND 16#0FFF) = 2 THEN // Int8
+							memcpy(ADR(AX8_sArgumentValue), ADR(AX8_DiagnosisMessage[16 + AX8_Offset + 2]), SIZEOF(SINT));
+							AX8_Args.AddSInt(AX8_sArgumentValue);
+							AX8_Offset := AX8_Offset + 2 + SIZEOF(SINT);							
+						ELSIF	(AX8_uiArgumentDataType AND 16#0FFF) = 3 THEN // Int16
+							memcpy(ADR(AX8_iArgumentValue), ADR(AX8_DiagnosisMessage[16 + AX8_Offset + 2]), SIZEOF(INT));
+							AX8_Args.AddInt(AX8_iArgumentValue);
+							AX8_Offset := AX8_Offset + 2 + SIZEOF(INT);							
+						ELSIF	(AX8_uiArgumentDataType AND 16#0FFF) = 4 THEN // Int32
+							memcpy(ADR(AX8_idArgumentValue), ADR(AX8_DiagnosisMessage[16 + AX8_Offset + 2]), SIZEOF(DINT));
+							AX8_Args.AddDInt(AX8_idArgumentValue);
+							AX8_Offset := AX8_Offset + 2 + SIZEOF(DINT);							
+						ELSIF	(AX8_uiArgumentDataType AND 16#0FFF) = 5 THEN // UInt8
+							memcpy(ADR(AX8_usArgumentValue), ADR(AX8_DiagnosisMessage[16 + AX8_Offset + 2]), SIZEOF(USINT));
+							AX8_Args.AddUSInt(AX8_usArgumentValue);
+							AX8_Offset := AX8_Offset + 2 + SIZEOF(USINT);							
+						ELSIF	(AX8_uiArgumentDataType AND 16#0FFF) = 6 THEN // UInt16
+							memcpy(ADR(AX8_uArgumentValue), ADR(AX8_DiagnosisMessage[16 + AX8_Offset + 2]), SIZEOF(UINT));
+							AX8_Args.AddUint(AX8_uArgumentValue);
+							AX8_Offset := AX8_Offset + 2 + SIZEOF(UINT);							
+						ELSIF	(AX8_uiArgumentDataType AND 16#0FFF) = 7 THEN // UInt32
+							memcpy(ADR(AX8_udArgumentValue), ADR(AX8_DiagnosisMessage[16 + AX8_Offset + 2]), SIZEOF(UDINT));
+							AX8_Args.AddUDInt(AX8_udArgumentValue);
+							AX8_Offset := AX8_Offset + 2 + SIZEOF(UDINT);
+						ELSIF	(AX8_uiArgumentDataType AND 16#0FFF) = 8 THEN // Real32
+							memcpy(ADR(AX8_rArgumentValue), ADR(AX8_DiagnosisMessage[16 + AX8_Offset + 2]), SIZEOF(REAL));
+							AX8_Args.AddReal(AX8_rArgumentValue);
+							AX8_Offset := AX8_Offset + 2 + SIZEOF(REAL);							
+						ELSIF	(AX8_uiArgumentDataType AND 16#0FFF) = 9 THEN // Visible string
+						ELSIF	(AX8_uiArgumentDataType AND 16#0FFF) =10 THEN // Octet string
+						END_IF
+					ELSIF (AX8_uiArgumentDataType AND 16#F000) = 16#1000 THEN // Bit 0..11: size of BYTE array in bytes
+					ELSIF (AX8_uiArgumentDataType AND 16#F000) = 16#2000 THEN // Bit 0..11: size of ASCII string without ending NULL
+						AX8_strArgumentValue := '';
+						memcpy(ADR(AX8_strArgumentValue), ADR(AX8_DiagnosisMessage[16 + AX8_Offset + 2]), (AX8_uiArgumentDataType AND 16#F000));
+						AX8_Args.AddStringByValue(AX8_strArgumentValue);
+						AX8_Offset := AX8_Offset + 2 + (AX8_uiArgumentDataType AND 16#F000);					
+					ELSIF (AX8_uiArgumentDataType AND 16#F000) = 16#3000 THEN // Bit 0..11: size of UniCode string without ending NULL
+					END_IF
+					AX8_Helper := AX8_Helper + 1;
+				END_WHILE 
+				
+				AdsReadEx.READ := FALSE;
+				Step := 330;
+		END_IF
+		
+		AX8_ActChMsg := AX8_ActChMsg - 1;
+		AX8_Counter := AX8_Counter + 1;
+	END_IF
+		
+	330:
+		AdsReadEx.READ := TRUE;
+		IF AdsReadEx.BUSY THEN
+			Step := 331;
+		END_IF
+		IF AdsReadEx.ERR THEN
+			Step := 666;
+		END_IF
+		
+	331:
+		IF NOT AdsReadEx.BUSY THEN
+			AdsReadEx.READ := FALSE;
+			Step := 340;
+		END_IF
+		IF AdsReadEx.ERR THEN
+			IF AdsReadEx.ERRID = 16#701 THEN // Service not supported, old Tc :-(
+				// CGuid t(0x28111931, pDesc->m_nVendorId, pDesc->m_nProductCode, pDesc->m_nRevisionNo);
+				myGuid.Data1 := 16#28111931;
+				myGuid.Data2 := UDINT_TO_WORD(SlaveIdentity.vendorId);
+				myGuid.Data3 := 0;
+				myGuid.Data4[0] := UDINT_TO_BYTE(SlaveIdentity.productCode);
+				myGuid.Data4[1] := UDINT_TO_BYTE(SHR(SlaveIdentity.productCode,8));
+				myGuid.Data4[2] := UDINT_TO_BYTE(SHR(SlaveIdentity.productCode,16));
+				myGuid.Data4[3] := UDINT_TO_BYTE(SHR(SlaveIdentity.productCode,24));
+				myGuid.Data4[4] := UDINT_TO_BYTE(SlaveIdentity.revisionNo);
+				myGuid.Data4[5] := UDINT_TO_BYTE(SHR(SlaveIdentity.revisionNo,8));
+				myGuid.Data4[6] := UDINT_TO_BYTE(SHR(SlaveIdentity.revisionNo,16));
+				myGuid.Data4[7] := UDINT_TO_BYTE(SHR(SlaveIdentity.revisionNo,24));
+				Sts_SequenceSTRING := 'CANOpen - Reading ADS messages failed. Twincat version is to old';
+			ELSE
+				Sts_SequenceSTRING := Concat('CANOpen - Reading ADS messages failed. ADSErrorID: ', UDINT_TO_STRING(AdsReadEx.ERRID));				
+			END_IF
+			Step := 666;
+		END_IF
+		
+	340:
+		
+		nEventId := SHL(BYTE_TO_UDINT(AX8_SlotnumberTemp), 16) + UINT_TO_UDINT(AX8_DiagCodeTemp);
+		Step := 350;
+		
+	350:
+		
+		AX8_RequestEventText.Request(myGuid, nEventId, 1033, AX8_Args);
+		IF AX8_RequestEventText.bBusy THEN
+			Step := 351;
+		END_IF
+		IF AX8_RequestEventText.bError THEN
+			Step := 666;
+		END_IF
+		
+	351:
+		IF NOT AX8_RequestEventText.bBusy THEN
+			Step := 360;
+		END_IF
+		IF AX8_RequestEventText.bError THEN
+			Step := 666;
+		END_IF
+		
+	360:
+		AX8_RequestEventText.GetString(AX8_CoeDiagMsgTemp, SIZEOF(AX8_CoeDiagMsgTemp));
+
+		IF AX8_MessageCounter = 1 THEN //seperate log for newest Message
+			AX8000_DiagCode := AX8_DiagCodeTemp ;
+			AX8000_Slotnumber := AX8_SlotnumberTemp;
+			Sts_LatestErrorSTRING := concat(UINT_TO_STRING(AX8000_DiagCode),' : ');
+			Sts_LatestErrorSTRING := concat(Sts_LatestErrorSTRING,AX8_CoeDiagMsgTemp);
+		END_IF;
+			AX8_ErrList[AX8_MessageCounter].AX8000DiagCode := AX8_DiagCodeTemp ;
+			AX8_ErrList[AX8_MessageCounter].AX8000Slotnumber := AX8_SlotnumberTemp;
+			AX8_ErrList[AX8_MessageCounter].arCoeDiagMsg := AX8_CoeDiagMsgTemp;
+
+			AX8_MessageCounter := AX8_MessageCounter + 1;
+			Step := 320;
+			
+	365:
+		IF Sts_LatestErrorSTRING = '...'  THEN
+			NCErrorNumber := axis.NcToPlc.ErrorCode;
+			NCDiagList();
+			Sts_LatestErrorSTRING := NCErrorSTRING;
+			
+		END_IF
+		Step :=370;
+			
+	370:
+		IF ForceAxisRead_Initiated THEN
+			Sts_SequenceSTRING :='Manual AxisReadOut Done';
+			
+			IF NOT Cmd_ManualAxisReadout THEN
+				ForceAxisRead_Initiated :=FALSE;
+				Step :=50;
+			END_IF
+		ELSE
+			IF Cmd_EnableAxisControl THEN
+				Sts_ResetRequired :=TRUE;
+				IF Cmd_ResetAxis THEN
+					Sts_LatestErrorSTRING := '';
+					Sts_FirstErrorSTRING := '';
+					Sts_ResetRequired :=0;
+					Step :=371;
+				END_IF;
+			ELSE
+				IF NOT axis.status.Error THEN
+					Sts_ResetRequired :=FALSE;
+					Step :=50;
+				END_IF
+			END_IF
+		END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FB_AX8000_ReadDiagCode">
+      <LineId Id="297" Count="3" />
+      <LineId Id="295" Count="1" />
+      <LineId Id="246" Count="3" />
+      <LineId Id="232" Count="5" />
+      <LineId Id="10" Count="221" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
