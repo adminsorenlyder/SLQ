@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.64">
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.65">
 	<DataTypes>
 		<DataType>
 			<Name GUID="{41A59402-DED6-BA84-4477-2F4D680064AD}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..5] OF INT</Name>
@@ -38,7 +38,7 @@
 			</ArrayInfo>
 		</DataType>
 		<DataType>
-			<Name GUID="{18071995-0000-0000-0000-002000000004}" IecBaseType="true" BitType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..3] OF BIT</Name>
+			<Name GUID="{18071995-0000-0000-0000-002000000004}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..3] OF BIT</Name>
 			<BitSize>4</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000010}">BIT</BaseType>
 			<ArrayInfo>
@@ -201,7 +201,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{0D1DA551-5B45-443F-B62C-68E9CA00CE9C}" Name="PLC_Base" PrjFilePath="PLC_Base\PLC_Base.plcproj" TmcFilePath="PLC_Base\PLC_Base.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Generic\PLC_Generic.tmc" TmcHash="{E1C047CE-F8FC-F2EC-A7C6-3E3C6FD90448}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Base\PLC_Base.tmc" TmcHash="{B2FA09FC-0D30-7A7D-79A5-ED33B7D0CDB9}">
 					<Name>PLC_Base Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Contexts>
@@ -221,7 +221,7 @@
 				</Instance>
 			</Project>
 			<Project GUID="{190F3B06-98C9-4E17-B67E-910FC8D078F4}" Name="PLC_Beckhoff" PrjFilePath="PLC_Beckhoff\PLC_Beckhoff.plcproj" TmcFilePath="PLC_Beckhoff\PLC_Beckhoff.tmc" ReloadTmc="true" AmsPort="852" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502040" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Beckhoff\PLC_Beckhoff.tmc" TmcHash="{65550BA6-D940-48CA-09D8-395C05DE1DC5}">
+				<Instance Id="#x08502040" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Beckhoff\PLC_Beckhoff.tmc" TmcHash="{E54EA046-588A-A3DE-72E9-407E3C2DDE7A}">
 					<Name>PLC_Beckhoff Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Contexts>
@@ -241,7 +241,7 @@
 				</Instance>
 			</Project>
 			<Project GUID="{7ED2757A-0EAC-4587-AC05-9BDDA25E7CA6}" Name="PLC_NORDGear" PrjFilePath="PLC_NORDGear\PLC_NORDGear.plcproj" TmcFilePath="PLC_NORDGear\PLC_NORDGear.tmc" ReloadTmc="true" AmsPort="853" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502080" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_NORDGear\PLC_NORDGear.tmc" TmcHash="{265C8A2C-2911-D4CC-C459-DCA1046945BC}">
+				<Instance Id="#x08502080" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_NORDGear\PLC_NORDGear.tmc" TmcHash="{7F16316D-EFDC-8C0C-ECCF-2084CE7E2985}">
 					<Name>PLC_NORDGear Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -283,7 +283,7 @@
 				</Instance>
 			</Project>
 			<Project GUID="{2304FC89-6D60-4C92-B837-CFE433D3D856}" Name="PLC_Siemens" PrjFilePath="PLC_Siemens\PLC_Siemens.plcproj" TmcFilePath="PLC_Siemens\PLC_Siemens.tmc" ReloadTmc="true" AmsPort="854" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x085020c0" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Siemens\PLC_Siemens.tmc" TmcHash="{7FB2EAA6-0E24-9E16-3F15-DDC355BF4C60}">
+				<Instance Id="#x085020c0" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Siemens\PLC_Siemens.tmc" TmcHash="{4A1EBDFF-7AAF-E0E8-6EA6-E7341B0A138D}">
 					<Name>PLC_Siemens Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -2738,10 +2738,7 @@ Bit 8 - 15 : reserved]]></Comment>
 				</Image>
 				<Box Id="8" BoxType="9124">
 					<Name>sinamics-g120c-pn</Name>
-					<Comment><![CDATA[
-The GSDML is not available!
-
-GSDML Name: GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml
+					<Comment><![CDATA[GSDML Name: GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml
 Path: $(TWINCAT3DIR)Config\Io\Profinet\
 VendorName: Siemens AG
 OrderNumber: 6SL3 210-1KExx-xxFx

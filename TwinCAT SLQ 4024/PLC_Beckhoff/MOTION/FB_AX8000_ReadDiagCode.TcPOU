@@ -1,30 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
   <POU Name="FB_AX8000_ReadDiagCode" Id="{c609d630-5d32-43bd-bd25-e8046f49cd09}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_AX8000_ReadDiagCode
 VAR_INPUT
+	Cmd_ReadDiagCode						:	BOOL;
 END_VAR
 VAR_OUTPUT
+	Sts_ActualDiagCode						:	UDINT;
+	Sts_DiagList							:	;	
+	Sts_Error								:	BOOL;
 END_VAR
 VAR
 	
 	// AX8000/CoE
 	AxisIsCANOPEN 							:	BOOL;
 	CoEReset 								:	Tc2_MC2.MC_Reset;
-	CoEReadEx 								:	FB_CoERead;
+	CoEReadEx 								:	Tc2_mc2_drive.FB_CoERead;
 	DriveRef 								:	Tc2_Ethercat.ST_DriveRef;
 	CoEReadValue							:	UDINT;
 	
 	// Ident Drive
-	AxisParameterSet						: 	ST_AxisParameterSet;
-	ReadParameterSet						: 	MC_ReadParameterSet;
-	GetSlaveIdentity						: 	FB_EcGetSlaveIdentity;
-	SlaveIdentity							: 	ST_EcSlaveIdentity;
-	CoERead									: 	FB_CoERead;
-	GetLocalAmsNetId						: 	FB_GetLocalAmsNetId;
+	AxisParameterSet						: 	Tc2_MC2.ST_AxisParameterSet;
+	ReadParameterSet						: 	Tc2_MC2.MC_ReadParameterSet;
+	GetSlaveIdentity						: 	Tc2_Ethercat.FB_EcGetSlaveIdentity;
+	SlaveIdentity							: 	Tc2_Ethercat.ST_EcSlaveIdentity;
+	CoERead									: 	Tc2_mc2_drive.FB_CoERead;
+	GetLocalAmsNetId						: 	Tc2_Utilities.FB_GetLocalAmsNetId;
 	AdsReadEx								: 	ADSREADEX;
-	ReadDriveAddress						: 	MC_ReadDriveAddress;
-	DriveAddress							: 	ST_DriveAddress;
+	ReadDriveAddress						: 	Tc2_MC2.MC_ReadDriveAddress;
+	DriveAddress							: 	Tc2_MC2.ST_DriveAddress;
 	
 	AX8_Message								: 	FB_TcMessage;
 	AX8_RequestEventText					: 	FB_RequestEventText;
@@ -57,6 +61,8 @@ VAR
 	
 	AX8000_DiagCode							: 	UINT;
 	AX8000_Slotnumber						: 	BYTE;
+	
+	StepControl								:	UINT;
 
 END_VAR
 VAR_IN_OUT
@@ -81,34 +87,42 @@ AdsReadEx(NETID	:= AxisParameterSet.sAmsNetId,PORT	:= 16#FFFF, IDXGRP	:= ECADS_I
 CoEReset(Axis:=Axis);
 CoEReadEx(Axis:=Axis,pDstBuf:=ADR(CoEReadValue),BufLen:=SIZEOF(CoEReadValue),CompleteAccess:=TRUE);
 
-	300: // Can Open Axis
-			Step :=310;
+
+CASE StepControl OF
+	
+	0:
+		IF Cmd_ReadDiagCode THEN
+			StepControl := 5;
+		END_IF
+
+	5: // Can Open Axis
+			StepControl :=10;
 			AX8_MessageCounter :=1;
 			Sts_SequenceSTRING := 'CANOpen - Reading Axis messages...';
 		
-	310:
+	10:
 		CoERead.Execute := TRUE;
 		IF CoERead.Busy THEN
-			Step :=311;
+			StepControl :=11;
 		END_IF
 		IF CoERead.Error THEN
 			Sts_SequenceSTRING := Concat('CANOpen - Reading Axis messages failed. ADSErrorID: ', UINT_TO_STRING(CoERead.AdsErrId));
-			Step :=666;
+			StepControl :=666;
 		END_IF
 	
-	311:
+	11:
 		IF NOT CoERead.Busy THEN
 			CoERead.Execute := FALSE;
 			Sts_SequenceSTRING := 'CANOpen - Reading Axis messages done!';
 			AX8_ActChMsg := AX8_10F3.NewMessage02;
-			Step :=320;
+			StepControl :=20;
 		END_IF
 		IF CoERead.Error THEN
 			Sts_SequenceSTRING := Concat('CANOpen - Reading Axis messages failed. ADSErrorID: ', UINT_TO_STRING(CoERead.AdsErrId));
 			Step :=666;
 		END_IF
 		
-	320:
+	20:
 		IF AX8_Counter > 10 THEN
 		IF AX8_MessageCounter = 1 THEN
 			AX8000_DiagCode := 0;
@@ -117,9 +131,9 @@ CoEReadEx(Axis:=Axis,pDstBuf:=ADR(CoEReadValue),BufLen:=SIZEOF(CoEReadValue),Com
 		END_IF
 		AX8_Counter := 1;
 		IF Cfg_ReadNCStatusIfNoDriveError THEN
-			Step := 365;
+			StepControl := 65;
 			ELSE
-			Step := 370;	// Home
+			StepControl := 70;	// Home
 		END_IF
 		
 	ELSE
@@ -188,26 +202,26 @@ CoEReadEx(Axis:=Axis,pDstBuf:=ADR(CoEReadValue),BufLen:=SIZEOF(CoEReadValue),Com
 				END_WHILE 
 				
 				AdsReadEx.READ := FALSE;
-				Step := 330;
+				StepControl := 30;
 		END_IF
 		
 		AX8_ActChMsg := AX8_ActChMsg - 1;
 		AX8_Counter := AX8_Counter + 1;
 	END_IF
 		
-	330:
+	30:
 		AdsReadEx.READ := TRUE;
 		IF AdsReadEx.BUSY THEN
-			Step := 331;
+			StepControl := 31;
 		END_IF
 		IF AdsReadEx.ERR THEN
-			Step := 666;
+			StepControl := 666;
 		END_IF
 		
-	331:
+	31:
 		IF NOT AdsReadEx.BUSY THEN
 			AdsReadEx.READ := FALSE;
-			Step := 340;
+			StepControl := 40;
 		END_IF
 		IF AdsReadEx.ERR THEN
 			IF AdsReadEx.ERRID = 16#701 THEN // Service not supported, old Tc :-(
@@ -227,33 +241,33 @@ CoEReadEx(Axis:=Axis,pDstBuf:=ADR(CoEReadValue),BufLen:=SIZEOF(CoEReadValue),Com
 			ELSE
 				Sts_SequenceSTRING := Concat('CANOpen - Reading ADS messages failed. ADSErrorID: ', UDINT_TO_STRING(AdsReadEx.ERRID));				
 			END_IF
-			Step := 666;
+			StepControl := 666;
 		END_IF
 		
-	340:
+	40:
 		
 		nEventId := SHL(BYTE_TO_UDINT(AX8_SlotnumberTemp), 16) + UINT_TO_UDINT(AX8_DiagCodeTemp);
-		Step := 350;
+		StepControl := 50;
 		
-	350:
+	50:
 		
 		AX8_RequestEventText.Request(myGuid, nEventId, 1033, AX8_Args);
 		IF AX8_RequestEventText.bBusy THEN
-			Step := 351;
+			StepControl := 51;
 		END_IF
 		IF AX8_RequestEventText.bError THEN
-			Step := 666;
+			StepControl := 666;
 		END_IF
 		
-	351:
+	51:
 		IF NOT AX8_RequestEventText.bBusy THEN
-			Step := 360;
+			StepControl := 60;
 		END_IF
 		IF AX8_RequestEventText.bError THEN
-			Step := 666;
+			StepControl := 666;
 		END_IF
 		
-	360:
+	60:
 		AX8_RequestEventText.GetString(AX8_CoeDiagMsgTemp, SIZEOF(AX8_CoeDiagMsgTemp));
 
 		IF AX8_MessageCounter = 1 THEN //seperate log for newest Message
@@ -267,49 +281,37 @@ CoEReadEx(Axis:=Axis,pDstBuf:=ADR(CoEReadValue),BufLen:=SIZEOF(CoEReadValue),Com
 			AX8_ErrList[AX8_MessageCounter].arCoeDiagMsg := AX8_CoeDiagMsgTemp;
 
 			AX8_MessageCounter := AX8_MessageCounter + 1;
-			Step := 320;
+			StepControl := 20;
 			
-	365:
+	65:
 		IF Sts_LatestErrorSTRING = '...'  THEN
 			NCErrorNumber := axis.NcToPlc.ErrorCode;
 			NCDiagList();
 			Sts_LatestErrorSTRING := NCErrorSTRING;
 			
 		END_IF
-		Step :=370;
+		StepControl :=70;
 			
-	370:
-		IF ForceAxisRead_Initiated THEN
-			Sts_SequenceSTRING :='Manual AxisReadOut Done';
-			
-			IF NOT Cmd_ManualAxisReadout THEN
-				ForceAxisRead_Initiated :=FALSE;
-				Step :=50;
-			END_IF
-		ELSE
-			IF Cmd_EnableAxisControl THEN
-				Sts_ResetRequired :=TRUE;
-				IF Cmd_ResetAxis THEN
-					Sts_LatestErrorSTRING := '';
-					Sts_FirstErrorSTRING := '';
-					Sts_ResetRequired :=0;
-					Step :=371;
-				END_IF;
-			ELSE
-				IF NOT axis.status.Error THEN
-					Sts_ResetRequired :=FALSE;
-					Step :=50;
-				END_IF
-			END_IF
-		END_IF]]></ST>
+	70:
+
+		
+END_CASE]]></ST>
     </Implementation>
     <LineIds Name="FB_AX8000_ReadDiagCode">
       <LineId Id="297" Count="3" />
       <LineId Id="295" Count="1" />
       <LineId Id="246" Count="3" />
       <LineId Id="232" Count="5" />
-      <LineId Id="10" Count="221" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="367" Count="1" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="369" Count="0" />
+      <LineId Id="373" Count="3" />
+      <LineId Id="370" Count="0" />
+      <LineId Id="12" Count="197" />
       <LineId Id="9" Count="0" />
+      <LineId Id="372" Count="0" />
+      <LineId Id="371" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
