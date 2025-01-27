@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.65">
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.64">
 	<DataTypes>
 		<DataType>
 			<Name GUID="{41A59402-DED6-BA84-4477-2F4D680064AD}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..5] OF INT</Name>
@@ -38,7 +38,7 @@
 			</ArrayInfo>
 		</DataType>
 		<DataType>
-			<Name GUID="{18071995-0000-0000-0000-002000000004}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..3] OF BIT</Name>
+			<Name GUID="{18071995-0000-0000-0000-002000000004}" IecBaseType="true" BitType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..3] OF BIT</Name>
 			<BitSize>4</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000010}">BIT</BaseType>
 			<ArrayInfo>
@@ -2738,7 +2738,10 @@ Bit 8 - 15 : reserved]]></Comment>
 				</Image>
 				<Box Id="8" BoxType="9124">
 					<Name>sinamics-g120c-pn</Name>
-					<Comment><![CDATA[GSDML Name: GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml
+					<Comment><![CDATA[
+The GSDML is not available!
+
+GSDML Name: GSDML-V2.31-Siemens-Sinamics_G120C-20170904.xml
 Path: $(TWINCAT3DIR)Config\Io\Profinet\
 VendorName: Siemens AG
 OrderNumber: 6SL3 210-1KExx-xxFx

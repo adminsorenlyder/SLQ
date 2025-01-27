@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
-  <POU Name="FB_NC_MotionControl" Id="{a29df78d-c22b-4499-b814-4099926ad4f8}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_NC_MotionControl
+  <POU Name="FB_DMC_MotionControl" Id="{3a59ceed-3bdc-4cb1-9fd9-6b66897c30a2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_DMC_MotionControl
 VAR_INPUT
 	Cmd_Reset			:	BOOL;
 	Cmd_Enable			:	BOOL;
@@ -17,12 +17,12 @@ VAR_OUTPUT
 END_VAR
 VAR
 	// Control blocks
-	MC_ResetFB 			: Tc2_MC2.MC_Reset;
-	MC_PowerFB 			: Tc2_MC2.MC_Power;
-	MC_MoveAbsoluteFB 	: Tc2_MC2.MC_MoveAbsolute;
-	MC_MoveVelocityFB 	: Tc2_MC2.MC_MoveVelocity;
-	MC_HaltFB 			: Tc2_MC2.MC_Halt;
-	MC_Jog 				: Tc2_MC2.MC_Jog;
+	MC_ResetFB 			: Tc3_DriveMotionControl.MC_Reset;
+	MC_PowerFB 			: Tc3_DriveMotionControl.MC_Power;
+	MC_MoveAbsoluteFB 	: Tc3_DriveMotionControl.MC_MoveAbsolute;
+	MC_MoveVelocityFB 	: Tc3_DriveMotionControl.MC_MoveVelocity;
+	MC_HaltFB 			: Tc3_DriveMotionControl.MC_Halt;
+	MC_Jog 				: Tc3_DriveMotionControl.MC_Jog;
 
 	// Stepkontrol
 	StepControl 		: UINT;
@@ -34,11 +34,11 @@ VAR
 	
 END_VAR
 VAR_IN_OUT
-	AxisRef		: Tc2_MC2.AXIS_REF;
+	AxisRef		: Tc3_DriveMotionControl.AXIS_REF;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[// NC Simple Motion Control - With standard blocks
+      <ST><![CDATA[// DMC Simple Motion Control - With standard blocks
 // This block is made for inspirational purposes.
 // Please make your ovn version that comlies with your / your company´s programming vision
 // Version 1.0 - Initial Version
@@ -101,16 +101,12 @@ CASE Stepcontrol OF
 //---------------------------------POWER---------------------------------
    20: // Enable Axis / Power on Axis
        MC_PowerFB.Enable :=TRUE;
-       MC_PowerFB.Enable_Positive :=TRUE;
-       MC_PowerFB.Enable_Negative :=TRUE;
        IF MC_PowerFB.Status THEN
           Stepcontrol :=0; // Back to holding step
        END_IF
 
    30: // Disable Axis / Removing power from Axis
        MC_PowerFB.Enable :=FALSE;
-       MC_PowerFB.Enable_Positive :=FALSE;
-       MC_PowerFB.Enable_Negative :=FALSE;
        IF NOT MC_PowerFB.Status THEN
           Stepcontrol :=0; // Back to holding step
        END_IF
@@ -166,9 +162,11 @@ CASE Stepcontrol OF
 
 END_CASE]]></ST>
     </Implementation>
-    <LineIds Name="FB_NC_MotionControl">
+    <LineIds Name="FB_DMC_MotionControl">
       <LineId Id="163" Count="0" />
-      <LineId Id="3" Count="124" />
+      <LineId Id="3" Count="61" />
+      <LineId Id="67" Count="5" />
+      <LineId Id="75" Count="52" />
       <LineId Id="2" Count="0" />
     </LineIds>
   </POU>
