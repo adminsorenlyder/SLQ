@@ -33,6 +33,9 @@
     <Compile Include="MOTION\FB_NC_TorqueHoming.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MOTION\FUN_AX5000_FindErrorText.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MOTION\FUN_NC_FindErrorText.TcPOU">
       <SubType>Code</SubType>
     </Compile>
