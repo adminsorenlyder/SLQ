@@ -36,6 +36,9 @@
     <Compile Include="MOTION\FB_DMC_MotionControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MOTION\FB_NC_ReadWriteParameters.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MOTION\FB_NC_TorqueHoming.TcPOU">
       <SubType>Code</SubType>
     </Compile>

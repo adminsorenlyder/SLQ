@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <POU Name="FB_NC_ReadWriteParameters" Id="{3ab1e961-2cf6-4ffb-b70a-671022136d76}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_NC_ReadWriteParameters
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	
+		Sts_EncoderOffset					:	REAL;
+		Sts_ModuloValue						:	REAL;		
+
+END_VAR
+VAR
+	
+		ReadParameterSet					: 	MC_ReadParameterSet;
+		WriteParameter						: 	Tc2_MC2.MC_WriteParameter;
+		axisParameterSet	   				:   Tc2_MC2.ST_AxisParameterSet;
+		
+		StepControl							:	UINT;
+
+END_VAR
+VAR_IN_OUT
+		Axis								:	Tc2_Mc2.AXIS_REF;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// NC Read / Write Parameters - With standard blocks
+// This block is made for inspirational purposes.
+// Please make your ovn version that comlies with your / your company´s programming vision
+// NOT FINISHED!!!
+//-----------------------------------------------------------------------------------------
+
+MC_AxisParameter.AxisEncoderOffset;
+MC_AxisParameter.AxisMaximumAcceleration;
+MC_AxisParameter.AxisMaximumDeceleration;
+MC_AxisParameter.AxisJerk;
+MC_AxisParameter.;
+
+// Axis ident
+ReadParameterSet(Axis:= Axis,Parameter:= AxisParameterSet);
+
+WriteParameter(Axis:=Axis);
+
+
+CASE StepControl OF
+	
+	
+
+
+
+
+
+
+END_CASE
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_NC_ReadWriteParameters">
+      <LineId Id="57" Count="3" />
+      <LineId Id="55" Count="1" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="51" Count="3" />
+      <LineId Id="11" Count="1" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="26" Count="1" />
+      <LineId Id="40" Count="1" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="45" Count="5" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="13" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
