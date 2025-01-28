@@ -48,6 +48,21 @@
     <Compile Include="MOTION\AX8000\FB_AX8000_ReadDiagCode.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MOTION\AX8000\FUN_AX8000_GetActualTorqueUDINT.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MOTION\AX8000\FUN_AX8000_GetSafeTorqueOffStateBOOL.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MOTION\AX8000\FUN_AX8000_GetMotorTemperatureUDINT.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MOTION\AX8000\FUN_AX8000_GetControlVoltageUDINT.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MOTION\AX8000\FUN_AX8000_GetMainVoltageUDINT.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MOTION\FB_DMC_MotionControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>

@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <POU Name="FUN_AX8000_GetControlVoltageUDINT" Id="{485fdda3-f8a7-4c60-850e-ff4ae4884fd1}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FUN_AX8000_GetControlVoltageUDINT : UDINT
+VAR_INPUT
+		Axis									:	Tc2_Mc2.AXIS_REF;
+		Channel									:	STRING;
+END_VAR
+VAR
+		CoERead 								:	Tc2_Mc2_Drive.FB_CoERead;
+		CoEReadValue 							:	UDINT;
+		Busy									:	BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// AX8000 Get Control Voltage
+// This block is made for inspirational purposes.
+// Please make your own version that complies with your / your company´s programming vision
+// Version 1.0 - Initial Version
+//-----------------------------------------------------------------------------------------
+
+IF NOT CoERead.Busy AND busy THEN
+	IF NOT CoERead.error THEN
+		FUN_AX8000_GetControlVoltageUDINT := CoEReadValue;
+	END_IF
+END_IF
+CoERead(Axis:=Axis,NetId:='',pDstBuf:=ADR(CoEReadValue),BufLen:=SIZEOF(CoEReadValue));
+IF Channel = 'A' THEN
+	CoERead.Index := 16#2C01; 
+END_IF
+IF Channel = 'B' THEN
+	CoERead.Index := 16#2C01; 
+END_IF
+CoERead.SubIndex := 0 ;
+CoERead.Execute := TRUE;
+IF CoERead.Busy THEN
+	Busy :=1;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FUN_AX8000_GetControlVoltageUDINT">
+      <LineId Id="42" Count="11" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="85" Count="1" />
+      <LineId Id="84" Count="0" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="55" Count="2" />
+      <LineId Id="20" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

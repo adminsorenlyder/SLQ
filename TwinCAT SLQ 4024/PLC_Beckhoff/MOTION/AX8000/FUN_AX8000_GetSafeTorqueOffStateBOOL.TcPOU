@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <POU Name="FUN_AX8000_GetSafeTorqueOffStateBOOL" Id="{ad63a966-fd3e-45fa-9966-fe47e245b44f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FUN_AX8000_GetSafeTorqueOffStateBOOL : BOOL
+VAR_INPUT
+		Axis									:	Tc2_Mc2.AXIS_REF;
+		Channel									:	STRING;
+END_VAR
+VAR
+		CoERead 								:	Tc2_Mc2_Drive.FB_CoERead;
+		CoEReadValue 							:	UDINT;
+		Busy									:	BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// AX8000 Get Sate Torque Off State
+// This block is made for inspirational purposes.
+// Please make your own version that complies with your / your company´s programming vision
+// Version 1.0 - Initial Version
+//-----------------------------------------------------------------------------------------
+
+IF NOT CoERead.Busy AND busy THEN
+	IF NOT CoERead.error THEN
+		IF CoEReadValue = 1 THEN
+			FUN_AX8000_GetSafeTorqueOffStateBOOL :=1;
+			ELSE
+			FUN_AX8000_GetSafeTorqueOffStateBOOL :=0;
+		END_IF
+	END_IF
+END_IF
+CoERead(Axis:=Axis,NetId:='',pDstBuf:=ADR(CoEReadValue),BufLen:=SIZEOF(CoEReadValue));
+IF Channel = 'A' THEN
+	CoERead.Index := 16#3001; 
+END_IF
+IF Channel = 'B' THEN
+	CoERead.Index := 16#3401; 
+END_IF
+CoERead.SubIndex := 0 ;
+CoERead.Execute := TRUE;
+IF CoERead.Busy THEN
+	Busy :=1;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FUN_AX8000_GetSafeTorqueOffStateBOOL">
+      <LineId Id="42" Count="7" />
+      <LineId Id="98" Count="1" />
+      <LineId Id="101" Count="1" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="51" Count="2" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="85" Count="1" />
+      <LineId Id="84" Count="0" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="55" Count="2" />
+      <LineId Id="20" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
