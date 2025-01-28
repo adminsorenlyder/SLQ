@@ -24,31 +24,46 @@
     <Compile Include="MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MOTION\FB_AX5000_ReadDiagCode.TcPOU">
+    <Compile Include="MOTION\AX5000\FB_AX5000_ReadDiagCode.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MOTION\FB_AX8000_ReadDiagCode.TcPOU">
+    <Compile Include="MOTION\AX5000\FUN_AX5000_FindErrorText.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MOTION\FB_NC_MotionControl.TcPOU">
+    <Compile Include="MOTION\AX5000\FUN_AX5000_GetActualTorqueUINT.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MOTION\AX5000\FUN_AX5000_GetSafeTorqueOffStateBOOL.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MOTION\AX5000\FUN_AX5000_GetMainVoltageUINT.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MOTION\AX5000\FUN_AX5000_GetControlVoltageUINT.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MOTION\AX5000\FUN_AX5000_GetMotorTemperatureUINT.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MOTION\AX8000\FB_AX8000_ReadDiagCode.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MOTION\FB_DMC_MotionControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MOTION\FB_NC_ReadWriteParameters.TcPOU">
+    <Compile Include="MOTION\NC\FB_NC_MotionControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MOTION\FB_NC_TorqueHoming.TcPOU">
+    <Compile Include="MOTION\NC\FB_NC_ReadWriteParameters.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MOTION\FUN_AX5000_FindErrorText.TcPOU">
+    <Compile Include="MOTION\NC\FB_NC_TorqueHoming.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MOTION\FUN_NC_FindErrorText.TcPOU">
+    <Compile Include="MOTION\NC\FUN_NC_FindErrorText.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MOTION\PRG_NC_ReadWriteParameters.TcPOU">
+    <Compile Include="MOTION\NC\PRG_NC_ReadWriteParameters.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PlcTask.TcTTO">
@@ -106,6 +121,9 @@
   <ItemGroup>
     <Folder Include="MOTION" />
     <Folder Include="CX" />
+    <Folder Include="MOTION\AX5000" />
+    <Folder Include="MOTION\AX8000" />
+    <Folder Include="MOTION\NC" />
     <Folder Include="SAFETY" />
   </ItemGroup>
   <ItemGroup>

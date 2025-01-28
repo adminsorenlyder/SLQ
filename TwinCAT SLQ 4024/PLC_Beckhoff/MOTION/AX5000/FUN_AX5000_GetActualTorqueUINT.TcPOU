@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <POU Name="FUN_AX5000_GetActualTorqueUINT" Id="{8db4cdba-776c-43ba-86b6-25f1d3921fad}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FUN_AX5000_GetActualTorqueUINT : UINT
+VAR_INPUT
+		Axis									:	Tc2_Mc2.AXIS_REF;
+END_VAR
+VAR
+		SoERead 								:	Tc2_Mc2_Drive.FB_SoERead;
+		SoEReadValue 							:	UINT;
+		Busy									:	BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// AX5000 Get Actual Torque
+// This block is made for inspirational purposes.
+// Please make your own version that complies with your / your company´s programming vision
+// Version 1.0 - Initial Version
+//-----------------------------------------------------------------------------------------
+
+IF NOT SoERead.Busy AND busy THEN
+	IF NOT SoERead.error THEN
+		FUN_AX5000_GetActualTorqueUINT := SoEReadValue;
+	END_IF
+END_IF
+SoERead(Axis:=Axis,Element:=16#40,pDstBuf:=ADR(SoEReadValue),BufLen:=SIZEOF(SoEReadValue));
+SoERead.Idn := S_0_IDNs + 84; 
+SoERead.Execute := TRUE;
+IF SoERead.Busy THEN
+	Busy :=1;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FUN_AX5000_GetActualTorqueUINT">
+      <LineId Id="42" Count="15" />
+      <LineId Id="20" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

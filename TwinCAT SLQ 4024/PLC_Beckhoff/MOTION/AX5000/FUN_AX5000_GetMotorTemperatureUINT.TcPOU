@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <POU Name="FUN_AX5000_GetMotorTemperatureUINT" Id="{82dc1489-e553-4a0c-8b3e-ec5942111571}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FUN_AX5000_GetMotorTemperatureUINT : UINT
+VAR_INPUT
+		Axis									:	Tc2_Mc2.AXIS_REF;
+END_VAR
+VAR
+		SoERead 								:	Tc2_Mc2_Drive.FB_SoERead;
+		SoEReadValue 							:	UINT;
+		Busy									:	BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// AX5000 Get Motor Temperature
+// This block is made for inspirational purposes.
+// Please make your own version that complies with your / your company´s programming vision
+// Version 1.0 - Initial Version
+//-----------------------------------------------------------------------------------------
+
+IF NOT SoERead.Busy AND busy THEN
+	IF NOT SoERead.error THEN
+		FUN_AX5000_GetMotorTemperatureUINT := SoEReadValue;
+	END_IF
+END_IF
+SoERead(Axis:=Axis,Element:=16#40,pDstBuf:=ADR(SoEReadValue),BufLen:=SIZEOF(SoEReadValue));
+SoERead.Idn := S_0_IDNs + 383; 
+SoERead.Execute := TRUE;
+IF SoERead.Busy THEN
+	Busy :=1;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FUN_AX5000_GetMotorTemperatureUINT">
+      <LineId Id="28" Count="3" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="22" Count="1" />
+      <LineId Id="25" Count="1" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="18" Count="2" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
