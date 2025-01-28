@@ -10,7 +10,11 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
+      <ST><![CDATA[// AX5000 Find Diag codes
+// This block is made for inspirational purposes.
+// Please make your ovn version that complies with your / your company´s programming vision
+// Version 1.0 - Initial Version
+//-----------------------------------------------------------------------------------------
 
 CASE AX5000ErrorNumber OF
 
@@ -940,6 +944,7 @@ END_CASE
 	FUN_AX5000_FindErrorText :=AX5000DiagSTRING;]]></ST>
     </Implementation>
     <LineIds Name="FUN_AX5000_FindErrorText">
+      <LineId Id="944" Count="3" />
       <LineId Id="8" Count="923" />
       <LineId Id="935" Count="0" />
       <LineId Id="932" Count="0" />

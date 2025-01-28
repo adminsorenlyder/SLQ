@@ -47,7 +47,7 @@ END_VAR
     <Implementation>
       <ST><![CDATA[// DMC Simple Motion Control - With standard blocks
 // This block is made for inspirational purposes.
-// Please make your ovn version that comlies with your / your company´s programming vision
+// Please make your ovn version that complies with your / your company´s programming vision
 // Version 1.0 - Initial Version
 // Version 1.1 - Added MoveRelative & SetPosition
 //-----------------------------------------------------------------------------------------

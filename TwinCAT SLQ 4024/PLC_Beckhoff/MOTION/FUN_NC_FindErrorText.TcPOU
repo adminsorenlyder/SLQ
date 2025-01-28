@@ -10,7 +10,13 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[//Errors
+      <ST><![CDATA[// NC Find Error text
+// This block is made for inspirational purposes.
+// Please make your ovn version that complies with your / your company´s programming vision
+// Version 1.0 - Initial Version
+//-----------------------------------------------------------------------------------------
+
+//Errors
 CASE NCErrorNumber OF
 0		:	NCErrorSTRING :='No Error';
 1793	:	NCErrorSTRING :='Link Error';
@@ -733,6 +739,8 @@ END_CASE
 FUN_NC_FindErrorText := NCErrorSTRING;]]></ST>
     </Implementation>
     <LineIds Name="FUN_NC_FindErrorText">
+      <LineId Id="1466" Count="3" />
+      <LineId Id="1464" Count="1" />
       <LineId Id="737" Count="719" />
       <LineId Id="2" Count="0" />
     </LineIds>

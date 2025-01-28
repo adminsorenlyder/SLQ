@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
   <POU Name="FB_SIEMENS_G120C_FRQ" Id="{f47ba0bc-97fd-40c6-8ba8-8952a26f9d89}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_SIEMENS_G120C_FRQ
 VAR_INPUT
@@ -85,8 +85,13 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[(*
+      <ST><![CDATA[// Siemens C120C Profinet Frequency Inverter control
+// This block is made for inspirational purposes.
+// Please make your ovn version that complies with your / your company´s programming vision
+// Version 1.0 - Initial Version
+//-----------------------------------------------------------------------------------------
 
+(*
 Input Word 1 = Statusword
 Input Word 2 = Actual Frequency
 Input Word 3 = Actual Current
@@ -97,8 +102,6 @@ Output Word 1 = Controlword
 Output Word 2 = Setpoint Frequency
 Output Word 3 = Ramp
 Output Word 4 = Ramp
-
-
 *)
 
 
@@ -655,9 +658,12 @@ MessageHandler(
 //Out_Actual[1].10 := 1;]]></ST>
     </Implementation>
     <LineIds Name="FB_SIEMENS_G120C_FRQ">
-      <LineId Id="3" Count="9" />
+      <LineId Id="921" Count="3" />
+      <LineId Id="919" Count="1" />
+      <LineId Id="3" Count="0" />
+      <LineId Id="5" Count="7" />
       <LineId Id="835" Count="1" />
-      <LineId Id="13" Count="6" />
+      <LineId Id="15" Count="4" />
       <LineId Id="43" Count="16" />
       <LineId Id="833" Count="0" />
       <LineId Id="61" Count="31" />
