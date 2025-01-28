@@ -1818,7 +1818,7 @@ External Setpoint Generation:
 				</Instance>
 			</Project>
 			<Project GUID="{190F3B06-98C9-4E17-B67E-910FC8D078F4}" Name="PLC_Beckhoff" PrjFilePath="PLC_Beckhoff\PLC_Beckhoff.plcproj" TmcFilePath="PLC_Beckhoff\PLC_Beckhoff.tmc" ReloadTmc="true" AmsPort="852" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502040" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Beckhoff\PLC_Beckhoff.tmc" TmcHash="{D46BA169-D09A-7FAD-464D-8CA81FD048C3}">
+				<Instance Id="#x08502040" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC_Beckhoff\PLC_Beckhoff.tmc" TmcHash="{45370EA6-2AFB-43CC-3405-DB77E01DEEB6}">
 					<Name>PLC_Beckhoff Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -4656,6 +4656,7 @@ Submodule Info: Free telegram, PZD length 6/6 words
 		</Io>
 	</Project>
 	<Mappings>
+		<MappingInfo Identifier="{05000010-2041-0850-6000-040340205008}" Id="#x02030010" Watchdog="14000000040000000400000004000000"/>
 		<OwnerA Name="TIPC^PLC_Beckhoff^PLC_Beckhoff Instance">
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis 1">
 				<Link VarA="PlcTask Inputs^MAIN.Axis01.NcToPlc" VarB="Outputs^ToPlc"/>

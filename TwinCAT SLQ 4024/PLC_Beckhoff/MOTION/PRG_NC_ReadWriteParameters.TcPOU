@@ -10,16 +10,34 @@ END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[
+ReadWriteParameters.Cmd_ReadParameters;
+ReadWriteParameters.Cmd_WriteParameters;
+ReadWriteParameters.Set_EncoderDemoninator;
+ReadWriteParameters.Set_EncoderNuminator;
+ReadWriteParameters.Set_EncoderOffset;
+ReadWriteParameters.Set_ModuloValue;
 
 ReadWriteParameters(
 	Cmd_ReadParameters:= , 
 	Cmd_WriteParameters:= , 
+	Set_EncoderNuminator:= , 
+	Set_EncoderDemoninator:= , 
+	Set_EncoderOffset:= , 
+	Set_ModuloValue:= , 
+	Sts_MaximumVelocity=> , 
+	Sts_MaximumAcceleration=> , 
+	Sts_Maximumdeceleration=> , 
+	Sts_EncoderNuminator=> , 
+	Sts_EncoderDemoninator=> , 
 	Sts_EncoderOffset=> , 
 	Sts_ModuloValue=> , 
+	Sts_StatusSTRING=> , 
 	Axis:=Main.Axis01 );]]></ST>
     </Implementation>
     <LineIds Name="PRG_NC_ReadWriteParameters">
-      <LineId Id="9" Count="6" />
+      <LineId Id="31" Count="6" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="38" Count="14" />
       <LineId Id="5" Count="0" />
     </LineIds>
   </POU>

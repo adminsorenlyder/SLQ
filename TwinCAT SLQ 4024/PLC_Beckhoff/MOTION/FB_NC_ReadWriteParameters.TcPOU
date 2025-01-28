@@ -17,10 +17,10 @@ VAR_OUTPUT
 		Sts_MaximumVelocity					:	LREAL;
 		Sts_MaximumAcceleration				:	LREAL;
 		Sts_Maximumdeceleration				:	LREAL;
-		Sts_EncoderNuminator				:	REAL;
-		Sts_EncoderDemoninator				:	REAL;
-		Sts_EncoderOffset					:	REAL;
-		Sts_ModuloValue						:	REAL;		
+		Sts_EncoderNuminator				:	LREAL;
+		Sts_EncoderDemoninator				:	LREAL;
+		Sts_EncoderOffset					:	LREAL;
+		Sts_ModuloValue						:	LREAL;		
 		Sts_StatusSTRING					:	STRING;
 		
 END_VAR
@@ -112,6 +112,8 @@ CASE StepControl OF
 				StepControl := 0;
 				WriteParameter.Execute :=0;
 			END_IF
+			ELSE
+			StepControl := 110;	
 		END_IF
 
 	105:
@@ -139,6 +141,8 @@ CASE StepControl OF
 				StepControl := 0;
 				WriteParameter.Execute :=0;
 			END_IF
+			ELSE
+			StepControl := 120;	
 		END_IF
 
 	115:
@@ -166,6 +170,8 @@ CASE StepControl OF
 				StepControl := 0;
 				WriteParameter.Execute :=0;
 			END_IF
+			ELSE
+			StepControl := 130;	
 		END_IF
 
 	125:
@@ -193,6 +199,8 @@ CASE StepControl OF
 				StepControl := 0;
 				WriteParameter.Execute :=0;
 			END_IF
+			ELSE
+			StepControl := 10;	
 		END_IF
 
 	135:
@@ -251,6 +259,7 @@ END_CASE
       <LineId Id="132" Count="4" />
       <LineId Id="207" Count="3" />
       <LineId Id="206" Count="0" />
+      <LineId Id="250" Count="1" />
       <LineId Id="130" Count="0" />
       <LineId Id="46" Count="1" />
       <LineId Id="138" Count="0" />
@@ -263,6 +272,7 @@ END_CASE
       <LineId Id="140" Count="8" />
       <LineId Id="232" Count="3" />
       <LineId Id="231" Count="0" />
+      <LineId Id="252" Count="1" />
       <LineId Id="149" Count="3" />
       <LineId Id="247" Count="0" />
       <LineId Id="169" Count="0" />
@@ -274,6 +284,7 @@ END_CASE
       <LineId Id="154" Count="7" />
       <LineId Id="237" Count="3" />
       <LineId Id="236" Count="0" />
+      <LineId Id="254" Count="1" />
       <LineId Id="162" Count="3" />
       <LineId Id="248" Count="0" />
       <LineId Id="170" Count="0" />
@@ -284,6 +295,7 @@ END_CASE
       <LineId Id="173" Count="7" />
       <LineId Id="242" Count="3" />
       <LineId Id="241" Count="0" />
+      <LineId Id="256" Count="1" />
       <LineId Id="181" Count="3" />
       <LineId Id="249" Count="0" />
       <LineId Id="185" Count="1" />

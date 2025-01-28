@@ -40,8 +40,8 @@ END_VAR
     <Implementation>
       <ST><![CDATA[// NC Simple Motion Control - With standard blocks
 // This block is made for inspirational purposes.
-// Please make your ovn version that complies with your / your company´s programming vision
-// Version 1.0 - Initial Version
+// Please make your own version that complies with your / your company´s programming vision
+// Version 1.1 - Initial Version
 //-----------------------------------------------------------------------------------------
 
 MC_ResetFB(Axis:=AxisRef);// Reset control block
