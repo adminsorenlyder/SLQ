@@ -48,6 +48,9 @@
     <Compile Include="MOTION\FUN_NC_FindErrorText.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MOTION\PRG_NC_ReadWriteParameters.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>

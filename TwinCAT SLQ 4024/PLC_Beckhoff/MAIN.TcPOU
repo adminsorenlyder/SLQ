@@ -3,10 +3,13 @@
   <POU Name="MAIN" Id="{f9f46e94-37ff-467b-a42a-c8c5b630cc31}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
+	
+	Axis01		:		Tc2_Mc2.AXIS_REF;
+
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[]]></ST>
+      <ST><![CDATA[PRG_NC_ReadWriteParameters();]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
       <LineId Id="2" Count="0" />

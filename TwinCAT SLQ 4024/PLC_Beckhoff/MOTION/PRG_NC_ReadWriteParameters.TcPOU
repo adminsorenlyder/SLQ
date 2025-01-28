@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <POU Name="PRG_NC_ReadWriteParameters" Id="{d5db72a3-cf91-4f33-ba58-a951fc505340}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_NC_ReadWriteParameters
+VAR
+
+	ReadWriteParameters			: FB_NC_ReadWriteParameters;
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+ReadWriteParameters(
+	Cmd_ReadParameters:= , 
+	Cmd_WriteParameters:= , 
+	Sts_EncoderOffset=> , 
+	Sts_ModuloValue=> , 
+	Axis:=Main.Axis01 );]]></ST>
+    </Implementation>
+    <LineIds Name="PRG_NC_ReadWriteParameters">
+      <LineId Id="9" Count="6" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

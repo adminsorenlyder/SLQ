@@ -6,13 +6,23 @@ VAR_INPUT
 
 		Cmd_ReadParameters					:	BOOL;
 		Cmd_WriteParameters					:	BOOL;
+		Set_EncoderNuminator				:	REAL;
+		Set_EncoderDemoninator				:	REAL;
+		Set_EncoderOffset					:	REAL;
+		Set_ModuloValue						:	REAL;	
 
 END_VAR
 VAR_OUTPUT
-	
+		
+		Sts_MaximumVelocity					:	LREAL;
+		Sts_MaximumAcceleration				:	LREAL;
+		Sts_Maximumdeceleration				:	LREAL;
+		Sts_EncoderNuminator				:	REAL;
+		Sts_EncoderDemoninator				:	REAL;
 		Sts_EncoderOffset					:	REAL;
 		Sts_ModuloValue						:	REAL;		
-
+		Sts_StatusSTRING					:	STRING;
+		
 END_VAR
 VAR
 	
@@ -30,35 +40,172 @@ END_VAR]]></Declaration>
       <ST><![CDATA[// NC Read / Write Parameters - With standard blocks
 // This block is made for inspirational purposes.
 // Please make your ovn version that complies with your / your company´s programming vision
-// NOT FINISHED!!!
+// Version 1.0 - Initial Version
 //-----------------------------------------------------------------------------------------
-
-MC_AxisParameter.AxisEncoderOffset;
-MC_AxisParameter.AxisMaximumAcceleration;
-MC_AxisParameter.AxisMaximumDeceleration;
-MC_AxisParameter.AxisJerk;
 
 
 // Axis ident
 ReadParameterSet(Axis:= Axis,Parameter:= AxisParameterSet);
-
 WriteParameter(Axis:=Axis);
+
+// Extract Values From AxisParameterSet
+Sts_MaximumAcceleration := axisParameterSet.faccelerationMax; 
+Sts_Maximumdeceleration := axisParameterSet.fdecelerationMax;
+Sts_MaximumVelocity := axisParameterSet.fVeloMaximum;
+Sts_EncoderOffset := axisParameterSet.fEncOffset; 
+Sts_ModuloValue := axisParameterSet.fEncModuloFactor; 
+Sts_EncoderNuminator := axisParameterSet.fEncScaleFactorNumerator; 
+Sts_EncoderDemoninator := axisParameterSet.fEncScaleFactorDenominator; 
 
 
 CASE StepControl OF
 	
 	0:
 		IF Cmd_ReadParameters THEN
+			StepControl := 5;
+		END_IF
+		IF Cmd_WriteParameters THEN
+			StepControl := 100;
+		END_IF
+	
+		
+	5:
+		IF Axis.NcToPlc.AxisId <> 0 THEN
 			StepControl := 10;
+		ELSE
+			StepControl := 0;
+			Sts_StatusSTRING := 'Axis is not linked.';
 		END_IF
 		
 	10: // Read Parameters
-	
+		ReadParameterSet.Execute := 1 ;
+		IF ReadParameterSet.Busy THEN
+			StepControl := 15;
+		END_IF
+		IF ReadParameterSet.Error THEN
+			Sts_StatusSTRING := CONCAT('ERROR Reading Values : ', TO_STRING(ReadParameterSet.ErrorID));
+			StepControl := 0;
+			ReadParameterSet.Execute :=0;
+		END_IF
 		
+	15:
+		IF ReadParameterSet.Done AND NOT Cmd_ReadParameters AND NOT Cmd_WriteParameters THEN
+			ReadParameterSet.Execute := 0 ;
+			StepControl := 0;
+		END_IF
+		IF ReadParameterSet.Error THEN
+			Sts_StatusSTRING := CONCAT('ERROR Reading Values : ', TO_STRING(ReadParameterSet.ErrorID));
+			StepControl := 0;
+			ReadParameterSet.Execute :=0;
+		END_IF
+		
+	100:
+		IF Set_EncoderNuminator <> 0.0 THEN
+			WriteParameter.Execute :=1;
+			WriteParameter.ParameterNumber := MC_AxisParameter.AxisEncoderScalingNumerator;
+			WriteParameter.Value := Set_EncoderNuminator;
+			IF WriteParameter.Busy THEN
+				StepControl := 105;
+			END_IF
+			IF WriteParameter.Error THEN
+				Sts_StatusSTRING := CONCAT('ERROR Writing Values : ', TO_STRING(WriteParameter.ErrorID));
+				StepControl := 0;
+				WriteParameter.Execute :=0;
+			END_IF
+		END_IF
 
+	105:
+		IF WriteParameter.Done THEN
+			Sts_StatusSTRING := 'Writing Done';
+			WriteParameter.Execute :=0;
+			StepControl := 110;
+		END_IF
+		IF WriteParameter.Error THEN
+			Sts_StatusSTRING := CONCAT('ERROR Writing Values : ', TO_STRING(WriteParameter.ErrorID));
+			StepControl := 0;
+			WriteParameter.Execute :=0;
+		END_IF
 
+	110:
+		IF Set_EncoderDemoninator <> 0.0 THEN
+			WriteParameter.Execute :=1;
+			WriteParameter.ParameterNumber := MC_AxisParameter.AxisEncoderScalingDenominator;
+			WriteParameter.Value := Set_EncoderDemoninator;
+			IF WriteParameter.Busy THEN
+				StepControl := 115;
+			END_IF
+			IF WriteParameter.Error THEN
+				Sts_StatusSTRING := CONCAT('ERROR Writing Values : ', TO_STRING(WriteParameter.ErrorID));
+				StepControl := 0;
+				WriteParameter.Execute :=0;
+			END_IF
+		END_IF
 
+	115:
+		IF WriteParameter.Done THEN
+			Sts_StatusSTRING := 'Writing Done';
+			WriteParameter.Execute :=0;
+			StepControl := 120;
+		END_IF
+		IF WriteParameter.Error THEN
+			Sts_StatusSTRING := CONCAT('ERROR Writing Values : ', TO_STRING(WriteParameter.ErrorID));
+			StepControl := 0;
+			WriteParameter.Execute :=0;
+		END_IF
 
+	120:
+		IF Set_EncoderOffset <> 0.0 THEN
+			WriteParameter.Execute :=1;
+			WriteParameter.ParameterNumber := MC_AxisParameter.AxisEncoderOffset;
+			WriteParameter.Value := Set_EncoderOffset;
+			IF WriteParameter.Busy THEN
+				StepControl := 125;
+			END_IF
+			IF WriteParameter.Error THEN
+				Sts_StatusSTRING := CONCAT('ERROR Writing Values : ', TO_STRING(WriteParameter.ErrorID));
+				StepControl := 0;
+				WriteParameter.Execute :=0;
+			END_IF
+		END_IF
+
+	125:
+		IF WriteParameter.Done THEN
+			Sts_StatusSTRING := 'Writing Done';
+			WriteParameter.Execute :=0;
+			StepControl := 130;
+		END_IF
+		IF WriteParameter.Error THEN
+			Sts_StatusSTRING := CONCAT('ERROR Writing Values : ', TO_STRING(WriteParameter.ErrorID));
+			StepControl := 0;
+			WriteParameter.Execute :=0;
+		END_IF
+		
+	130:
+		IF Set_ModuloValue <> 0.0 THEN
+			WriteParameter.Execute :=1;
+			WriteParameter.ParameterNumber := MC_AxisParameter.AxisEncoderModuloValue;
+			WriteParameter.Value := Set_ModuloValue;
+			IF WriteParameter.Busy THEN
+				StepControl := 135;
+			END_IF
+			IF WriteParameter.Error THEN
+				Sts_StatusSTRING := CONCAT('ERROR Writing Values : ', TO_STRING(WriteParameter.ErrorID));
+				StepControl := 0;
+				WriteParameter.Execute :=0;
+			END_IF
+		END_IF
+
+	135:
+		IF WriteParameter.Done THEN
+			Sts_StatusSTRING := 'Writing Done';
+			WriteParameter.Execute :=0;
+			StepControl := 10;
+		END_IF
+		IF WriteParameter.Error THEN
+			Sts_StatusSTRING := CONCAT('ERROR Writing Values : ', TO_STRING(WriteParameter.ErrorID));
+			StepControl := 0;
+			WriteParameter.Execute :=0;
+		END_IF
 
 
 END_CASE
@@ -69,17 +216,81 @@ END_CASE
     <LineIds Name="FB_NC_ReadWriteParameters">
       <LineId Id="57" Count="3" />
       <LineId Id="55" Count="1" />
-      <LineId Id="10" Count="0" />
-      <LineId Id="51" Count="3" />
       <LineId Id="11" Count="1" />
       <LineId Id="9" Count="0" />
-      <LineId Id="26" Count="1" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="188" Count="0" />
+      <LineId Id="187" Count="0" />
+      <LineId Id="190" Count="5" />
+      <LineId Id="189" Count="0" />
       <LineId Id="40" Count="1" />
       <LineId Id="39" Count="0" />
       <LineId Id="42" Count="0" />
       <LineId Id="45" Count="0" />
-      <LineId Id="85" Count="6" />
-      <LineId Id="46" Count="4" />
+      <LineId Id="85" Count="2" />
+      <LineId Id="123" Count="0" />
+      <LineId Id="125" Count="1" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="101" Count="3" />
+      <LineId Id="106" Count="2" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="88" Count="2" />
+      <LineId Id="92" Count="2" />
+      <LineId Id="196" Count="1" />
+      <LineId Id="199" Count="1" />
+      <LineId Id="198" Count="0" />
+      <LineId Id="95" Count="1" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="202" Count="3" />
+      <LineId Id="201" Count="0" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="127" Count="2" />
+      <LineId Id="132" Count="4" />
+      <LineId Id="207" Count="3" />
+      <LineId Id="206" Count="0" />
+      <LineId Id="130" Count="0" />
+      <LineId Id="46" Count="1" />
+      <LineId Id="138" Count="0" />
+      <LineId Id="246" Count="0" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="139" Count="0" />
+      <LineId Id="137" Count="0" />
+      <LineId Id="212" Count="3" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="140" Count="8" />
+      <LineId Id="232" Count="3" />
+      <LineId Id="231" Count="0" />
+      <LineId Id="149" Count="3" />
+      <LineId Id="247" Count="0" />
+      <LineId Id="169" Count="0" />
+      <LineId Id="153" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="217" Count="3" />
+      <LineId Id="216" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="154" Count="7" />
+      <LineId Id="237" Count="3" />
+      <LineId Id="236" Count="0" />
+      <LineId Id="162" Count="3" />
+      <LineId Id="248" Count="0" />
+      <LineId Id="170" Count="0" />
+      <LineId Id="166" Count="1" />
+      <LineId Id="222" Count="3" />
+      <LineId Id="221" Count="0" />
+      <LineId Id="171" Count="0" />
+      <LineId Id="173" Count="7" />
+      <LineId Id="242" Count="3" />
+      <LineId Id="241" Count="0" />
+      <LineId Id="181" Count="3" />
+      <LineId Id="249" Count="0" />
+      <LineId Id="185" Count="1" />
+      <LineId Id="172" Count="0" />
+      <LineId Id="227" Count="3" />
+      <LineId Id="226" Count="0" />
+      <LineId Id="50" Count="0" />
       <LineId Id="44" Count="0" />
       <LineId Id="43" Count="0" />
       <LineId Id="22" Count="0" />
