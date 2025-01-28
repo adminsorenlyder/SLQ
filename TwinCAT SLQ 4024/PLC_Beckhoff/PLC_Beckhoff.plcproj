@@ -63,6 +63,9 @@
     <Compile Include="MOTION\AX8000\FUN_AX8000_GetMainVoltageUDINT.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MOTION\ELx72xx\FUN_ELx72xx_GetSafeTorqueOffStateBOOL.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MOTION\FB_DMC_MotionControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -139,6 +142,7 @@
     <Folder Include="MOTION\AX5000" />
     <Folder Include="MOTION\AX8000" />
     <Folder Include="MOTION\NC" />
+    <Folder Include="MOTION\ELx72xx" />
     <Folder Include="SAFETY" />
   </ItemGroup>
   <ItemGroup>
